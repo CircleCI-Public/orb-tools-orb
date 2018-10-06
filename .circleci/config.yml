@@ -1,0 +1,31 @@
+version: 2.1
+orbs:
+  orb-tools: circleci/orb-tools@volatile
+
+workflows:
+  default:
+    jobs:
+      - orb-tools/pack-and-validate-orb:
+          path: ./src/
+          workspace-path: orb-packed/
+          artifact-path: orb-packed/
+
+      - orb-tools/publish-dev-orb:
+          namespace: circleci
+          orb-name: hello-build
+          label: ${CIRCLE_BRANCH}
+          dev-token-variable: "$CIRCLECI_API_TOKEN"
+          workspace-path: orb-packed/
+          requires: [orb-tools/pack-and-validate-orb]
+
+      # - orb-tools/increment-orb:
+      #     orb-path: orb-packed/orb.yml
+      #     namespace: circleci
+      #     orb-name: hello-build
+      #     segment: "patch"
+      #     workspace-path: orb-packed/
+      #     release-token-variable: "$CIRCLECI_API_TOKEN"
+      #     requires: [orb-tools/pack-and-validate-orb]
+      #     filters:
+      #       branches:
+      #         only: master

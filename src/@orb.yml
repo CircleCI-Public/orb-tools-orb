@@ -66,11 +66,8 @@ commands:
       orb-path:
         description: "Path to an orb."
         type: string
-      namespace:
-        description: "Namespace the orb lives under."
-        type: string
-      orb-name:
-        description: "Name of the orb to increment.;"
+      orb-ref:
+        description: "A versionless orb-ref in the form <namespace>/<orb-name>"
         type: string
       segment:
         description: "The semver segment to increment 'major' or 'minor' or 'patch'"
@@ -92,10 +89,9 @@ commands:
           command: >
             circleci orb publish increment
             << parameters.orb-path >>
-            << parameters.namespace >>/<< parameters.orb-name >>
+            << parameters.orb-ref >>
             << parameters.segment >>
             <<# parameters.token-variable >>--token << parameters.token-variable >> <</ parameters.token-variable >>
-
   publish:
     description: >
       Uses the CLI to publish an orb to the registry.
@@ -105,8 +101,8 @@ commands:
         type: string
       orb-ref:
         description: >
-          A fully-qualified reference to an orb. This takes the form namespace/orb@version.
-          NOTE: To publish a dev version prefix the version with 'dev:' like so namespace/orb@dev:label
+          A fully-qualified reference to an orb. This takes the form <namespace>/<orb-name>@<version>
+          NOTE: To publish a dev version prefix the version with 'dev:' like this: <namespace>/<orb-name>@dev:<label>
         type: string
       token-variable:
         description: >
@@ -229,11 +225,15 @@ jobs:
       orb-path:
         description: "Path to an orb."
         type: string
-      namespace:
-        description: "Namespace the orb lives under."
+      path-root:
+        description: >
+          The location where orb-path should be relative from, 
+          defaulting the current directory.
+          In most cases the default should be fine.
         type: string
-      orb-name:
-        description: "Name of the orb to increment.;"
+        default: "."
+      orb-ref:
+        description: "A versionless orb-ref in the form <namespace>/<orb-name>"
         type: string
       segment:
         description: "The semver segment to increment 'major' or 'minor' or 'patch'"
@@ -253,38 +253,25 @@ jobs:
         default: ""
     steps:
       - when:
+          condition: << parameters.checkout >>
+          steps:
+            - checkout
+      - when:
           condition: << parameters.workspace-path >>
           steps:
             - attach_workspace:
-                at: .
-            - increment:
-                orb-path: << parameters.workspace-path >>$(basename << parameters.orb-path >>)
-                namespace: << parameters.namespace >>
-                orb-name: << parameters.orb-name >>
-                segment: << parameters.segment >>
-                token-variable: << parameters.release-token-variable >>
-      - unless:
-          condition: << parameters.workspace-path >>
-          steps:
-            - checkout
-            - increment:
-                orb-path: << parameters.orb-path >>
-                namespace: << parameters.namespace >>
-                orb-name: << parameters.orb-name >>
-                segment: << parameters.segment >>
-                token-variable: << parameters.release-token-variable >>
+                at: << parameters.path-root >>
+      - increment:
+          orb-path: << parameters.workspace-path >>$(basename << parameters.orb-path >>)
+          orb-ref: << parameters.orb-ref >>
+          segment: << parameters.segment >>
+          token-variable: << parameters.release-token-variable >>
 
   publish-dev-orb:
     executor: cli/default
     parameters:
-      namespace:
-        description: "The namespace where this should be published."
-        type: string
-      orb-name:
-        description: "The orb name where this should be published."
-        type: string
-      label:
-        description: "The label to use when publishing the dev orb (eg: if you pass `foo` you will publish to `dev:foo`)"
+      orb-ref:
+        description: "A full orb-ref in the form of <namespace>/<orb-name>@dev:<label>"
         type: string
       dev-token-variable:
         description: >
@@ -325,23 +312,26 @@ jobs:
           steps:
             - validate:
                 orb-path: << parameters.workspace-path >><< parameters.file-name >>
+      - run:
+          # TODO: this should arguably be something the CLI does for you
+          command: |
+            set -- '<< parameters.orb-ref >>'
+            re='([a-z][0-9a-z-_]*)\/([a-z][0-9a-z-_]*)@dev:([0-9a-z-_.]{0,1023})'
+            if ! [[ $1 =~ $re ]]; then
+              echo "The orb-ref << parameters.orb-ref >> is not a valid dev orb "
+              exit 1
+            fi
+            echo $?
       - publish:
           orb-path: << parameters.workspace-path >><< parameters.file-name >>
-          orb-ref: << parameters.namespace >>/<< parameters.orb-name >>@dev:<< parameters.label >>
+          orb-ref: << parameters.orb-ref >>
           token-variable: << parameters.dev-token-variable >>
 
   publish-release-orb:
     executor: cli/default
     parameters:
-      namespace:
-        description: "The namespace where this should be published."
-        type: string
-      orb-name:
-        description: "The orb name where this should be published."
-        type: string
-      version:
-        description: "The semver to use when publishing the orb (eg: if you pass `1.2.3`)"
-        type: string
+      orb-ref:
+        description: "A full orb-ref in the form of <namespace>/<orbname>@<semver>"
       release-token-variable:
         description: >
           The env var containing your release token. Pass this as a literal string such
@@ -383,5 +373,5 @@ jobs:
                 orb-path: << parameters.workspace-path >><< parameters.file-name >>
       - publish:
           orb-path: << parameters.workspace-path >><< parameters.file-name >>
-          orb-ref: << parameters.namespace >>/<< parameters.orb-name >>@<< parameters.version >>
+          orb-ref: << parameters.orb-ref >>
           token-variable: << parameters.release-token-variable >>
