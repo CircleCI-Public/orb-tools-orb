@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  orb-tools: circleci/orb-tools@dev:refactor-and-add-build
+  orb-tools: "circleci/orb-tools@dev:refactor-and-add-build"
 
 workflows:
   default:
@@ -15,7 +15,7 @@ workflows:
           orb-ref: "circleci/orb-tools@dev:${CIRCLE_BRANCH}"
           dev-token-variable: "$CIRCLECI_API_TOKEN"
           workspace-path: orb-packed/
-          requires: [pack-and-validate]
+          requires: [pack-and-validate-orb]
 
       # - orb-tools/increment-orb:
       #     orb-path: orb-packed/orb.yml
