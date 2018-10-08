@@ -271,76 +271,16 @@ jobs:
           segment: << parameters.segment >>
           token-variable: << parameters.release-token-variable >>
 
-  publish-dev-orb:
-    executor: cli/default
-    parameters:
-      orb-ref:
-        description: "A full orb-ref in the form of <namespace>/<orb-name>@dev:<label>"
-        type: string
-      dev-token-variable:
-        description: >
-          The env var containing your dev token. Pass this as a literal string such
-          as `$ORB_DEV_PUBLISHING_TOKEN`. Do not paste the actual token into your
-          configuration. If omitted it's assumed the CLI has already been setup
-          with a valid token.
-        type: string
-        default: ""
-      workspace-path:
-        description: "The directory relative to the workspace root where the orb file will be found. Should end in a trailing /"
-        type: string
-        default: ""
-      file-name:
-        description: "The name of the file where the packed string is stored. In most cases you can leave the default value."
-        type: string
-        default: "orb.yml"
-      do-validation:
-        description: "Boolean for whether to do validation. Default is true."
-        type: boolean
-        default: true
-    steps:
-      - when:
-          condition: << parameters.workspace-path >>
-          steps:
-            - attach_workspace:
-                at: .
-      - unless:
-          condition: << parameters.workspace-path >>
-          steps:
-            - run:
-                name: "No workspace was passed."
-                command: |
-                  echo "No workspace was passed."
-                  exit 1
-      - when:
-          condition: << parameters.do-validation >>
-          steps:
-            - validate:
-                orb-path: << parameters.workspace-path >><< parameters.file-name >>
-      # - run:
-      #     # TODO: this should arguably be something the CLI does for you
-      #     command: |
-      #       set -- '<< parameters.orb-ref >>'
-      #       re='([a-z][0-9a-z-_]*)\/([a-z][0-9a-z-_]*)@dev:([0-9a-z-_.]{0,1023})'
-      #       if ! [[ $1 =~ $re ]]; then
-      #         echo "The orb-ref << parameters.orb-ref >> is not a valid dev orb "
-      #         exit 1
-      #       fi
-      #       echo $?
-      - publish:
-          orb-path: << parameters.workspace-path >><< parameters.file-name >>
-          orb-ref: << parameters.orb-ref >>
-          token-variable: << parameters.dev-token-variable >>
-
-  publish-release-orb:
+  publish-orb:
     executor: cli/default
     parameters:
       orb-ref:
         description: "A full orb-ref in the form of <namespace>/<orbname>@<semver>"
         type: string
-      release-token-variable:
+      publish-token-variable:
         description: >
-          The env var containing your release token. Pass this as a literal string such
-          as `$ORB_PUBLISHING_TOKEN`. Do not paste the actual token into your
+          The env var containing your publish token. Pass this as a literal string such
+          as `$ORB_PUBLISHING_TOKEN`. DO NOT paste the actual token into your
           configuration. If omitted it's assumed the CLI has already been setup
           with a valid token.
         type: string
@@ -379,4 +319,4 @@ jobs:
       - publish:
           orb-path: << parameters.workspace-path >><< parameters.file-name >>
           orb-ref: << parameters.orb-ref >>
-          token-variable: << parameters.release-token-variable >>
+          token-variable: << parameters.publish-token-variable >>
