@@ -251,6 +251,10 @@ jobs:
           with a valid token.
         type: string
         default: ""
+      checkout:
+        description: Boolean for whether or not to checkout as a first step. Default is false.
+        type: boolean
+        default: false
     steps:
       - when:
           condition: << parameters.checkout >>
@@ -332,6 +336,7 @@ jobs:
     parameters:
       orb-ref:
         description: "A full orb-ref in the form of <namespace>/<orbname>@<semver>"
+        type: string
       release-token-variable:
         description: >
           The env var containing your release token. Pass this as a literal string such
@@ -341,7 +346,7 @@ jobs:
         type: string
         default: ""
       workspace-path:
-        description: "The directory relative to the workspace root where the orb file will be found. Should end in a trailing /"
+        description: "The directory relative to the workspace root where the orb file will be found. Should end in a trailing `/`"
         type: string
         default: ""
       file-name:
