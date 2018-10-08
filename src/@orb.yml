@@ -316,16 +316,16 @@ jobs:
           steps:
             - validate:
                 orb-path: << parameters.workspace-path >><< parameters.file-name >>
-      - run:
-          # TODO: this should arguably be something the CLI does for you
-          command: |
-            set -- '<< parameters.orb-ref >>'
-            re='([a-z][0-9a-z-_]*)\/([a-z][0-9a-z-_]*)@dev:([0-9a-z-_.]{0,1023})'
-            if ! [[ $1 =~ $re ]]; then
-              echo "The orb-ref << parameters.orb-ref >> is not a valid dev orb "
-              exit 1
-            fi
-            echo $?
+      # - run:
+      #     # TODO: this should arguably be something the CLI does for you
+      #     command: |
+      #       set -- '<< parameters.orb-ref >>'
+      #       re='([a-z][0-9a-z-_]*)\/([a-z][0-9a-z-_]*)@dev:([0-9a-z-_.]{0,1023})'
+      #       if ! [[ $1 =~ $re ]]; then
+      #         echo "The orb-ref << parameters.orb-ref >> is not a valid dev orb "
+      #         exit 1
+      #       fi
+      #       echo $?
       - publish:
           orb-path: << parameters.workspace-path >><< parameters.file-name >>
           orb-ref: << parameters.orb-ref >>
