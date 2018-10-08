@@ -15,7 +15,7 @@ workflows:
           orb-ref: "circleci/orb-tools@dev:${CIRCLE_BRANCH}"
           dev-token-variable: "$CIRCLECI_API_TOKEN"
           workspace-path: orb-packed/
-          requires: [pack-and-validate-orb]
+          requires: [pack-and-validate]
 
       # - orb-tools/increment-orb:
       #     orb-path: orb-packed/orb.yml
