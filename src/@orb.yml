@@ -148,11 +148,10 @@ jobs:
                 orb-path: << parameters.orb-path >>
                 workspace-path: << parameters.workspace-path >>
 
-  pack-and-validate:
+  pack:
     description: >
       *Experimental*
-      Pack the contents of an orb for publishing
-      and validate the orb is well-formed.
+      Pack the contents of an orb for publishing.
     parameters:
       path:
         description: >
@@ -200,8 +199,6 @@ jobs:
       - pack:
           source: << parameters.path >>
           destination: ~/pack-and-validate-orb/<< parameters.destination-file-name >>
-      - validate:
-          orb-path: ~/pack-and-validate-orb/<< parameters.destination-file-name >>
       - when:
           condition: << parameters.workspace-path >>
           steps:
@@ -227,7 +224,7 @@ jobs:
         type: string
       path-root:
         description: >
-          The location where orb-path should be relative from, 
+          The location where orb-path should be relative from,
           defaulting the current directory.
           In most cases the default should be fine.
         type: string

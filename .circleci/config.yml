@@ -8,8 +8,7 @@ workflows:
       - orb-tools/validate:
           orb-path: "src/@orb.yml"
 
-
-      - orb-tools/pack-and-validate:
+      - orb-tools/pack:
           path: ./src/
           workspace-path: orb-packed/
           artifact-path: orb-packed/
