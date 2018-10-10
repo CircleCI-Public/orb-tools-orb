@@ -6,6 +6,8 @@ workflows:
   default:
     jobs:
       - orb-tools/validate:
+          orb-path: "src/@orb.yml"
+
 
       - orb-tools/pack-and-validate:
           path: ./src/
