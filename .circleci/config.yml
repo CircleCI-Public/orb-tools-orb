@@ -17,7 +17,7 @@ workflows:
 
       - orb-tools/publish:
           orb-ref: "circleci/orb-tools@dev:${CIRCLE_BRANCH}"
-          dev-token-variable: "$CIRCLECI_API_TOKEN"
+          publish-token-variable: "$CIRCLECI_API_TOKEN"
           workspace-path: orb-packed/
           requires: [pack-and-validate]
 
