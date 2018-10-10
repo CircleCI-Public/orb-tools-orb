@@ -1,33 +1,31 @@
 version: 2.1
+
 orbs:
-  orb-tools: "circleci/orb-tools@dev:refactor-to-unify-publishing"
+  orb-tools: circleci/orb-tools@dev:refactor-to-unify-publishing
 
 workflows:
   default-workflow:
     jobs:
-      - orb-tools/validate:
-          orb-path: "src/@orb.yml"
-
       - orb-tools/pack:
-          path: ./src/
-          workspace-path: orb-packed/
-          artifact-path: orb-packed/
-          name: pack-and-validate
+          source-orb-path: ./src/@orb.yml
+          destination-orb-path: ./packed/orb.yml
+
+      - orb-tools/validate:
+          orb-path: ./packed/orb.yml
+          requires: [orb-tools/pack]
 
       - orb-tools/publish:
+          orb-path: ./packed/orb.yml
           orb-ref: "circleci/orb-tools@dev:${CIRCLE_BRANCH}"
           publish-token-variable: "$CIRCLECI_API_TOKEN"
-          workspace-path: orb-packed/
-          requires: [pack-and-validate]
+          requires: [orb-tools/validate]
 
-      # - orb-tools/increment-orb:
-      #     orb-path: orb-packed/orb.yml
-      #     namespace: circleci
-      #     orb-name: hello-build
-      #     segment: "patch"
-      #     workspace-path: orb-packed/
-      #     release-token-variable: "$CIRCLECI_API_TOKEN"
-      #     requires: [orb-tools/pack-and-validate-orb]
-      #     filters:
-      #       branches:
-      #         only: master
+      - orb-tools/increment:
+          orb-path: orb-packed/orb.yml
+          orb-ref: "circleci/orb-tools"
+          segment: "patch"
+          publish-token-variable: "$CIRCLECI_API_TOKEN"
+          requires: [orb-tools/validate]
+          filters:
+            branches:
+              only: master

@@ -4,18 +4,6 @@ orbs:
   cli: circleci/circleci-cli@volatile
 
 commands:
-  validate:
-    description: >
-      Users the CLI to validate a given orb yml
-    parameters:
-      orb-path:
-        description: "Path to the orb to be validated."
-        type: string
-    steps:
-      - run:
-          name: "Validate whether this is a well-formed orb."
-          command: circleci orb validate << parameters.orb-path >>
-
   pack:
     description: >
       *Experimental*
@@ -34,29 +22,17 @@ commands:
           command: |
             circleci config pack << parameters.source >> > << parameters.destination >>
 
-  persist-orb-to-workspace:
+  validate:
     description: >
-      Persists an orb yml between jobs in a workflow.
+      Users the CLI to validate a given orb yml
     parameters:
       orb-path:
-        description: "Path to the orb to be persisted."
-        type: string
-      workspace-path:
-        description: >
-          Save the contents of the orb into the workspace at the
-          given path. The value should include a trailing slash.
+        description: "Path to the orb file to be validated."
         type: string
     steps:
       - run:
-          name: Save the orb to `<< parameters.workspace-path >>`
-          command: |
-            mkdir -p << parameters.workspace-path >>
-            cp << parameters.orb-path >> << parameters.workspace-path >>
-      - persist_to_workspace:
-          name: "Persist orb to `<< parameters.workspace-path >>` because that value was passed as `parameters.workspace-path`."
-          root: .
-          paths:
-            - << parameters.workspace-path >>
+          name: "Validate whether this is a well-formed orb."
+          command: circleci orb validate << parameters.orb-path >>
 
   increment:
     description: >
@@ -64,7 +40,7 @@ commands:
       If the orb does not have a version yet it starts at 0.0.0
     parameters:
       orb-path:
-        description: "Path to an orb."
+        description: "Path to an orb file."
         type: string
       orb-ref:
         description: "A versionless orb-ref in the form <namespace>/<orb-name>"
@@ -97,7 +73,7 @@ commands:
       Uses the CLI to publish an orb to the registry.
     parameters:
       orb-path:
-        description: "Path to an orb."
+        description: "Path to an orb file."
         type: string
       orb-ref:
         description: >
@@ -122,113 +98,83 @@ commands:
             <<# parameters.token-variable >>--token << parameters.token-variable >> <</ parameters.token-variable >>
 
 jobs:
-  validate:
-    description: Uses the CLI to validate a given orb.
-    parameters:
-      orb-path:
-        description: "Path to the orb to be validated."
-        type: string
-      workspace-path:
-        description: >
-          When provided, save the contents of the orb into
-          the workspace at the given path. The value should
-          include a trailing slash.
-          Empty string (also the default value) is a no-op.
-        type: string
-        default: ""
-    executor: cli/default
-    steps:
-      - checkout
-      - validate:
-          orb-path: << parameters.orb-path >>
-      - when:
-          condition: << parameters.workspace-path >>
-          steps:
-            - persist-orb-to-workspace:
-                orb-path: << parameters.orb-path >>
-                workspace-path: << parameters.workspace-path >>
-
   pack:
     description: >
       *Experimental*
       Pack the contents of an orb for publishing.
     parameters:
-      path:
+      source-orb-path:
         description: >
-          The root of where the code for the orb lives
-          relative to the root of the repo.
+          "The path of the root orb file to be packed. (ie: src/@orb.yml)"
         type: string
-      workspace-path:
+      destination-orb-path:
         description: >
-          When provided, save the contents of the orb into
-          the workspace at the given path. The value should
-          include a trailing slash.
-          Empty string (also the default value) is a no-op.
+          "The path including filename of where the packed orb will be written."
         type: string
-        default: ""
-      artifact-path:
+      save-as-artifact:
         description: >
-          When provided, save the contents of the orb as an
-          artifact in the directory specified. The value should
-          include a trailing slash.
-          Empty string (also the default value) is a no-op.
-        type: string
-        default: ""
-      destination-file-name:
-        description: >
-          The name of the file where the packed string will be stored.
-          In most cases you can leave the default value of `orb.yml`.
-        type: string
-        default: "orb.yml"
-
+          "When true, save the packed orb as an artifact at the
+          'destination-orb-path'."
+        type: boolean
+        default: false
     executor: cli/default
     steps:
-      - run:
-          name: "Starting the job: pack-and-validate-orb on the directory << parameters.path >>"
-          command: |
-            echo "parameters.workspace-path passed as: '<< parameters.workspace-path >>' (if the string is empty no workspace save will be attempted)"
-            echo "parameters.artifact-path passed as: '<< parameters.artifact-path >>' (if the string is empty no artifact save will be attempted)"
-            echo "parameters.destination-file-name passed as: '~/pack-and-validate-orb/<< parameters.destination-file-name >>'"
       - checkout
       - run:
-          name: "Ensure /pack-and-validate-orb"
-           # TODO: this is more fragile than is ideal
-           # TODO: using this fixed path feels like a hack or a missing feature to have a small dose of shared state across the job that can be mutated at runtime
+          name: "Ensure destination path"
           command: |
-            mkdir -pv ~/pack-and-validate-orb
+            mkdir -pv $(dirname << parameters.destination-orb-path >>)
       - pack:
-          source: << parameters.path >>
-          destination: ~/pack-and-validate-orb/<< parameters.destination-file-name >>
+          source: << parameters.source-orb-path >>
+          destination: << parameters.destination-orb-path>>
+      - persist_to_workspace:
+          root: .
+          paths:
+            - << parameters.destination-orb-path >>
       - when:
-          condition: << parameters.workspace-path >>
-          steps:
-            - persist-orb-to-workspace:
-                orb-path: ~/pack-and-validate-orb/<< parameters.destination-file-name >>
-                workspace-path: << parameters.workspace-path >>
-      - when:
-          condition: << parameters.artifact-path >>
+          condition: << parameters.save-as-artifact >>
           steps:
             - store_artifacts:
-                name: "Storing the artifact to << parameters.artifact-path >><< parameters.destination-file-name >>"
-                path: ~/pack-and-validate-orb/<< parameters.destination-file-name >>
-                destination: << parameters.artifact-path >><< parameters.destination-file-name >>
+                name: "Store orb as artifact"
+                path: << parameters.destination-orb-path >>
 
-  increment-orb:
+  validate:
+    description: Uses the CLI to validate a given orb.
+    parameters:
+      orb-path:
+        description: "Path of the orb file to be validated."
+        type: string
+      checkout:
+        description: Boolean for whether or not to checkout as a first step. Default is false.
+        type: boolean
+        default: false
+    executor: cli/default
+    steps:
+      - when:
+          condition: << parameters.checkout >>
+          steps:
+            - checkout
+      - unless:
+          condition: << parameters.checkout >>
+          steps:
+            - attach_workspace:
+                at: .
+      - validate:
+          orb-path: << parameters.orb-path >>
+      - persist_to_workspace:
+          root: .
+          paths:
+            - << parameters.orb-path >>
+
+  increment:
     description: >
       Uses the CLI to increment the version of an orb in the registry.
       If the orb does not have a version yet it starts at 0.0.0
     executor: cli/default
     parameters:
       orb-path:
-        description: "Path to an orb."
+        description: "Path to an orb file."
         type: string
-      path-root:
-        description: >
-          The location where orb-path should be relative from,
-          defaulting the current directory.
-          In most cases the default should be fine.
-        type: string
-        default: "."
       orb-ref:
         description: "A versionless orb-ref in the form <namespace>/<orb-name>"
         type: string
@@ -236,11 +182,7 @@ jobs:
         description: "The semver segment to increment 'major' or 'minor' or 'patch'"
         type: enum
         enum: ["major", "minor", "patch"]
-      workspace-path:
-        description: "The directory relative to the workspace root where the orb file will be found. Should end in a trailing /"
-        type: string
-        default: ""
-      release-token-variable:
+      publish-token-variable:
         description: >
           The env var containing your token. Pass this as a literal string such
           as `$ORB_PUBLISHING_TOKEN`. Do not paste the actual token into your
@@ -257,20 +199,23 @@ jobs:
           condition: << parameters.checkout >>
           steps:
             - checkout
-      - when:
-          condition: << parameters.workspace-path >>
+      - unless:
+          condition: << parameters.checkout >>
           steps:
             - attach_workspace:
-                at: << parameters.path-root >>
+                at: .
       - increment:
-          orb-path: << parameters.workspace-path >>$(basename << parameters.orb-path >>)
+          orb-path: << parameters.orb-path >>
           orb-ref: << parameters.orb-ref >>
           segment: << parameters.segment >>
-          token-variable: << parameters.release-token-variable >>
+          token-variable: << parameters.publish-token-variable >>
 
   publish:
     executor: cli/default
     parameters:
+      orb-path:
+        description: "Path of the orb file to publish"
+        type: string
       orb-ref:
         description: "A full orb-ref in the form of <namespace>/<orbname>@<semver>"
         type: string
@@ -282,18 +227,6 @@ jobs:
           with a valid token.
         type: string
         default: ""
-      workspace-path:
-        description: "The directory relative to the workspace root where the orb file will be found. Should end in a trailing `/`"
-        type: string
-        default: ""
-      file-name:
-        description: "The name of the file where the packed string is stored. In most cases you can leave the default value."
-        type: string
-        default: "orb.yml"
-      do-validation:
-        description: "Boolean for whether to do validation. Default is true."
-        type: boolean
-        default: true
       checkout:
         description: Boolean for whether or not to checkout as a first step. Default is false.
         type: boolean
@@ -303,25 +236,12 @@ jobs:
           condition: << parameters.checkout >>
           steps:
             - checkout
-      - when:
-          condition: << parameters.workspace-path >>
+      - unless:
+          condition: << parameters.checkout >>
           steps:
             - attach_workspace:
                 at: .
-      - unless:
-          condition: << parameters.workspace-path >>
-          steps:
-            - run:
-                name: "No workspace was passed."
-                command: |
-                  echo "No workspace was passed."
-                  exit 1
-      - when:
-          condition: << parameters.do-validation >>
-          steps:
-            - validate:
-                orb-path: << parameters.workspace-path >><< parameters.file-name >>
       - publish:
-          orb-path: << parameters.workspace-path >><< parameters.file-name >>
+          orb-path: << parameters.orb-path >>
           orb-ref: << parameters.orb-ref >>
           token-variable: << parameters.publish-token-variable >>
