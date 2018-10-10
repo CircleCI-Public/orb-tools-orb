@@ -122,7 +122,7 @@ commands:
             <<# parameters.token-variable >>--token << parameters.token-variable >> <</ parameters.token-variable >>
 
 jobs:
-  validate-orb:
+  validate:
     description: Uses the CLI to validate a given orb.
     parameters:
       orb-path:
@@ -148,7 +148,7 @@ jobs:
                 orb-path: << parameters.orb-path >>
                 workspace-path: << parameters.workspace-path >>
 
-  pack-and-validate-orb:
+  pack-and-validate:
     description: >
       *Experimental*
       Pack the contents of an orb for publishing
@@ -271,7 +271,7 @@ jobs:
           segment: << parameters.segment >>
           token-variable: << parameters.release-token-variable >>
 
-  publish-orb:
+  publish:
     executor: cli/default
     parameters:
       orb-ref:
@@ -297,7 +297,15 @@ jobs:
         description: "Boolean for whether to do validation. Default is true."
         type: boolean
         default: true
+      checkout:
+        description: Boolean for whether or not to checkout as a first step. Default is false.
+        type: boolean
+        default: false
     steps:
+      - when:
+          condition: << parameters.checkout >>
+          steps:
+            - checkout
       - when:
           condition: << parameters.workspace-path >>
           steps:

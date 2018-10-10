@@ -1,17 +1,19 @@
 version: 2.1
 orbs:
-  orb-tools: "circleci/orb-tools@dev:refactor-and-add-build"
+  orb-tools: "circleci/orb-tools@dev:refactor-to-unify-publishing"
 
 workflows:
   default:
     jobs:
-      - orb-tools/pack-and-validate-orb:
+      - orb-tools/validate:
+
+      - orb-tools/pack-and-validate:
           path: ./src/
           workspace-path: orb-packed/
           artifact-path: orb-packed/
           name: pack-and-validate
 
-      - orb-tools/publish-dev-orb:
+      - orb-tools/publish:
           orb-ref: "circleci/orb-tools@dev:${CIRCLE_BRANCH}"
           dev-token-variable: "$CIRCLECI_API_TOKEN"
           workspace-path: orb-packed/
