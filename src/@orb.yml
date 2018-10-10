@@ -30,7 +30,7 @@ commands:
         type: string
     steps:
       - run:
-          name: "Pack << parameters.source>>"
+          name: "Pack << parameters.source>> to << parameters.destination >>"
           command: |
             circleci config pack << parameters.source >> > << parameters.destination >>
 
@@ -48,7 +48,7 @@ commands:
         type: string
     steps:
       - run:
-          name: Save and orb to `<< parameters.workspace-path >>`
+          name: Save the orb to `<< parameters.workspace-path >>`
           command: |
             mkdir -p << parameters.workspace-path >>
             cp << parameters.orb-path >> << parameters.workspace-path >>

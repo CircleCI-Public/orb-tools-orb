@@ -3,7 +3,7 @@ orbs:
   orb-tools: "circleci/orb-tools@dev:refactor-to-unify-publishing"
 
 workflows:
-  default:
+  default-workflow:
     jobs:
       - orb-tools/validate:
           orb-path: "src/@orb.yml"
