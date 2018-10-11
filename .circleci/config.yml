@@ -7,25 +7,30 @@ workflows:
   default-workflow:
     jobs:
       - orb-tools/pack:
-          source-orb-path: ./src/@orb.yml
-          destination-orb-path: ./packed/orb.yml
-
-      - orb-tools/validate:
-          orb-path: ./packed/orb.yml
-          requires: [orb-tools/pack]
+          source-orb-path: src/@orb.yml
+          destination-orb-path: packed/orb.yml
+          workspace-path: packed/orb.yml
+          artifact-path: packed/orb.yml
+          validate: true
 
       - orb-tools/publish:
-          orb-path: ./packed/orb.yml
+          orb-path: packed/orb.yml
           orb-ref: "circleci/orb-tools@dev:${CIRCLE_BRANCH}"
           publish-token-variable: "$CIRCLECI_API_TOKEN"
-          requires: [orb-tools/validate]
+          attach-workspace: true
+          checkout: false
+          validate: true
+          requires: [orb-tools/pack]
 
       - orb-tools/increment:
-          orb-path: orb-packed/orb.yml
+          orb-path: packed/orb.yml
           orb-ref: "circleci/orb-tools"
           segment: "patch"
           publish-token-variable: "$CIRCLECI_API_TOKEN"
-          requires: [orb-tools/validate]
+          attach-workspace: true
+          checkout: false
+          validate: true
+          requires: [orb-tools/pack]
           filters:
             branches:
               only: master

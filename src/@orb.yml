@@ -18,6 +18,10 @@ commands:
         type: string
     steps:
       - run:
+          name: "Ensure destination path"
+          command: |
+            mkdir -pv $(dirname << parameters.destination >>)
+      - run:
           name: "Pack << parameters.source>> to << parameters.destination >>"
           command: |
             circleci config pack << parameters.source >> > << parameters.destination >>
@@ -105,66 +109,86 @@ jobs:
     parameters:
       source-orb-path:
         description: >
-          "The path of the root orb file to be packed. (ie: src/@orb.yml)"
+          Path of the root orb entry file to be packed. (ie: src/@orb.yml)
         type: string
       destination-orb-path:
         description: >
-          "The path including filename of where the packed orb will be written."
+          Path including filename of where the packed orb will be written.
         type: string
-      save-as-artifact:
+      validate:
         description: >
-          "When true, save the packed orb as an artifact at the
-          'destination-orb-path'."
+          Boolean for whether or not to do validation on the orb. Default
+          is false.
         type: boolean
         default: false
-    executor: cli/default
-    steps:
-      - checkout
-      - run:
-          name: "Ensure destination path"
-          command: |
-            mkdir -pv $(dirname << parameters.destination-orb-path >>)
-      - pack:
-          source: << parameters.source-orb-path >>
-          destination: << parameters.destination-orb-path>>
-      - persist_to_workspace:
-          root: .
-          paths:
-            - << parameters.destination-orb-path >>
-      - when:
-          condition: << parameters.save-as-artifact >>
-          steps:
-            - store_artifacts:
-                name: "Store orb as artifact"
-                path: << parameters.destination-orb-path >>
-
-  validate:
-    description: Uses the CLI to validate a given orb.
-    parameters:
-      orb-path:
-        description: "Path of the orb file to be validated."
-        type: string
       checkout:
-        description: Boolean for whether or not to checkout as a first step. Default is false.
+        description: >
+          Boolean for whether or not to checkout as a first step. Default is true.
+        type: boolean
+        default: true
+      attach-workspace:
+        description: >
+          Boolean for whether or not to attach to an existing workspace. Default
+          is false.
         type: boolean
         default: false
+      workspace-root:
+        description: >
+          Workspace root path that is either an absolute path or a path relative
+          to the working directory. Defaults to '.' (the working directory)
+        type: string
+        default: "."
+      workspace-path:
+        description: >
+          Path of the workspace to persist to relative to workspace-root.
+          Typically this is the same as the destination-orb-path. If the default
+          value of blank is provided then this job will not persist to a
+          workspace.
+        type: string
+        default: ""
+      artifact-path:
+        description: >
+          Path to directory that should be saved as a job artifact. If the
+          default value of blank is provided then this job will not save any
+          artifacts.
+        type: string
+        default: ""
     executor: cli/default
     steps:
+      # Setup
       - when:
           condition: << parameters.checkout >>
           steps:
             - checkout
-      - unless:
-          condition: << parameters.checkout >>
+      - when:
+          condition: << parameters.attach-workspace >>
           steps:
             - attach_workspace:
-                at: .
-      - validate:
-          orb-path: << parameters.orb-path >>
-      - persist_to_workspace:
-          root: .
-          paths:
-            - << parameters.orb-path >>
+                at: << parameters.workspace-root >>
+      # Pack
+      - pack:
+          source: << parameters.source-orb-path >>
+          destination: << parameters.destination-orb-path >>
+      # Validate
+      - when:
+          condition: << parameters.validate >>
+          steps:
+            - validate:
+                orb-path: << parameters.destination-orb-path >>
+      # Save
+      - when:
+          condition: << parameters.workspace-path >>
+          steps:
+            - persist_to_workspace:
+                root: << parameters.workspace-root >>
+                paths:
+                  - << parameters.workspace-path >>
+      - when:
+          condition: << parameters.artifact-path >>
+          steps:
+            - store_artifacts:
+                path: << parameters.artifact-path >>
+
 
   increment:
     description: >
@@ -173,13 +197,14 @@ jobs:
     executor: cli/default
     parameters:
       orb-path:
-        description: "Path to an orb file."
+        description: Path to an orb file.
         type: string
       orb-ref:
-        description: "A versionless orb-ref in the form <namespace>/<orb-name>"
+        description: A versionless orb-ref in the form <namespace>/<orb-name>
         type: string
       segment:
-        description: "The semver segment to increment 'major' or 'minor' or 'patch'"
+        description: >
+          The semver segment to increment 'major' or 'minor' or 'patch'
         type: enum
         enum: ["major", "minor", "patch"]
       publish-token-variable:
@@ -190,20 +215,47 @@ jobs:
           with a valid token.
         type: string
         default: ""
-      checkout:
-        description: Boolean for whether or not to checkout as a first step. Default is false.
+      validate:
+        description: >
+          Boolean for whether or not to do validation on the orb. Default
+          is false.
         type: boolean
         default: false
+      checkout:
+        description: >
+          Boolean for whether or not to checkout as a first step. Default is true.
+        type: boolean
+        default: true
+      attach-workspace:
+        description: >
+          Boolean for whether or not to attach to an existing workspace. Default
+          is false.
+        type: boolean
+        default: false
+      workspace-root:
+        description: >
+          Workspace root path that is either an absolute path or a path relative
+          to the working directory. Defaults to '.' (the working directory)
+        type: string
+        default: "."
     steps:
+      # Setup
       - when:
           condition: << parameters.checkout >>
           steps:
             - checkout
-      - unless:
-          condition: << parameters.checkout >>
+      - when:
+          condition: << parameters.attach-workspace >>
           steps:
             - attach_workspace:
-                at: .
+                at: << parameters.workspace-root >>
+      # Validate
+      - when:
+          condition: << parameters.validate >>
+          steps:
+            - validate:
+                orb-path: << parameters.orb-path >>
+      # Increment
       - increment:
           orb-path: << parameters.orb-path >>
           orb-ref: << parameters.orb-ref >>
@@ -214,10 +266,10 @@ jobs:
     executor: cli/default
     parameters:
       orb-path:
-        description: "Path of the orb file to publish"
+        description: Path of the orb file to publish.
         type: string
       orb-ref:
-        description: "A full orb-ref in the form of <namespace>/<orbname>@<semver>"
+        description: A full orb-ref in the form of <namespace>/<orbname>@<semver>
         type: string
       publish-token-variable:
         description: >
@@ -227,20 +279,47 @@ jobs:
           with a valid token.
         type: string
         default: ""
-      checkout:
-        description: Boolean for whether or not to checkout as a first step. Default is false.
+      validate:
+        description: >
+          Boolean for whether or not to do validation on the orb. Default
+          is false.
         type: boolean
         default: false
+      checkout:
+        description: >
+          Boolean for whether or not to checkout as a first step. Default is true.
+        type: boolean
+        default: true
+      attach-workspace:
+        description: >
+          Boolean for whether or not to attach to an existing workspace. Default
+          is false.
+        type: boolean
+        default: false
+      workspace-root:
+        description: >
+          Workspace root path that is either an absolute path or a path relative
+          to the working directory. Defaults to '.' (the working directory)
+        type: string
+        default: "."
     steps:
+      # Setup
       - when:
           condition: << parameters.checkout >>
           steps:
             - checkout
-      - unless:
-          condition: << parameters.checkout >>
+      - when:
+          condition: << parameters.attach-workspace >>
           steps:
             - attach_workspace:
-                at: .
+                at: << parameters.workspace-root >>
+      # Validate
+      - when:
+          condition: << parameters.validate >>
+          steps:
+            - validate:
+                orb-path: << parameters.orb-path >>
+      # Publish
       - publish:
           orb-path: << parameters.orb-path >>
           orb-ref: << parameters.orb-ref >>
