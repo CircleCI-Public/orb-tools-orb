@@ -7,7 +7,7 @@ workflows:
   default-workflow:
     jobs:
       - orb-tools/pack:
-          source-orb-path: src/@orb.yml
+          source-dir: src/
           destination-orb-path: packed/orb.yml
           workspace-path: packed/orb.yml
           artifact-path: packed/orb.yml

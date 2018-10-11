@@ -107,9 +107,9 @@ jobs:
       *Experimental*
       Pack the contents of an orb for publishing.
     parameters:
-      source-orb-path:
+      source-dir:
         description: >
-          Path of the root orb entry file to be packed. (ie: src/@orb.yml)
+          Path to the root of the orb source directory to be packed. (ie: my-orb/src/)
         type: string
       destination-orb-path:
         description: >
@@ -167,7 +167,7 @@ jobs:
                 at: << parameters.workspace-root >>
       # Pack
       - pack:
-          source: << parameters.source-orb-path >>
+          source: << parameters.source-dir >>
           destination: << parameters.destination-orb-path >>
       # Validate
       - when:
