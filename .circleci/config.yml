@@ -22,15 +22,15 @@ workflows:
           validate: true
           requires: [orb-tools/pack]
 
-      - orb-tools/increment:
-          orb-path: packed/orb.yml
-          orb-ref: "circleci/orb-tools"
-          segment: "patch"
-          publish-token-variable: "$CIRCLECI_API_TOKEN"
-          attach-workspace: true
-          checkout: false
-          validate: true
-          requires: [orb-tools/pack]
-          filters:
-            branches:
-              only: master
+     #- orb-tools/increment:
+     #    orb-path: packed/orb.yml
+     #    orb-ref: "circleci/orb-tools"
+     #    segment: "patch"
+     #    publish-token-variable: "$CIRCLECI_API_TOKEN"
+     #    attach-workspace: true
+     #    checkout: false
+     #    validate: true
+     #    requires: [orb-tools/pack]
+     #    filters:
+     #      branches:
+     #        only: master
