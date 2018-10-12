@@ -118,9 +118,9 @@ jobs:
       validate:
         description: >
           Boolean for whether or not to do validation on the orb. Default
-          is false.
+          is true.
         type: boolean
-        default: false
+        default: true
       checkout:
         description: >
           Boolean for whether or not to checkout as a first step. Default is true.
@@ -218,9 +218,9 @@ jobs:
       validate:
         description: >
           Boolean for whether or not to do validation on the orb. Default
-          is false.
+          is true.
         type: boolean
-        default: false
+        default: true
       checkout:
         description: >
           Boolean for whether or not to checkout as a first step. Default is true.
@@ -282,9 +282,9 @@ jobs:
       validate:
         description: >
           Boolean for whether or not to do validation on the orb. Default
-          is false.
+          is true.
         type: boolean
-        default: false
+        default: true
       checkout:
         description: >
           Boolean for whether or not to checkout as a first step. Default is true.
