@@ -1,0 +1,34 @@
+version: 2.1
+
+workflows:
+  test-config-packing:
+    jobs:
+      - orb-tools/pack:
+          name: build
+          source-dir: foo
+          destination-orb-path: out.yml
+          checkout: false
+          pre-steps:
+            # set up what the job needs to run in pre-steps
+            # create config files to be packed
+            # in a normal pack job these would come from the checkout
+            - run: mkdir -pv foo/bar
+            - run: mkdir foo/subtree
+            - run: 'echo "version: 2.1" > foo/foo.yml'
+            - run: 'echo "baz: qux" > foo/bar/@baz.yml'
+            - run: 'echo "ginkgo: {seasonality: deciduous}" > foo/subtree/types.yml'
+          post-steps:
+            # run checks in post steps
+            # create the expected out file
+            - run: |
+                cat \<<END > expected.yml
+                bar:
+                  baz: qux
+                subtree:
+                  types:
+                    ginkgo:
+                      seasonality: deciduous
+                version: 2.1
+                END
+            # if it doesn't match, this will fail the job
+            - run: diff --ignore-blank-lines out.yml expected.yml

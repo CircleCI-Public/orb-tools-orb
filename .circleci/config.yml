@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  orb-tools: circleci/orb-tools@dev:refactor-to-unify-publishing
+  orb-tools: circleci/orb-tools@dev:cayenne:testing-testing
 
 workflows:
   default-workflow:
@@ -13,6 +13,15 @@ workflows:
           artifact-path: packed/orb.yml
           validate: true
 
+      - orb-tools/test-in-builds:
+          requires: [orb-tools/pack]
+          attach-workspace: true
+          orb-location: packed/orb.yml
+          orb-name: orb-tools
+          test-steps:
+            - orb-tools/local-test-build:
+                test-config-location: test/config-packing.yml
+
       - orb-tools/publish:
           orb-path: packed/orb.yml
           orb-ref: "circleci/orb-tools@dev:${CIRCLE_BRANCH}"
@@ -20,7 +29,7 @@ workflows:
           attach-workspace: true
           checkout: false
           validate: true
-          requires: [orb-tools/pack]
+          requires: [orb-tools/test-in-builds]
 
      #- orb-tools/increment:
      #    orb-path: packed/orb.yml
