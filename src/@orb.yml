@@ -107,6 +107,10 @@ commands:
       test-config-location:
         description: Location of a the test config file. See documentation for the precise structure needed.
         type: string
+      should-fail:
+        description: If set to false (default) this job will fail if the local test job fails. If set to true, this job will fail if the local test job does not fail.
+        type: boolean
+        default: false
       external-check-steps:
         description: Checks you want to run that look at the contents of local_build_output.txt. Checks that depend on the environment inside the test job should go inside the test config. This stop should probably call a script rather than hardcode the checks into your config.
         type: steps
@@ -117,12 +121,13 @@ commands:
           source: tmp-config-src
           destination: uncompiled-config.yml
       # run that config inside a local job - it will have pre-steps that contain the config to be packed inside it, and post-steps that check that it looks like it should
+      - run: cat uncompiled-config.yml
       - run:
           name: compile test config
           command: circleci config process uncompiled-config.yml > config.yml
       - run:
           name: run test job locally
-          command: 'circleci local execute -c config.yml | tee local_build_output.txt /dev/stderr | tail -n 1 | grep "Success"'
+          command: '<<# parameters.should-fail >>! <</ parameters.should-fail>>circleci local execute -c config.yml | tee local_build_output.txt /dev/stderr | tail -n 1 | grep "Success"'
       - << parameters.external-check-steps >>
 
 jobs:

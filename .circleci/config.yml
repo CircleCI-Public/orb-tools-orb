@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  orb-tools: circleci/orb-tools@dev:cayenne:testing-testing
+  orb-tools: circleci/orb-tools@dev:cayenne:testing-testing:7172935
 
 workflows:
   default-workflow:
@@ -21,6 +21,11 @@ workflows:
           test-steps:
             - orb-tools/local-test-build:
                 test-config-location: test/config-packing.yml
+            - orb-tools/local-test-build:
+                test-config-location: test/validate-invalid.yml
+                should-fail: true
+                external-check-steps:
+                  - run: grep "There is an error in the config file" local_build_output.txt
 
       - orb-tools/publish:
           orb-path: packed/orb.yml
