@@ -60,7 +60,7 @@ commands:
           configuration. If omitted it's assumed the CLI has already been setup
           with a valid token.
         type: string
-        default: ""
+        default: $CIRCLE_TOKEN
     steps:
       - run:
           name: >
@@ -91,7 +91,7 @@ commands:
           configuration. If omitted it's assumed the CLI has already been setup
           with a valid token.
         type: string
-        default: ""
+        default: $CIRCLE_TOKEN
     steps:
       - run:
           name: >
