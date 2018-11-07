@@ -1,4 +1,6 @@
 version: 2.1
+description: |
+  Tools for authoring and publishing orbs
 
 orbs:
   cli: circleci/circleci-cli@volatile
