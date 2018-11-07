@@ -101,6 +101,35 @@ commands:
             circleci orb publish << parameters.orb-path >> << parameters.orb-ref >>
             <<# parameters.token-variable >>--token << parameters.token-variable >> <</ parameters.token-variable >>
 
+  local-test-build:
+    description: Test the runtime functionality of your orb by running a local job. This is meant to be used in the test-steps of a test-in-builds job.
+    parameters:
+      test-config-location:
+        description: Location of a the test config file. This looks like a regular config, but it will have the orb being tested added as a local orb, with the orb name that is passed into the test-in-builds job this belongs to.
+        type: string
+      should-fail:
+        description: If set to false (default) this job will fail if the local test job fails. If set to true, this job will fail if the local test job does not fail.
+        type: boolean
+        default: false
+      external-check-steps:
+        description: Checks you want to run that look at the contents of local_build_output.txt. Checks that depend on the environment inside the test job should go inside the test config. This step should probably call a script rather than hardcode the checks into your config.
+        type: steps
+        default: []
+    steps:
+      - run: cp << parameters.test-config-location >> tmp-config-src/config.yml
+      - pack:
+          source: tmp-config-src
+          destination: uncompiled-config.yml
+      # run that uncompiled-config inside a local job - it will have pre-steps that contain the config to be packed inside it, and post-steps that check that it looks like it should
+      - run: cat uncompiled-config.yml
+      - run:
+          name: compile test config
+          command: circleci config process uncompiled-config.yml > config.yml
+      - run:
+          name: run test job locally
+          command: '<<# parameters.should-fail >>! <</ parameters.should-fail>>circleci local execute -c config.yml | tee local_build_output.txt /dev/stderr | tail -n 1 | grep "Success"'
+      - << parameters.external-check-steps >>
+
 jobs:
   pack:
     description: >
@@ -324,3 +353,49 @@ jobs:
           orb-path: << parameters.orb-path >>
           orb-ref: << parameters.orb-ref >>
           token-variable: << parameters.publish-token-variable >>
+
+  test-in-builds:
+    parameters:
+      orb-location:
+        type: string
+      orb-name:
+        type: string
+      checkout:
+        description: >
+          Boolean for whether or not to checkout as a first step. Default is true.
+        type: boolean
+        default: true
+      attach-workspace:
+        description: >
+          Boolean for whether or not to attach to an existing workspace. This is
+          normally used if you are using the pack config job. Default is false.
+        type: boolean
+        default: false
+      workspace-root:
+        description: >
+          Workspace root path that is either an absolute path or a path relative
+          to the working directory. Defaults to '.' (the working directory)
+        type: string
+        default: "."
+      test-steps:
+        type: steps
+    machine: true
+    steps:
+      # Setup
+      - when:
+          condition: << parameters.checkout >>
+          steps:
+            - checkout
+      - when:
+          condition: << parameters.attach-workspace >>
+          steps:
+            - attach_workspace:
+                at: << parameters.workspace-root >>
+      - cli/install
+      - run:
+          name: create temp directory for packing test config
+          command: mkdir -pv tmp-config-src/orbs
+      - run:
+          name: copy orb over to be able to use as local orb in test config
+          command: cp << parameters.orb-location >> tmp-config-src/orbs/<< parameters.orb-name >>.yml
+      - << parameters.test-steps >>
