@@ -25,7 +25,7 @@ workflows:
                 test-config-location: test/validate-invalid.yml
                 should-fail: true
                 external-check-steps:
-                  - run: grep "There is an error in the config file" local_build_output.txt
+                  - run: 'grep "Error: ERROR IN CONFIG FILE:" local_build_output.txt'
 
       - orb-tools/publish:
           orb-path: packed/orb.yml
