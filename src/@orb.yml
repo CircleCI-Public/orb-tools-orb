@@ -129,7 +129,6 @@ commands:
       - run:
           name: compile test config
           command: circleci config process uncompiled-config.yml > config.yml
-      - setup_remote_docker
       - run:
           name: run test job locally
           command: '<<# parameters.should-fail >>! <</ parameters.should-fail>>circleci local execute -c config.yml | tee local_build_output.txt /dev/stderr | tail -n 1 | grep "Success"'
