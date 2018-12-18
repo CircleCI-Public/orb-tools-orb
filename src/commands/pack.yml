@@ -1,0 +1,24 @@
+description: >
+  *Experimental*
+  Uses the CLI to pack an orb file structure
+  into a single orb yml.
+
+parameters:
+  source:
+    description: "Path to the root folder of an unpacked orb."
+    type: string
+
+  destination:
+    description: "Path including the filename to output the packed orb."
+    type: string
+
+steps:
+  - run:
+      name: "Ensure destination path"
+      command: |
+        mkdir -pv $(dirname << parameters.destination >>)
+
+  - run:
+      name: "Pack << parameters.source>> to << parameters.destination >>"
+      command: |
+        circleci config pack << parameters.source >> > << parameters.destination >>

@@ -1,0 +1,12 @@
+description: >
+  Uses the CLI to validate a given orb yml
+
+parameters:
+  orb-path:
+    description: "Path to the orb file to be validated."
+    type: string
+
+steps:
+  - run:
+      name: "Validate whether this is a well-formed orb."
+      command: circleci orb validate << parameters.orb-path >>
