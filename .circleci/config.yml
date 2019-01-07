@@ -96,7 +96,7 @@ jobs:
             git push origin $INTEGRATION_TAG
 
   test-commands:
-    executor: github
+    executor: cli
     steps:
       - checkout
 
