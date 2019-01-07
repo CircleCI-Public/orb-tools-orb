@@ -196,6 +196,7 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-dev_filters
+          requires: [test-pack-job-dev]
           test-steps:
             - checkout
 
@@ -245,6 +246,7 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-master_filters
+          requires: [test-pack-job-master]
           test-steps:
             - checkout
 

@@ -25,7 +25,7 @@ parameters:
   workspace-root:
     description: >
       Workspace root path that is either an absolute path or a path relative
-      to the working directory. Defaults to '.' (the working directory)
+      to the working directory. Defaults to a named 'workspace' directory in the working directory
     type: string
     default: workspace
 
