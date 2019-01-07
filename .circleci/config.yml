@@ -191,15 +191,15 @@ workflows:
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-dev
           attach-workspace: true
-          orb-name: orb-tools-in-build-dev
+          orb-name: orb-tools-alpha
           filters: *integration-dev_filters
           requires: [test-pack-job-dev]
           test-steps:
             - checkout
 
-            - orb-tools-in-build-dev/install-bats
-            - orb-tools-in-build-dev/pack
-            - orb-tools-in-build-dev/validate
+            - orb-tools-alpha/install-bats
+            - orb-tools-alpha/pack
+            - orb-tools-alpha/validate
 
             - orb-tools-in-build-dev/publish:
                 orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
@@ -242,20 +242,20 @@ workflows:
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-master
           attach-workspace: true
-          orb-name: orb-tools-in-build-master
+          orb-name: orb-tools-alpha
           filters: *integration-master_filters
           requires: [test-pack-job-master]
           test-steps:
             - checkout
 
-            - orb-tools-in-build-master/install-bats
-            - orb-tools-in-build-master/pack
-            - orb-tools-in-build-master/validate
+            - orb-tools-alpha/install-bats
+            - orb-tools-alpha/pack
+            - orb-tools-alpha/validate
 
-            - orb-tools-in-build-master/publish:
+            - orb-tools-alpha/publish:
                 orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
 
-            - orb-tools-in-build-master/increment:
+            - orb-tools-alpha/increment:
                 orb-ref: sandbox/orb-tools
 
       - orb-tools-alpha/publish:
