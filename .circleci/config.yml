@@ -122,6 +122,7 @@ jobs:
           name: major release if changes to src/commands or src/jobs; minor if to src/examples, src/executors, or src/@orb.yml; otherwise patch
           command: circleci orb publish promote circleci/orb-tools@dev:${CIRCLE_SHA1:0:7} <<parameters.release>> --token $CIRCLE_TOKEN
 
+# yaml anchor filters
 integration-dev_filters: &integration-dev_filters
   branches:
     ignore: /.*/
