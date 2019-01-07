@@ -1,0 +1,57 @@
+parameters:
+  orb-location:
+    type: string
+    default: workspace/orb.yml
+
+  orb-name:
+    type: string
+
+  checkout:
+    description: >
+      Boolean for whether or not to checkout as a first step. Default is true.
+    type: boolean
+    default: true
+
+  attach-workspace:
+    description: >
+      Boolean for whether or not to attach to an existing workspace. This is
+      normally used if you are using the pack config job. Default is false.
+    type: boolean
+    default: false
+
+  workspace-root:
+    description: >
+      Workspace root path that is either an absolute path or a path relative
+      to the working directory. Defaults to '.' (the working directory)
+    type: string
+    default: workspace
+
+  test-steps:
+    type: steps
+
+machine: true
+
+steps:
+  # Setup
+  - when:
+      condition: << parameters.checkout >>
+      steps:
+        - checkout
+
+  - when:
+      condition: << parameters.attach-workspace >>
+      steps:
+        - attach_workspace:
+            at: << parameters.workspace-root >>
+
+  - cli/install
+
+  - run:
+      name: create temp directory for packing test config
+      command: mkdir -pv tmp-config-src/orbs
+
+  - run:
+      name: copy orb over to be able to use as local orb in test config
+      command: cp << parameters.orb-location >> tmp-config-src/orbs/<< parameters.orb-name >>.yml
+
+  - << parameters.test-steps >>

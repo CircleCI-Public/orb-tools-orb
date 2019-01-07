@@ -7,10 +7,12 @@ parameters:
   source:
     description: "Path to the root folder of an unpacked orb."
     type: string
+    default: src
 
   destination:
     description: "Path including the filename to output the packed orb."
     type: string
+    default: orb.yml
 
 steps:
   - run:

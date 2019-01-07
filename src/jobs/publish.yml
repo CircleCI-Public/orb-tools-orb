@@ -1,0 +1,73 @@
+executor: cli/default
+
+parameters:
+  orb-path:
+    description: Path of the orb file to publish.
+    type: string
+    default: workspace/orb.yml
+
+  orb-ref:
+    description: A full orb-ref in the form of <namespace>/<orbname>@<semver>
+    type: string
+
+  publish-token-variable:
+    description: >
+      Name of env var containing your publish token. Pass this as a raw string such
+      as ORB_PUBLISHING_TOKEN. DO NOT paste the actual token into your
+      configuration. If omitted it's assumed the CLI has already been setup
+      with a valid token.
+    type: env_var_name
+    default: CIRCLE_TOKEN
+
+  validate:
+    description: >
+      Boolean for whether or not to do validation on the orb. Default
+      is true.
+    type: boolean
+    default: true
+
+  checkout:
+    description: >
+      Boolean for whether or not to checkout as a first step. Default is true.
+    type: boolean
+    default: true
+
+  attach-workspace:
+    description: >
+      Boolean for whether or not to attach to an existing workspace. Default
+      is false.
+    type: boolean
+    default: false
+
+  workspace-root:
+    description: >
+      Workspace root path that is either an absolute path or a path relative
+      to the working directory. Defaults to '.' (the working directory)
+    type: string
+    default: workspace
+
+steps:
+  # Setup
+  - when:
+      condition: << parameters.checkout >>
+      steps:
+        - checkout
+
+  - when:
+      condition: << parameters.attach-workspace >>
+      steps:
+        - attach_workspace:
+            at: << parameters.workspace-root >>
+
+  # Validate
+  - when:
+      condition: << parameters.validate >>
+      steps:
+        - validate:
+            orb-path: << parameters.orb-path >>
+
+  # Publish
+  - publish:
+      orb-path: << parameters.orb-path >>
+      orb-ref: << parameters.orb-ref >>
+      token-variable: << parameters.publish-token-variable >>

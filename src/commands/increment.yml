@@ -6,6 +6,7 @@ parameters:
   orb-path:
     description: "Path to an orb file."
     type: string
+    default: orb.yml
 
   orb-ref:
     description: "A versionless orb-ref in the form <namespace>/<orb-name>"
@@ -15,15 +16,16 @@ parameters:
     description: "The semver segment to increment 'major' or 'minor' or 'patch'"
     type: enum
     enum: ["major", "minor", "patch"]
+    default: "patch"
 
   token-variable:
     description: >
-      The env var containing your token. Pass this as a literal string such
-      as `$ORB_PUBLISHING_TOKEN`. Do not paste the actual token into your
+      Name of env var containing your token. Pass this as a raw string such
+      as ORB_PUBLISHING_TOKEN. Do not paste the actual token into your
       configuration. If omitted it's assumed the CLI has already been setup
       with a valid token.
-    type: string
-    default: ""
+    type: env_var_name
+    default: CIRCLE_TOKEN
 
 steps:
   - run:
@@ -35,4 +37,4 @@ steps:
         << parameters.orb-path >>
         << parameters.orb-ref >>
         << parameters.segment >>
-        <<# parameters.token-variable >>--token << parameters.token-variable >> <</ parameters.token-variable >>
+        <<# parameters.token-variable >>--token $<< parameters.token-variable >> <</ parameters.token-variable >>

@@ -1,0 +1,420 @@
+commands:
+  increment:
+    description: |
+      Uses the CLI to increment the version of an orb in the registry. If the orb does not have a version yet it starts at 0.0.0
+    parameters:
+      orb-path:
+        default: orb.yml
+        description: Path to an orb file.
+        type: string
+      orb-ref:
+        description: A versionless orb-ref in the form <namespace>/<orb-name>
+        type: string
+      segment:
+        default: patch
+        description: The semver segment to increment 'major' or 'minor' or 'patch'
+        enum:
+        - major
+        - minor
+        - patch
+        type: enum
+      token-variable:
+        default: CIRCLE_TOKEN
+        description: |
+          Name of env var containing your token. Pass this as a raw string such as ORB_PUBLISHING_TOKEN. Do not paste the actual token into your configuration. If omitted it's assumed the CLI has already been setup with a valid token.
+        type: env_var_name
+    steps:
+    - run:
+        command: |
+          circleci orb publish increment << parameters.orb-path >> << parameters.orb-ref >> << parameters.segment >> <<# parameters.token-variable >>--token $<< parameters.token-variable >> <</ parameters.token-variable >>
+        name: |
+          Increment << parameters.segment >> segment of orb at << parameters.orb-path >> NOTE: this currently assumes you are publishing to the registry at circleci.com
+  install-bats:
+    description: |
+      Install BATS CLI for running shell-based orb integration tests
+    steps:
+    - run:
+        command: |
+          if which git > /dev/null; then
+            git clone https://github.com/sstephenson/bats.git
+          else
+            echo "git is required to install BATS"
+            exit 1
+          fi
+
+          cd bats
+          sudo ./install.sh /usr/local || \
+            ./install.sh /usr/local
+          cd ..
+          rm -rf bats
+        name: install BATS
+        working_directory: /~
+  local-test-build:
+    description: |
+      Test the runtime functionality of your orb by running a local job. This is meant to be used in the test-steps of a test-in-builds job.
+    parameters:
+      external-check-steps:
+        default: []
+        description: Checks you want to run that look at the contents of local_build_output.txt.
+          Checks that depend on the environment inside the test job should go inside
+          the test config. This step should probably call a script rather than hardcode
+          the checks into your config.
+        type: steps
+      should-fail:
+        default: false
+        description: If set to false (default) this job will fail if the local test
+          job fails. If set to true, this job will fail if the local test job does
+          not fail.
+        type: boolean
+      test-config-location:
+        description: Location of a the test config file. This looks like a regular
+          config, but it will have the orb being tested added as a local orb, with
+          the orb name that is passed into the test-in-builds job this belongs to.
+        type: string
+    steps:
+    - run: cp << parameters.test-config-location >> tmp-config-src/config.yml
+    - pack:
+        destination: uncompiled-config.yml
+        source: tmp-config-src
+    - run: cat uncompiled-config.yml
+    - run:
+        command: circleci config process uncompiled-config.yml > config.yml
+        name: compile test config
+    - run:
+        command: <<# parameters.should-fail >>! <</ parameters.should-fail>>circleci
+          local execute -c config.yml | tee local_build_output.txt /dev/stderr | tail
+          -n 1 | grep "Success"
+        name: run test job locally
+    - << parameters.external-check-steps >>
+  pack:
+    description: |
+      *Experimental* Uses the CLI to pack an orb file structure into a single orb yml.
+    parameters:
+      destination:
+        default: orb.yml
+        description: Path including the filename to output the packed orb.
+        type: string
+      source:
+        default: src
+        description: Path to the root folder of an unpacked orb.
+        type: string
+    steps:
+    - run:
+        command: |
+          mkdir -pv $(dirname << parameters.destination >>)
+        name: Ensure destination path
+    - run:
+        command: |
+          circleci config pack << parameters.source >> > << parameters.destination >>
+        name: Pack << parameters.source>> to << parameters.destination >>
+  publish:
+    description: |
+      Uses the CLI to publish an orb to the registry.
+    parameters:
+      orb-path:
+        default: orb.yml
+        description: Path to an orb file.
+        type: string
+      orb-ref:
+        description: |
+          A fully-qualified reference to an orb. This takes the form <namespace>/<orb-name>@<version> NOTE: To publish a dev version prefix the version with 'dev:' like this: <namespace>/<orb-name>@dev:<label>
+        type: string
+      token-variable:
+        default: CIRCLE_TOKEN
+        description: |
+          Name of env var containing your token. Pass this as a raw string such as ORB_PUBLISHING_TOKEN. Do not paste the actual token into your configuration. If omitted it's assumed the CLI has already been setup with a valid token.
+        type: env_var_name
+    steps:
+    - run:
+        command: |
+          circleci orb publish << parameters.orb-path >> << parameters.orb-ref >> <<# parameters.token-variable >>--token $<< parameters.token-variable >> <</ parameters.token-variable >>
+        name: |
+          Publish orb at << parameters.orb-path >> to << parameters.orb-ref >> NOTE: this currently assumes you are publishing to the registry at circleci.com
+  tap-to-junit:
+    description: |
+      Convert BATS tests' TAP output to JUnit XML, for Test Summary
+    parameters:
+      results-dir:
+        default: test-results
+        description: |
+          Filepath (absolute/relative) to directory in which to output JUnit-formatted test results XML (if it does not exist, it will be created; if filepath is relative, directory will be created from your working directory)
+        type: string
+      results-name:
+        default: bats
+        description: |
+          Name for this set of test results (controls what name displays in Test Summary section; corresponds to name of subdirectory created within <<parameters.results-dir>>)
+        type: string
+    steps:
+    - run:
+        command: |
+          mkdir -p \
+            <<parameters.results-dir>>/<<parameters.results-name>>
+        name: Create test results directory structure
+    - run:
+        command: |
+          echo 'not done yet'
+        name: Convert BATS output to JUNIT XML
+    - store_test_results:
+        path: <<parameters.results-dir>>
+    - store_artifacts:
+        path: <<parameters.results-dir>>
+  validate:
+    description: |
+      Uses the CLI to validate a given orb yml
+    parameters:
+      orb-path:
+        default: orb.yml
+        description: Path to the orb file to be validated.
+        type: string
+    steps:
+    - run:
+        command: circleci orb validate << parameters.orb-path >>
+        name: Validate whether this is a well-formed orb.
+description: |
+  Various tools for creating, testing, publishing Orbs
+examples: {}
+executors: {}
+jobs:
+  increment:
+    description: |
+      Uses the CLI to increment the version of an orb in the registry. If the orb does not have a version yet it starts at 0.0.0
+    executor: cli/default
+    parameters:
+      attach-workspace:
+        default: false
+        description: |
+          Boolean for whether or not to attach to an existing workspace. Default is false.
+        type: boolean
+      checkout:
+        default: true
+        description: |
+          Boolean for whether or not to checkout as a first step. Default is true.
+        type: boolean
+      orb-path:
+        default: workspace/orb.yml
+        description: Path to an orb file.
+        type: string
+      orb-ref:
+        description: A versionless orb-ref in the form <namespace>/<orb-name>
+        type: string
+      publish-token-variable:
+        default: CIRCLE_TOKEN
+        description: |
+          Name of env var containing your token. Pass this as a raw string such as ORB_PUBLISHING_TOKEN. Do not paste the actual token into your configuration. If omitted it's assumed the CLI has already been setup with a valid token.
+        type: env_var_name
+      segment:
+        default: patch
+        description: |
+          The semver segment to increment 'major' or 'minor' or 'patch'
+        enum:
+        - major
+        - minor
+        - patch
+        type: enum
+      validate:
+        default: true
+        description: |
+          Boolean for whether or not to do validation on the orb. Default is true.
+        type: boolean
+      workspace-root:
+        default: workspace
+        description: |
+          Workspace root path that is either an absolute path or a path relative to the working directory. Defaults to '.' (the working directory)
+        type: string
+    steps:
+    - when:
+        condition: << parameters.checkout >>
+        steps:
+        - checkout
+    - when:
+        condition: << parameters.attach-workspace >>
+        steps:
+        - attach_workspace:
+            at: << parameters.workspace-root >>
+    - when:
+        condition: << parameters.validate >>
+        steps:
+        - validate:
+            orb-path: << parameters.orb-path >>
+    - increment:
+        orb-path: << parameters.orb-path >>
+        orb-ref: << parameters.orb-ref >>
+        segment: << parameters.segment >>
+        token-variable: << parameters.publish-token-variable >>
+  pack:
+    description: |
+      *Experimental* Pack the contents of an orb for publishing.
+    executor: cli/default
+    parameters:
+      artifact-path:
+        default: ""
+        description: |
+          Path to directory that should be saved as a job artifact. If the default value of blank is provided then this job will not save any artifacts.
+        type: string
+      attach-workspace:
+        default: false
+        description: |
+          Boolean for whether or not to attach to an existing workspace. Default is false.
+        type: boolean
+      checkout:
+        default: true
+        description: |
+          Boolean for whether or not to checkout as a first step. Default is true.
+        type: boolean
+      destination-orb-path:
+        default: orb.yml
+        description: |
+          Path including filename of where the packed orb will be written.
+        type: string
+      source-dir:
+        default: src
+        description: |
+          Path to the root of the orb source directory to be packed. (ie: my-orb/src/)
+        type: string
+      validate:
+        default: true
+        description: |
+          Boolean for whether or not to do validation on the orb. Default is true.
+        type: boolean
+      workspace-path:
+        default: ""
+        description: |
+          Path of the workspace to persist to relative to workspace-root. Typically this is the same as the destination-orb-path. If the default value of blank is provided then this job will not persist to a workspace.
+        type: string
+      workspace-root:
+        default: .
+        description: |
+          Workspace root path that is either an absolute path or a path relative to the working directory. Defaults to '.' (the working directory)
+        type: string
+    steps:
+    - when:
+        condition: << parameters.checkout >>
+        steps:
+        - checkout
+    - when:
+        condition: << parameters.attach-workspace >>
+        steps:
+        - attach_workspace:
+            at: << parameters.workspace-root >>
+    - pack:
+        destination: << parameters.destination-orb-path >>
+        source: << parameters.source-dir >>
+    - when:
+        condition: << parameters.validate >>
+        steps:
+        - validate:
+            orb-path: << parameters.destination-orb-path >>
+    - when:
+        condition: << parameters.workspace-path >>
+        steps:
+        - persist_to_workspace:
+            paths:
+            - << parameters.workspace-path >>
+            root: << parameters.workspace-root >>
+    - when:
+        condition: << parameters.artifact-path >>
+        steps:
+        - store_artifacts:
+            path: << parameters.artifact-path >>
+  publish:
+    executor: cli/default
+    parameters:
+      attach-workspace:
+        default: false
+        description: |
+          Boolean for whether or not to attach to an existing workspace. Default is false.
+        type: boolean
+      checkout:
+        default: true
+        description: |
+          Boolean for whether or not to checkout as a first step. Default is true.
+        type: boolean
+      orb-path:
+        default: workspace/orb.yml
+        description: Path of the orb file to publish.
+        type: string
+      orb-ref:
+        description: A full orb-ref in the form of <namespace>/<orbname>@<semver>
+        type: string
+      publish-token-variable:
+        default: CIRCLE_TOKEN
+        description: |
+          Name of env var containing your publish token. Pass this as a raw string such as ORB_PUBLISHING_TOKEN. DO NOT paste the actual token into your configuration. If omitted it's assumed the CLI has already been setup with a valid token.
+        type: env_var_name
+      validate:
+        default: true
+        description: |
+          Boolean for whether or not to do validation on the orb. Default is true.
+        type: boolean
+      workspace-root:
+        default: workspace
+        description: |
+          Workspace root path that is either an absolute path or a path relative to the working directory. Defaults to '.' (the working directory)
+        type: string
+    steps:
+    - when:
+        condition: << parameters.checkout >>
+        steps:
+        - checkout
+    - when:
+        condition: << parameters.attach-workspace >>
+        steps:
+        - attach_workspace:
+            at: << parameters.workspace-root >>
+    - when:
+        condition: << parameters.validate >>
+        steps:
+        - validate:
+            orb-path: << parameters.orb-path >>
+    - publish:
+        orb-path: << parameters.orb-path >>
+        orb-ref: << parameters.orb-ref >>
+        token-variable: << parameters.publish-token-variable >>
+  test-in-builds:
+    machine: true
+    parameters:
+      attach-workspace:
+        default: false
+        description: |
+          Boolean for whether or not to attach to an existing workspace. This is normally used if you are using the pack config job. Default is false.
+        type: boolean
+      checkout:
+        default: true
+        description: |
+          Boolean for whether or not to checkout as a first step. Default is true.
+        type: boolean
+      orb-location:
+        default: workspace/orb.yml
+        type: string
+      orb-name:
+        type: string
+      test-steps:
+        type: steps
+      workspace-root:
+        default: workspace
+        description: |
+          Workspace root path that is either an absolute path or a path relative to the working directory. Defaults to '.' (the working directory)
+        type: string
+    steps:
+    - when:
+        condition: << parameters.checkout >>
+        steps:
+        - checkout
+    - when:
+        condition: << parameters.attach-workspace >>
+        steps:
+        - attach_workspace:
+            at: << parameters.workspace-root >>
+    - cli/install
+    - run:
+        command: mkdir -pv tmp-config-src/orbs
+        name: create temp directory for packing test config
+    - run:
+        command: cp << parameters.orb-location >> tmp-config-src/orbs/<< parameters.orb-name
+          >>.yml
+        name: copy orb over to be able to use as local orb in test config
+    - << parameters.test-steps >>
+orbs:
+  cli: circleci/circleci-cli@0.1.2
+version: 2.1
+

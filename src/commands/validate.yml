@@ -5,6 +5,7 @@ parameters:
   orb-path:
     description: "Path to the orb file to be validated."
     type: string
+    default: orb.yml
 
 steps:
   - run:
