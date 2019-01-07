@@ -4,7 +4,6 @@ description: >
 steps:
   - run:
       name: install BATS
-      working_directory: /~
       command: |
         if which git > /dev/null; then
           git clone https://github.com/sstephenson/bats.git
