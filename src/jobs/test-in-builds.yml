@@ -1,3 +1,6 @@
+description: >
+  Test the runtime functionality of your orb by running a local job.
+
 parameters:
   orb-location:
     type: string

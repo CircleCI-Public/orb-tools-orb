@@ -1,7 +1,7 @@
 version: 2.1
 
 description: |
-  Various tools for creating, testing, publishing Orbs
+  Various tools for creating, testing, and publishing Orbs
 
 orbs:
   cli: circleci/circleci-cli@0.1.2

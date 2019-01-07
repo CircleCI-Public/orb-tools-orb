@@ -1,3 +1,6 @@
+description: >
+  Uses the CLI to publish an orb to the registry.
+
 executor: cli/default
 
 parameters:
