@@ -4,7 +4,10 @@ description: >
 
 parameters:
   test-config-location:
-    description: Location of a the test config file. This looks like a regular config, but it will have the orb being tested added as a local orb, with the orb name that is passed into the test-in-builds job this belongs to.
+    description: >
+      Location of a the test config file. This looks like a regular config,
+      but it will have the orb being tested added as a local orb,
+      with the orb name that is passed into the test-in-builds job this belongs to.
     type: string
 
   should-fail:
@@ -13,7 +16,10 @@ parameters:
     default: false
 
   external-check-steps:
-    description: Checks you want to run that look at the contents of local_build_output.txt. Checks that depend on the environment inside the test job should go inside the test config. This step should probably call a script rather than hardcode the checks into your config.
+    description: >
+      Checks you want to run that look at the contents of local_build_output.txt.
+      Checks that depend on the environment inside the test job should go inside the test config.
+      This step should probably call a script rather than hardcode the checks into your config.
     type: steps
     default: []
 

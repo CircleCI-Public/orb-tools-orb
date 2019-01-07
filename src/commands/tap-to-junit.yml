@@ -36,4 +36,3 @@ steps:
 
   - store_artifacts:
       path: <<parameters.results-dir>>
-
