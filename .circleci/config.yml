@@ -134,6 +134,9 @@ integration-master_filters: &integration-master_filters
   tags:
     only: /master-.*/
 
+prod-deploy_requires: &prod-deploy_requires
+  requires: [test-commands-master, test-in-builds-job-master, test-publish-job-master, test-increment-job-master]
+
 workflows:
   lint_pack-validate_publish-dev:
     jobs:
@@ -185,8 +188,6 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
           filters: *integration-dev_filters
-          # requires:
-          #   - test-commands-dev
 
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-dev
@@ -194,7 +195,6 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-dev_filters
-          requires: [test-pack-job-dev]
           test-steps:
             - checkout
 
@@ -215,7 +215,6 @@ workflows:
           orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
           filters: *integration-dev_filters
           requires:
-            # - test-in-builds-job-dev
             - test-pack-job-dev
 
       - orb-tools-alpha/increment:
@@ -225,7 +224,6 @@ workflows:
           orb-ref: sandbox/orb-tools
           filters: *integration-dev_filters
           requires:
-            # - test-publish-job-dev
             - test-pack-job-dev
 
       # triggered by master branch commits
@@ -239,8 +237,6 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
           filters: *integration-master_filters
-          requires:
-            - test-commands-master
 
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-master
@@ -248,7 +244,6 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-master_filters
-          requires: [test-pack-job-master]
           test-steps:
             - checkout
 
@@ -269,7 +264,7 @@ workflows:
           orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
           filters: *integration-master_filters
           requires:
-            - test-in-builds-job-master
+            - test-pack-job-master
 
       - orb-tools-alpha/increment:
           name: test-increment-job-master
@@ -278,14 +273,13 @@ workflows:
           orb-ref: sandbox/orb-tools
           filters: *integration-master_filters
           requires:
-            - test-publish-job-master
+            - test-pack-job-master
 
       # patch, minor, or major publishing
       - dev-promote-prod:
           name: dev-promote-patch
           context: orb-publishing
-          requires:
-            - test-increment-job-master
+          *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
@@ -295,8 +289,7 @@ workflows:
       - dev-promote-prod:
           name: dev-promote-minor
           context: orb-publishing
-          requires:
-            - test-increment-job-master
+          *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
@@ -306,8 +299,7 @@ workflows:
       - dev-promote-prod:
           name: dev-promote-major
           context: orb-publishing
-          requires:
-            - test-increment-job-master
+          *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
