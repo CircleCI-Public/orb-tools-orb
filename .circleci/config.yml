@@ -135,7 +135,7 @@ integration-master_filters: &integration-master_filters
     only: /master-.*/
 
 prod-deploy_requires: &prod-deploy_requires
-  requires: [test-commands-master, test-in-builds-job-master, test-publish-job-master, test-increment-job-master]
+  [test-commands-master, test-in-builds-job-master, test-publish-job-master, test-increment-job-master]
 
 workflows:
   lint_pack-validate_publish-dev:
@@ -279,7 +279,7 @@ workflows:
       - dev-promote-prod:
           name: dev-promote-patch
           context: orb-publishing
-          *prod-deploy_requires
+          requires: *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
@@ -289,7 +289,7 @@ workflows:
       - dev-promote-prod:
           name: dev-promote-minor
           context: orb-publishing
-          *prod-deploy_requires
+          requires: *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
@@ -299,7 +299,7 @@ workflows:
       - dev-promote-prod:
           name: dev-promote-major
           context: orb-publishing
-          *prod-deploy_requires
+          requires: *prod-deploy_requires
           filters:
             branches:
               ignore: /.*/
