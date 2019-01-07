@@ -24,6 +24,7 @@ parameters:
     default: []
 
 steps:
+  - run: mkdir -p tmp-config-src
   - run: cp << parameters.test-config-location >> tmp-config-src/config.yml
 
   - pack:
