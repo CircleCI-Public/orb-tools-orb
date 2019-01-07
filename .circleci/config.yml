@@ -190,6 +190,7 @@ workflows:
 
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-dev
+          context: orb-publishing
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-dev_filters
@@ -241,6 +242,7 @@ workflows:
 
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-master
+          context: orb-publishing
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-master_filters
