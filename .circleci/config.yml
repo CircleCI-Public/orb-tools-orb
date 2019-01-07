@@ -201,10 +201,10 @@ workflows:
             - orb-tools-alpha/pack
             - orb-tools-alpha/validate
 
-            - orb-tools-in-build-dev/publish:
+            - orb-tools-alpha/publish:
                 orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
 
-            - orb-tools-in-build-dev/increment:
+            - orb-tools-alpha/increment:
                 orb-ref: sandbox/orb-tools
 
       - orb-tools-alpha/publish:
