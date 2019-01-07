@@ -185,8 +185,8 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
           filters: *integration-dev_filters
-          requires:
-            - test-commands-dev
+          # requires:
+          #   - test-commands-dev
 
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-dev
@@ -194,7 +194,7 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-dev_filters
-          requires: [test-pack-job-dev]
+          # requires: [test-pack-job-dev]
           test-steps:
             - checkout
 
@@ -214,8 +214,8 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
           filters: *integration-dev_filters
-          requires:
-            - test-in-builds-job-dev
+          # requires:
+          #   - test-in-builds-job-dev
 
       - orb-tools-alpha/increment:
           name: test-increment-job-dev
@@ -223,8 +223,8 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools
           filters: *integration-dev_filters
-          requires:
-            - test-publish-job-dev
+          # requires:
+          #   - test-publish-job-dev
 
       # triggered by master branch commits
       - test-commands:
