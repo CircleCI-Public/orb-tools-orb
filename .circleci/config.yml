@@ -214,8 +214,9 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
           filters: *integration-dev_filters
-          # requires:
-          #   - test-in-builds-job-dev
+          requires:
+            # - test-in-builds-job-dev
+            - test-pack-job-dev
 
       - orb-tools-alpha/increment:
           name: test-increment-job-dev
@@ -223,8 +224,9 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools
           filters: *integration-dev_filters
-          # requires:
-          #   - test-publish-job-dev
+          requires:
+            # - test-publish-job-dev
+            - test-pack-job-dev
 
       # triggered by master branch commits
       - test-commands:
