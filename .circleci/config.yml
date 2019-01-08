@@ -226,7 +226,8 @@ workflows:
           orb-ref: sandbox/orb-tools
           filters: *integration-dev_filters
           requires:
-            - test-pack-job-dev
+            - test-in-builds-job-dev
+            - test-publish-job-dev
 
       # triggered by master branch commits
       - test-commands:
@@ -276,7 +277,8 @@ workflows:
           orb-ref: sandbox/orb-tools
           filters: *integration-master_filters
           requires:
-            - test-pack-job-master
+            - test-in-builds-job-master
+            - test-publish-job-master
 
       # patch, minor, or major publishing
       - dev-promote-prod:
