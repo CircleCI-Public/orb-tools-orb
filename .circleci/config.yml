@@ -1,50 +1,314 @@
 version: 2.1
 
 orbs:
-  orb-tools: circleci/orb-tools@dev:cayenne:testing-testing:7172935
+  circle-compare-url: iynere/compare-url@0.4.4
+  orb-tools: circleci/orb-tools@2.0.2
+  orb-tools-alpha: circleci/orb-tools@dev:alpha
+
+executors:
+  cli:
+    resource_class: small
+    docker:
+      - image: circleci/circleci-cli:0.1.5060
+
+  github:
+    resource_class: small
+    docker:
+      - image: cibuilds/github
+
+  lint:
+    resource_class: small
+    docker:
+      - image: singapore/lint-condo
+
+jobs:
+  lint:
+    executor: lint
+    steps:
+      - checkout
+      - run: yamllint .
+
+  # validate goes here: see workflow
+
+  publish-dev:
+    executor: cli
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: workspace
+
+      - run:
+          name: publish various dev versions
+          command: |
+            # dev:alpha, for integration testing
+            circleci orb publish workspace/orb.yml circleci/orb-tools@dev:alpha --token $CIRCLE_TOKEN
+
+            # branch + sha, for transparency
+            circleci orb publish workspace/orb.yml circleci/orb-tools@dev:$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7} --token $CIRCLE_TOKEN
+
+            # sha only, for potential prod promotion
+            circleci orb publish workspace/orb.yml circleci/orb-tools@dev:${CIRCLE_SHA1:0:7} --token $CIRCLE_TOKEN
+
+      - store_artifacts:
+          path: workspace/orb.yml
+
+  trigger-integration:
+    executor: github
+    parameters:
+      tag:
+        type: enum
+        default: "integration"
+        enum: ["integration", master]
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints:
+            - "33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0"
+
+      - run:
+          name: git config
+          command: |
+            git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
+            git config --global user.name "$CIRCLE_USERNAME"
+
+      - circle-compare-url/reconstruct
+
+      - run:
+          name: trigger integration workflow, possible patch / minor / major release
+          command: |
+            CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt)
+
+            COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/compare/::g')
+
+            echo "Commit range: $COMMIT_RANGE"
+
+            if [[ $(git diff $COMMIT_RANGE --name-status | grep -e "src/commands" -e "src/jobs") ]]; then
+              INTEGRATION_TAG=<<parameters.tag>>-major-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+            elif [[ $(git diff $COMMIT_RANGE --name-status | grep -e "src/executors" -e "src/examples" -e "src/@orb.yml") ]]; then
+              INTEGRATION_TAG=<<parameters.tag>>-minor-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+            else
+              INTEGRATION_TAG=<<parameters.tag>>-patch-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+            fi
+
+            git tag $INTEGRATION_TAG
+            git push origin $INTEGRATION_TAG
+
+  test-commands:
+    executor: cli
+    steps:
+      - checkout
+
+      - orb-tools-alpha/install-bats
+      - orb-tools-alpha/pack
+      - orb-tools-alpha/validate
+
+      - orb-tools-alpha/publish:
+          orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
+
+      - orb-tools-alpha/increment:
+          orb-ref: sandbox/orb-tools
+
+  dev-promote-prod:
+    executor: cli
+    parameters:
+      release:
+        type: enum
+        default: "patch"
+        enum: ["patch", "minor", "major"]
+    steps:
+      - run:
+          name: major release if changes to src/commands or src/jobs; minor if to src/examples, src/executors, or src/@orb.yml; otherwise patch
+          command: circleci orb publish promote circleci/orb-tools@dev:${CIRCLE_SHA1:0:7} <<parameters.release>> --token $CIRCLE_TOKEN
+
+# yaml anchor filters
+integration-dev_filters: &integration-dev_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /integration-.*/
+
+integration-master_filters: &integration-master_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /master-.*/
+
+prod-deploy_requires: &prod-deploy_requires
+  [test-commands-master, test-in-builds-job-master, test-publish-job-master, test-increment-job-master]
 
 workflows:
-  default-workflow:
+  lint_pack-validate_publish-dev:
     jobs:
+      - lint
+
       - orb-tools/pack:
-          source-dir: src/
-          destination-orb-path: packed/orb.yml
-          workspace-path: packed/orb.yml
-          artifact-path: packed/orb.yml
-          validate: true
+          name: pack-validate
+          source-dir: src
+          destination-orb-path: orb.yml
+          workspace-path: orb.yml
+          artifact-path: orb.yml
+          requires:
+            - lint
 
-      - orb-tools/test-in-builds:
-          requires: [orb-tools/pack]
+      - publish-dev:
+          context: orb-publishing
+          requires:
+            - pack-validate
+
+      - trigger-integration:
+          name: trigger-integration-dev
+          context: orb-publishing
+          requires:
+            - publish-dev
+          filters:
+            branches:
+              ignore: master
+
+      - trigger-integration:
+          name: trigger-integration-master
+          context: orb-publishing
+          tag: master
+          requires:
+            - publish-dev
+          filters:
+            branches:
+              only: master
+
+  integration_tests-prod_deploy:
+    jobs:
+      # triggered by non-master branch commits
+      - test-commands:
+          name: test-commands-dev
+          context: orb-publishing
+          filters: *integration-dev_filters
+
+      - orb-tools-alpha/pack:
+          name: test-pack-job-dev
+          workspace-path: orb.yml
+          artifact-path: orb.yml
+          filters: *integration-dev_filters
+
+      - orb-tools-alpha/test-in-builds:
+          name: test-in-builds-job-dev
+          context: orb-publishing
           attach-workspace: true
-          orb-location: packed/orb.yml
-          orb-name: orb-tools
+          orb-name: orb-tools-alpha
+          filters: *integration-dev_filters
+          requires: [test-pack-job-dev]
           test-steps:
-            - orb-tools/local-test-build:
-                test-config-location: test/config-packing.yml
-            - orb-tools/local-test-build:
-                test-config-location: test/validate-invalid.yml
-                should-fail: true
-                external-check-steps:
-                  - run: 'grep "Error: ERROR IN CONFIG FILE:" local_build_output.txt'
+            - checkout
 
-      - orb-tools/publish:
-          orb-path: packed/orb.yml
-          orb-ref: "circleci/orb-tools@dev:${CIRCLE_BRANCH}"
-          publish-token-variable: "$CIRCLECI_API_TOKEN"
+            - orb-tools-alpha/install-bats
+            - orb-tools-alpha/pack
+            - orb-tools-alpha/validate
+
+            - orb-tools-alpha/publish:
+                orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
+
+            - orb-tools-alpha/increment:
+                orb-ref: sandbox/orb-tools
+
+      - orb-tools-alpha/publish:
+          name: test-publish-job-dev
           attach-workspace: true
-          checkout: false
-          validate: true
-          requires: [orb-tools/test-in-builds]
+          context: orb-publishing
+          orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
+          filters: *integration-dev_filters
+          requires:
+            - test-pack-job-dev
 
-     #- orb-tools/increment:
-     #    orb-path: packed/orb.yml
-     #    orb-ref: "circleci/orb-tools"
-     #    segment: "patch"
-     #    publish-token-variable: "$CIRCLECI_API_TOKEN"
-     #    attach-workspace: true
-     #    checkout: false
-     #    validate: true
-     #    requires: [orb-tools/pack]
-     #    filters:
-     #      branches:
-     #        only: master
+      - orb-tools-alpha/increment:
+          name: test-increment-job-dev
+          attach-workspace: true
+          context: orb-publishing
+          orb-ref: sandbox/orb-tools
+          filters: *integration-dev_filters
+          requires:
+            - test-in-builds-job-dev
+            - test-publish-job-dev
+
+      # triggered by master branch commits
+      - test-commands:
+          name: test-commands-master
+          context: orb-publishing
+          filters: *integration-master_filters
+
+      - orb-tools-alpha/pack:
+          name: test-pack-job-master
+          workspace-path: orb.yml
+          artifact-path: orb.yml
+          filters: *integration-master_filters
+
+      - orb-tools-alpha/test-in-builds:
+          name: test-in-builds-job-master
+          context: orb-publishing
+          attach-workspace: true
+          orb-name: orb-tools-alpha
+          filters: *integration-master_filters
+          requires: [test-pack-job-master]
+          test-steps:
+            - checkout
+
+            - orb-tools-alpha/install-bats
+            - orb-tools-alpha/pack
+            - orb-tools-alpha/validate
+
+            - orb-tools-alpha/publish:
+                orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
+
+            - orb-tools-alpha/increment:
+                orb-ref: sandbox/orb-tools
+
+      - orb-tools-alpha/publish:
+          name: test-publish-job-master
+          attach-workspace: true
+          context: orb-publishing
+          orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
+          filters: *integration-master_filters
+          requires:
+            - test-pack-job-master
+
+      - orb-tools-alpha/increment:
+          name: test-increment-job-master
+          attach-workspace: true
+          context: orb-publishing
+          orb-ref: sandbox/orb-tools
+          filters: *integration-master_filters
+          requires:
+            - test-in-builds-job-master
+            - test-publish-job-master
+
+      # patch, minor, or major publishing
+      - dev-promote-prod:
+          name: dev-promote-patch
+          context: orb-publishing
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-patch.*/
+
+      - dev-promote-prod:
+          name: dev-promote-minor
+          release: minor
+          context: orb-publishing
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-minor.*/
+
+      - dev-promote-prod:
+          name: dev-promote-major
+          release: major
+          context: orb-publishing
+          requires: *prod-deploy_requires
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /master-major.*/
