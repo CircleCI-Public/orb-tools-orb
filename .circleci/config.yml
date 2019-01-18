@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   circle-compare-url: iynere/compare-url@0.4.4
-  orb-tools: circleci/orb-tools@2.0.2
+  orb-tools: circleci/orb-tools@3.0.0
   orb-tools-alpha: circleci/orb-tools@dev:alpha
 
 executors:
@@ -86,10 +86,12 @@ jobs:
 
             if [[ $(git diff $COMMIT_RANGE --name-status | grep -e "src/commands" -e "src/jobs") ]]; then
               INTEGRATION_TAG=<<parameters.tag>>-major-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
-            elif [[ $(git diff $COMMIT_RANGE --name-status | grep -e "src/executors" -e "src/examples" -e "src/@orb.yml") ]]; then
+            elif [[ $(git diff $COMMIT_RANGE --name-status | grep -e "src/examples" -e "src/executors" -e "src/@orb.yml") ]]; then
               INTEGRATION_TAG=<<parameters.tag>>-minor-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
-            else
+            elif [[ $(git diff $COMMIT_RANGE --name-status | grep -e "config.yml") ]]; then
               INTEGRATION_TAG=<<parameters.tag>>-patch-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+            else
+              INTEGRATION_TAG=<<parameters.tag>>-skip-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
             fi
 
             git tag $INTEGRATION_TAG
