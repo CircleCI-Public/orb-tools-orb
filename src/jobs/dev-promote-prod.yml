@@ -28,7 +28,7 @@ parameters:
     default: dev:${CIRCLE_SHA1:0:7}
     description: >
       Dev:reference to promote to a production release, defaults to
-      'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 6
+      'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 7
       characters of the job's commit hash)
 
 steps:
