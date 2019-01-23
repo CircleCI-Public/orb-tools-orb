@@ -70,7 +70,6 @@ workflows:
 
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-dev
-          context: orb-publishing
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           requires:
             - publish-dev
@@ -80,7 +79,6 @@ workflows:
 
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-master
-          context: orb-publishing
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           tag: master
           requires:
