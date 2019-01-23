@@ -1,0 +1,134 @@
+description: >
+  Trigger an integration-testing workflow for a just-published
+  alpha version of an orb. Creates a git tag and pushes it to the
+  corresponding GitHub repo for the project. See examples for further
+  usage details.
+
+executor: ci-base
+
+parameters:
+  checkout:
+    type: boolean
+    default: true
+    description: >
+      Checkout as a first step? Default is true.
+
+  attach-workspace:
+    type: boolean
+    default: false
+    description: >
+      Boolean for whether or not to attach to an existing workspace.
+      Default is false.
+
+  workspace-root:
+    type: string
+    default: workspace
+    description: >
+      Workspace root path that is either an absolute path or a path relative
+      to the working directory.
+
+  ssh-fingerprints:
+    type: string
+    description: >
+      Fingerprints for SSH deploy key (add the public key as a read/write
+      key on GitHub; add the private key in CircleCI via SSH Permissions,
+      with github.com as Hostname). Used to push a git tag back to the
+      project's repository.
+
+  tag:
+    type: enum
+    default: integration
+    enum: [integration, master]
+    description: >
+      Will this integration trigger integration (integration tests
+      only) or master (integration tests, plus potential deployment of
+      production/semantic orb release) workflow jobs?
+
+  use-git-diff:
+    type: boolean
+    default: true
+    description: >
+      Calculate the git diff between this commit and the previous commit on
+      this branch (or most recent ancestor, if this is a new branch)?
+      Useful for dynamically interpolating patch, minor, or major orb
+      publishing based on what parts of a destructured orb were modified.
+      Modifications to jobs or commands trigger a potential major release;
+      modifications to executors, examples, or @orb.yml trigger a minor release;
+      modifications to the orb's config.yml file trigger a patch release;
+      if none of the above are modified, integration tests will run but
+      publishing will be skipped. If this parameter is set to false,
+      you will only be able to statically pick patch, minor, or major
+      as a potential release type, by using the subsequent parameter.
+
+  static-release-type:
+    type: enum
+    default: patch
+    enum: [patch, minor, major]
+    description: >
+      If not dynamically interpolating potential orb release type (see
+      previous parameter), select a release type using this parameter.
+
+steps:
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
+
+  - when:
+      condition: <<parameters.attach-workspace>>
+      steps:
+        - attach_workspace:
+            at: <<parameters.workspace-root>>
+
+  - add_ssh_keys:
+      fingerprints:
+        - <<parameters.ssh-fingerprints>>
+
+  - run:
+      name: git config
+      command: |
+        git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
+        git config --global user.name "$CIRCLE_USERNAME"
+
+  - when:
+      condition: <<parameters.use-git-diff>>
+      steps:
+        - circle-compare-url/reconstruct
+        - run:
+            name: construct git integration tag
+            command: |
+              CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt)
+
+              COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/compare/::g')
+
+              echo "Commit range: $COMMIT_RANGE"
+
+              if [[ $(git diff $COMMIT_RANGE --name-status | \
+                grep -e "src/commands" -e "src/jobs") ]]; then
+                INTEGRATION_TAG=<<parameters.tag>>-major-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+
+              elif [[ $(git diff $COMMIT_RANGE --name-status | \
+                grep -e "src/examples" -e "src/@orb.yml" -e "src/executors") ]]; then
+                INTEGRATION_TAG=<<parameters.tag>>-minor-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+
+              elif [[ $(git diff $COMMIT_RANGE --name-status | \
+                grep -e "config.yml") ]]; then
+                INTEGRATION_TAG=<<parameters.tag>>-patch-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+
+              else
+                INTEGRATION_TAG=<<parameters.tag>>-skip-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+              fi
+
+  - unless:
+      condition: <<parameters.use-git-diff>>
+      steps:
+        - run:
+            name: construct git integration tag
+            command: |
+              INTEGRATION_TAG=<<parameters.tag>>-<<parameters.static-release-type>>-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
+
+  - run:
+      name: push git tag
+      command: |
+        git tag $INTEGRATION_TAG
+        git push origin $INTEGRATION_TAG

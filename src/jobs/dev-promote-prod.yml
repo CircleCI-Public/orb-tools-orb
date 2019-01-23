@@ -1,0 +1,41 @@
+description: >
+  Promote a dev version of an orb to a semantic production release.
+  Designed to run at the conclusion of an integration-testing workflow.
+
+executor: cli/default
+
+parameters:
+  release:
+    type: enum
+    default: patch
+    enum: [patch, minor, major]
+    description: >
+      What type of release to publish (patch, minor, major)?
+
+  publish-token-variable:
+    type: env_var_name
+    default: CIRCLE_TOKEN
+    description: >
+      Name of environment variable containing your CircleCI API token
+
+  orb-name:
+    type: string
+    description: >
+      Semver-less name of an orb, e.g. circleci/orb-tools
+
+  orb-ref:
+    type: string
+    default: dev:${CIRCLE_SHA1:0:7}
+    description: >
+      Dev:reference to promote to a production release, defaults to
+      'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 6
+      characters of the job's commit hash)
+
+steps:
+  - run:
+      name: promote dev orb to production/semantic release
+      command: |
+        circleci orb publish promote \
+          <<parameters.orb-name>>@<<parameters.orb-ref>> \
+          <<parameters.release>> --token \
+          <<parameters.publish-token-variable>>
