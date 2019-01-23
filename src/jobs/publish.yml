@@ -14,13 +14,10 @@ parameters:
     type: string
 
   publish-token-variable:
-    description: >
-      Name of env var containing your publish token. Pass this as a raw string such
-      as ORB_PUBLISHING_TOKEN. DO NOT paste the actual token into your
-      configuration. If omitted it's assumed the CLI has already been setup
-      with a valid token.
     type: env_var_name
     default: CIRCLE_TOKEN
+    description: >
+      Name of environment variable containing your CircleCI API token
 
   validate:
     description: >
