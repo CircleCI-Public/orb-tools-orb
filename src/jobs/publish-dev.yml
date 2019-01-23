@@ -126,7 +126,7 @@ steps:
       steps:
         - publish:
             orb-path: <<parameters.orb-path>>
-            orb-ref: <<parameters.alpha-version-ref>>
+            orb-ref: <<parameters.orb-name>>@<<parameters.alpha-version-ref>>
             token-variable: <<parameters.publish-token-variable>>
 
   - when:
@@ -134,7 +134,7 @@ steps:
       steps:
         - publish:
             orb-path: <<parameters.orb-path>>
-            orb-ref: <<parameters.sha-version-ref>>
+            orb-ref: <<parameters.orb-name>>@<<parameters.sha-version-ref>>
             token-variable: <<parameters.publish-token-variable>>
 
   - when:
@@ -142,7 +142,7 @@ steps:
       steps:
         - publish:
             orb-path: <<parameters.orb-path>>
-            orb-ref: <<parameters.branch-sha-version-ref>>
+            orb-ref: <<parameters.orb-name>>@<<parameters.branch-sha-version-ref>>
             token-variable: <<parameters.publish-token-variable>>
 
   - when:
