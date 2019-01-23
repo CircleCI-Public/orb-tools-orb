@@ -5,4 +5,4 @@ description: |
 
 orbs:
   cli: circleci/circleci-cli@0.1.2
-  circle-compare-url: iynere/compare-url-orb@0.4.5
+  circle-compare-url: iynere/compare-url@0.4.5
