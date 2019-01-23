@@ -2,24 +2,9 @@ version: 2.1
 
 orbs:
   circle-compare-url: iynere/compare-url@0.4.5
+  cli: circleci/circleci-cli@0.1.2
   orb-tools: circleci/orb-tools@5.0.0
   orb-tools-alpha: circleci/orb-tools@dev:alpha
-
-executors:
-  cli:
-    resource_class: small
-    docker:
-      - image: circleci/circleci-cli:0.1.5060
-
-  github:
-    resource_class: small
-    docker:
-      - image: cibuilds/github
-
-  lint:
-    resource_class: small
-    docker:
-      - image: singapore/lint-condo
 
 jobs:
   # lint goes here: see workflow
@@ -28,7 +13,7 @@ jobs:
   # trigger-integration goes here: see workflow
 
   test-commands:
-    executor: cli
+    executor: cli/default
     steps:
       - checkout
 
