@@ -42,12 +42,12 @@ parameters:
 
 steps:
   # TODO: should validate we're getting good config yaml as an input
-  - ensure-command:
+  - build-tools/ensure-command:
       command: "gem"
 
   - run: gem install unindent
 
-  - init-file:
+  - build-tools/init-file:
       file: << parameters.file >>
 
   - script-run:
