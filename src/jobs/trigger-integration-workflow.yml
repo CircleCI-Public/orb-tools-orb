@@ -95,7 +95,7 @@ steps:
       steps:
         - circle-compare-url/reconstruct
         - run:
-            name: construct git integration tag
+            name: construct/push git integration tag
             command: |
               CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt)
 
@@ -126,7 +126,7 @@ steps:
       condition: <<parameters.use-git-diff>>
       steps:
         - run:
-            name: construct git integration tag
+            name: construct/push git integration tag
             command: |
               INTEGRATION_TAG=<<parameters.tag>>-<<parameters.static-release-type>>-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
