@@ -65,9 +65,6 @@ steps:
         - attach_workspace:
             at: <<parameters.workspace-root>>
 
-            <<#parameters.alternate-tenant>> \
-            --tenant $<<parameters.azure-tenant>> <</parameters.alternate-tenant>>
-
   - when:
       condition: <<parameters.use-default-rules>>
       steps:
