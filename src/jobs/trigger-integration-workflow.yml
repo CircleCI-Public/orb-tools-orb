@@ -95,7 +95,7 @@ steps:
       steps:
         - circle-compare-url/reconstruct
         - run:
-            name: construct git integration tag
+            name: construct/push git integration tag
             command: |
               CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt)
 
@@ -108,7 +108,7 @@ steps:
                 INTEGRATION_TAG=<<parameters.tag>>-major-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
               elif [[ $(git diff $COMMIT_RANGE --name-status | \
-                grep -e "src/examples" -e "src/@orb.yml" -e "src/executors") ]]; then
+                grep -e "src/examples" -e "src/executors" -e "src/@orb.yml") ]]; then
                 INTEGRATION_TAG=<<parameters.tag>>-minor-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
               elif [[ $(git diff $COMMIT_RANGE --name-status | \
@@ -119,16 +119,16 @@ steps:
                 INTEGRATION_TAG=<<parameters.tag>>-skip-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
               fi
 
+              git tag $INTEGRATION_TAG
+              git push origin $INTEGRATION_TAG
+
   - unless:
       condition: <<parameters.use-git-diff>>
       steps:
         - run:
-            name: construct git integration tag
+            name: construct/push git integration tag
             command: |
               INTEGRATION_TAG=<<parameters.tag>>-<<parameters.static-release-type>>-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
-  - run:
-      name: push git tag
-      command: |
-        git tag $INTEGRATION_TAG
-        git push origin $INTEGRATION_TAG
+              git tag $INTEGRATION_TAG
+              git push origin $INTEGRATION_TAG

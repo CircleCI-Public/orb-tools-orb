@@ -61,7 +61,7 @@ parameters:
     type: string
     default: dev:alpha
     description: >
-      Dev:reference to use for orb alpha version, defaults to 'alpha'
+      Dev:reference to use for orb alpha version, defaults to 'dev:alpha'
 
   publish-sha-version:
     type: boolean
@@ -76,7 +76,7 @@ parameters:
     default: dev:${CIRCLE_SHA1:0:7}
     description: >
       Dev:reference to use for second dev version of the orb,
-      defaults to 'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 6
+      defaults to 'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 7
       characters of the job's commit hash)
 
   publish-branch-sha-version:
@@ -91,8 +91,8 @@ parameters:
     default: dev:$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
     description: >
       Dev:reference to use for third dev version of the orb,
-      defaults to '$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}' (evaluates to the
-      git branch plus the first 6 characters of the job's commit hash)
+      defaults to 'dev:$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}' (evaluates to the
+      git branch plus the first 7 characters of the job's commit hash)
 
   store-artifact:
     type: boolean
@@ -126,7 +126,7 @@ steps:
       steps:
         - publish:
             orb-path: <<parameters.orb-path>>
-            orb-ref: <<parameters.alpha-version-ref>>
+            orb-ref: <<parameters.orb-name>>@<<parameters.alpha-version-ref>>
             token-variable: <<parameters.publish-token-variable>>
 
   - when:
@@ -134,7 +134,7 @@ steps:
       steps:
         - publish:
             orb-path: <<parameters.orb-path>>
-            orb-ref: <<parameters.sha-version-ref>>
+            orb-ref: <<parameters.orb-name>>@<<parameters.sha-version-ref>>
             token-variable: <<parameters.publish-token-variable>>
 
   - when:
@@ -142,7 +142,7 @@ steps:
       steps:
         - publish:
             orb-path: <<parameters.orb-path>>
-            orb-ref: <<parameters.branch-sha-version-ref>>
+            orb-ref: <<parameters.orb-name>>@<<parameters.branch-sha-version-ref>>
             token-variable: <<parameters.publish-token-variable>>
 
   - when:
