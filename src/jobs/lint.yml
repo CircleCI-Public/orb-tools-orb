@@ -40,12 +40,6 @@ parameters:
       If set to false, you must set use-custom-rules to true and supply
       a filepath to the custom-rules-filepath parameter.
 
-  use-custom-rules:
-    type: boolean
-    default: false
-    description: >
-      Set this to true if you have your own yamllint configuration file
-
   custom-rules-filepath:
     type: string
     default: .yamllint
@@ -82,5 +76,13 @@ steps:
 
               EOF
 
-  - run: |
-      yamllint <<#parameters.use-custom-rules>>-c <<parameters.custom-rules-filepath>><</parameters.use-custom-rules>>  <<parameters.lint-dir>>
+        - run:
+            name: yamllint
+            command: |
+              yamllint <<parameters.lint-dir>>
+
+  - unless:
+      condition: <<parameters.use-default-rules>>
+      steps:
+        - run: |
+            yamllint -c <<parameters.custom-rules-filepath>> <<parameters.lint-dir>>
