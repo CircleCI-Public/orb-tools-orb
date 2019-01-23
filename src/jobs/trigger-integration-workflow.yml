@@ -108,7 +108,7 @@ steps:
                 INTEGRATION_TAG=<<parameters.tag>>-major-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
               elif [[ $(git diff $COMMIT_RANGE --name-status | \
-                grep -e "src/examples" -e "src/@orb.yml") ]]; then
+                grep -e "src/examples" -e "src/@orb.yml" -e "src/executors") ]]; then
                 INTEGRATION_TAG=<<parameters.tag>>-minor-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
               elif [[ $(git diff $COMMIT_RANGE --name-status | \
