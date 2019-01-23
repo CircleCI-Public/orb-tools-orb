@@ -27,6 +27,13 @@ parameters:
       Workspace root path that is either an absolute path or a path relative
       to the working directory.
 
+  circle-token:
+    type: env_var_name
+    default: CIRCLE_TOKEN
+    description: >
+      Name of environment variable storing your CircleCI API token,
+      defaults to CIRCLE_TOKEN
+
   ssh-fingerprints:
     type: string
     description: >
@@ -93,7 +100,9 @@ steps:
   - when:
       condition: <<parameters.use-git-diff>>
       steps:
-        - circle-compare-url/reconstruct
+        - circle-compare-url/reconstruct:
+            circle-token: <<parameters.circle-token>>
+
         - run:
             name: construct/push git integration tag
             command: |
