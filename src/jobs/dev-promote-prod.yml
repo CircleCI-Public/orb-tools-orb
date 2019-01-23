@@ -38,4 +38,4 @@ steps:
         circleci orb publish promote \
           <<parameters.orb-name>>@<<parameters.orb-ref>> \
           <<parameters.release>> --token \
-          <<parameters.publish-token-variable>>
+          $<<parameters.publish-token-variable>>
