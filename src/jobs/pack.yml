@@ -42,6 +42,12 @@ parameters:
     type: string
     default: "."
 
+  persist-to-workspace:
+    type: boolean
+    default: true
+    description: >
+      Should this job persist files to a workspace? Defaults to true
+
   workspace-path:
     description: >
       Path of the workspace to persist to relative to workspace-root.
@@ -49,7 +55,13 @@ parameters:
       value of blank is provided then this job will not persist to a
       workspace.
     type: string
-    default: ""
+    default: orb.yml
+
+  store-artifacts:
+    type: boolean
+    default: true
+    description: >
+      Store this job store files as job artifacts? Defaults to true
 
   artifact-path:
     description: >
@@ -57,7 +69,7 @@ parameters:
       default value of blank is provided then this job will not save any
       artifacts.
     type: string
-    default: ""
+    default: orb.yml
 
 executor: cli/default
 
@@ -88,7 +100,7 @@ steps:
 
   # Save
   - when:
-      condition: << parameters.workspace-path >>
+      condition: << parameters.persist-to-workspace >>
       steps:
         - persist_to_workspace:
             root: << parameters.workspace-root >>
@@ -96,7 +108,7 @@ steps:
               - << parameters.workspace-path >>
 
   - when:
-      condition: << parameters.artifact-path >>
+      condition: << parameters.store-artifacts >>
       steps:
         - store_artifacts:
             path: << parameters.artifact-path >>
