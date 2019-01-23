@@ -50,7 +50,7 @@ steps:
   - build-tools/init-file:
       file: << parameters.file >>
 
-  - script-run:
+  - build-tools/script-run:
       label: "Extract the orb `<< parameters.orb >>` and write it to: << parameters.file >> "
       script: |
         #!/usr/local/bin/ruby
