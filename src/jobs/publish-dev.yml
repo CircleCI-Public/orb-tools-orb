@@ -76,7 +76,7 @@ parameters:
     default: dev:${CIRCLE_SHA1:0:7}
     description: >
       Dev:reference to use for second dev version of the orb,
-      defaults to 'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 6
+      defaults to 'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 7
       characters of the job's commit hash)
 
   publish-branch-sha-version:
@@ -92,7 +92,7 @@ parameters:
     description: >
       Dev:reference to use for third dev version of the orb,
       defaults to 'dev:$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}' (evaluates to the
-      git branch plus the first 6 characters of the job's commit hash)
+      git branch plus the first 7 characters of the job's commit hash)
 
   store-artifact:
     type: boolean
