@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  circle-compare-url: iynere/compare-url@0.4.5
+  circle-compare-url: iynere/compare-url@0.4.8
   cli: circleci/circleci-cli@0.1.2
   orb-tools: circleci/orb-tools@5.0.3
   orb-tools-alpha: circleci/orb-tools@dev:alpha
