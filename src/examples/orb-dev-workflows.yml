@@ -5,7 +5,9 @@ description: >
   an integration testing workflow that will run against the new dev
   release of the orb. After running integration tests, use the orb's
   dev-promote-prod job to promote the orb's @dev:alpha release to a
-  production release.
+  production release. See the orb's GitHub README for a version of this
+  example with extensive usage and context comments:
+  https://github.com/circleci-public/orb-tools-orb#examples
 
 usage:
   version: 2.1
