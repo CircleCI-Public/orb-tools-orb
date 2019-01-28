@@ -19,49 +19,50 @@ usage:
 
   workflows:
     lint_pack-validate_publish-dev:
-      # this `lint-pack_validate_publish-dev` workflow will run on any commit
-      - orb-tools/lint
+      jobs:
+        # this `lint-pack_validate_publish-dev` workflow will run on any commit
+        - orb-tools/lint
 
-      # pack your orb YAML files to a single orb.yml
-      # validate the orb.yml file to ensure it is well-formed
-      - orb-tools/pack:
-          requires:
-            - orb-tools/lint
+        # pack your orb YAML files to a single orb.yml
+        # validate the orb.yml file to ensure it is well-formed
+        - orb-tools/pack:
+            requires:
+              - orb-tools/lint
 
-      # release dev version of orb, for testing & possible publishing
-      # requires a CircleCI API token to be stored as CIRCLE_TOKEN (default)
-      # https://circleci.com/docs/2.0/managing-api-tokens
-      # store CIRCLE_TOKEN as a project env var or Contexts resource
-      # if using Contexts, add your context below
-      - orb-tools/publish-dev:
-          orb-name: your-namespace/your-orb-name
-          requires:
-            - orb-tools/pack
+        # release dev version of orb, for testing & possible publishing
+        # requires a CircleCI API token to be stored as CIRCLE_TOKEN (default)
+        # https://circleci.com/docs/2.0/managing-api-tokens
+        # store CIRCLE_TOKEN as a project env var or Contexts resource
+        # if using Contexts, add your context below
+        - orb-tools/publish-dev:
+            orb-name: your-namespace/your-orb-name
+            requires:
+              - orb-tools/pack
 
-      # trigger an integration workflow to test the dev version of your orb
-      # an SSH key must be stored in your orb's repository and in CircleCI
-      # (add the public key as a read/write key on GitHub; add the private
-      # key in CircleCI via SSH Permissions, with github.com as Hostname)
-      - orb-tools/trigger-integration-workflow:
-          name: trigger-integration-dev
-          ssh-fingerprints: your-SSH-fingerprints
-          requires:
-            - orb-tools/publish-dev
-          filters:
-            branches:
-              ignore: master
+        # trigger an integration workflow to test the dev version of your orb
+        # an SSH key must be stored in your orb's repository and in CircleCI
+        # (add the public key as a read/write key on GitHub; add the private
+        # key in CircleCI via SSH Permissions, with github.com as Hostname)
+        - orb-tools/trigger-integration-workflow:
+            name: trigger-integration-dev
+            ssh-fingerprints: your-SSH-fingerprints
+            requires:
+              - orb-tools/publish-dev
+            filters:
+              branches:
+                ignore: master
 
-      # by default, the 1st job (above) will trigger only integration tests;
-      # the 2nd job (below) may also publish a production orb version
-      - orb-tools/trigger-integration-workflow:
-          name: trigger-integration-master
-          ssh-fingerprints: your-SSH-fingerprints
-          tag: master
-          requires:
-            - orb-tools/publish-dev
-          filters:
-            branches:
-              only: master
+        # by default, the 1st job (above) will trigger only integration tests;
+        # the 2nd job (below) may also publish a production orb version
+        - orb-tools/trigger-integration-workflow:
+            name: trigger-integration-master
+            ssh-fingerprints: your-SSH-fingerprints
+            tag: master
+            requires:
+              - orb-tools/publish-dev
+            filters:
+              branches:
+                only: master
 
     # this `integration-tests_prod-release` workflow will ignore commits
     # it is only triggered by git tags, which are created in the job above
