@@ -1,9 +1,8 @@
-# Orb Tools Orb
-
+# Orb Tools Orb ![CircleCI status](https://circleci.com/gh/CircleCI-Public/orb-tools-orb.svg "CircleCI status")
 An orb for orb authors.
 
-### Examples
 
+### Examples
 Following is a well-documented example of a full orb development pipeline, consisting of two workflows and making heavy use of multiple jobs from this orb. For further details/discussion, see [Emerging Testing Best Practices for Orbs](https://discuss.circleci.com/t/emerging-testing-best-practices-for-orbs), on CircleCI's Discuss forum.
 
 ```yaml
