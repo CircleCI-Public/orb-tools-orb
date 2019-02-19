@@ -112,18 +112,22 @@ steps:
 
               echo "Commit range: $COMMIT_RANGE"
 
+              # only publish a major release if there are new jobs or commands
               if [[ $(git diff $COMMIT_RANGE --name-status | \
-                grep -e "src/commands" -e "src/jobs") ]]; then
+                grep -e "A      src/commands" -e "A      src/jobs") ]]; then
                 INTEGRATION_TAG=<<parameters.tag>>-major-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
+              # publish a minor release if there are other changes to jobs or commands
               elif [[ $(git diff $COMMIT_RANGE --name-status | \
-                grep -e "src/examples" -e "src/executors" -e "src/@orb.yml") ]]; then
+                grep -e "src/commands" -e "src/jobs") ]]; then
                 INTEGRATION_TAG=<<parameters.tag>>-minor-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
+              # patch release if any changers to examples, executors, @orb.yml
               elif [[ $(git diff $COMMIT_RANGE --name-status | \
-                grep -e "config.yml") ]]; then
+                grep -e "src/examples" -e "src/executors" -e "src/@orb.yml") ]]; then
                 INTEGRATION_TAG=<<parameters.tag>>-patch-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
+              # otherwise, don't publish a release
               else
                 INTEGRATION_TAG=<<parameters.tag>>-skip-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
               fi
