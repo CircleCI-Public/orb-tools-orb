@@ -67,6 +67,13 @@ parameters:
       you will only be able to statically pick patch, minor, or major
       as a potential release type, by using the subsequent parameter.
 
+  cleanup-tags:
+    type: boolean
+    default: false
+    description: >
+      Before proceeding with pushing a tag to trigger an integration testing
+      workflow, optionally cleanup all previous remote tags.
+
   static-release-type:
     type: enum
     default: patch
@@ -96,6 +103,21 @@ steps:
       command: |
         git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
         git config --global user.name "$CIRCLE_USERNAME"
+
+  - when:
+      condition: <<parameters.cleanup-tags>>
+      steps:
+        - run:
+            name: cleanup old remote tags
+            command: |
+              # delete local tags
+              git tag -d $(git tag -l)
+
+              # fetch remote tags
+              git fetch
+
+              # delete remote tags
+              git push origin --delete $(git tag -l) # pushing once should be faster than multiple times
 
   - when:
       condition: <<parameters.use-git-diff>>
