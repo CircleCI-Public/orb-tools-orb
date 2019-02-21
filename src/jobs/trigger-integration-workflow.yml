@@ -117,7 +117,7 @@ steps:
               git fetch
 
               # delete remote tags
-              git push origin --delete $(git tag -l) # pushing once should be faster than multiple times || true
+              git push origin --delete $(git tag -l) || true # pushing once should be faster than multiple times
 
   - when:
       condition: <<parameters.use-git-diff>>
