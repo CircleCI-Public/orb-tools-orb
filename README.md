@@ -17,7 +17,7 @@ orbs:
 
 workflows:
   lint_pack-validate_publish-dev:
-    jobs
+    jobs:
       # this `lint-pack_validate_publish-dev` workflow will run on any commit
       - orb-tools/lint
 
