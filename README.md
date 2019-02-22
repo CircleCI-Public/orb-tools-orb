@@ -1,4 +1,4 @@
-# Orb Tools Orb ![CircleCI status](https://circleci.com/gh/CircleCI-Public/orb-tools-orb.svg "CircleCI status")
+# Orb Tools Orb [![CircleCI status](https://circleci.com/gh/CircleCI-Public/orb-tools-orb.svg "CircleCI status")](https://circleci.com/gh/CircleCI-Public/orb-tools-orb)
 An orb for orb authors.
 
 
