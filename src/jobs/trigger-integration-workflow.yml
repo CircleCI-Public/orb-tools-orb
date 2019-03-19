@@ -111,13 +111,13 @@ steps:
             name: cleanup old remote tags
             command: |
               # delete local tags
-              git tag -d $(git tag -l)
+              git tag -d $(git tag -l "integration-*")
 
               # fetch remote tags
               git fetch
 
               # delete remote tags
-              git push origin --delete $(git tag -l) || true # pushing once should be faster than multiple times
+              git push origin --delete $(git tag -l "integration-*") || true # pushing once should be faster than multiple times
 
   - when:
       condition: <<parameters.use-git-diff>>
