@@ -39,3 +39,9 @@ steps:
           <<parameters.orb-name>>@<<parameters.orb-ref>> \
           <<parameters.release>> --token \
           $<<parameters.publish-token-variable>>
+
+  - run:
+      name: success! your new orb release was published to the orb registry
+      command: |
+        echo "visit your orb in the orb registry:"
+        echo "https://circleci.com/orbs/registry/orb/<<parameters.orb-name>>"
