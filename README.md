@@ -1,4 +1,4 @@
-# Orb Tools Orb [![CircleCI status](https://circleci.com/gh/CircleCI-Public/orb-tools-orb.svg "CircleCI status")](https://circleci.com/gh/CircleCI-Public/orb-tools-orb) [![CircleCI Orb Version](https://img.shields.io/badge/endpoint.svg?url=https://badges.circleci.io/orb/circleci/orb-tools)](https://circleci.com/orbs/registry/orb/circleci/orb-tools)
+# Orb Tools Orb [![CircleCI status](https://circleci.com/gh/CircleCI-Public/orb-tools-orb.svg "CircleCI status")](https://circleci.com/gh/CircleCI-Public/orb-tools-orb) [![CircleCI Orb Version](https://img.shields.io/badge/endpoint.svg?url=https://badges.circleci.io/orb/circleci/orb-tools)](https://circleci.com/orbs/registry/orb/circleci/orb-tools) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/CircleCI-Public/orb-tools-orb/master/LICENSE) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/orbs)
 An orb for orb authors.
 
 
