@@ -1,0 +1,24 @@
+description: >
+  Check that an env-var parameter is defined, produce an error otherwise.
+parameters:
+  param:
+    description: >
+      Name of the environment variable to check.
+    type: env_var_name
+  error-message:
+    description: >
+      Optional custom message to print if parameter is undefined. A
+      standard message describing the missing environment variable
+      which produced the error is always printed, but this can be used
+      to pass a custom string to provide more specific information.
+    type: string
+    default: ""
+steps:
+  - run: |
+      if [[ -z "${<<parameters.param>>}" ]]; then
+        echo "ERROR: Missing environment variable <<parameters.param>>" >&2
+        if [[ -n "<<parameters.error-message>>" ]]; then
+          echo "<<parameters.error-message>>" >&2
+        fi
+        exit 1
+      fi
