@@ -21,7 +21,7 @@ jobs:
       - orb-tools-alpha/pack
       - orb-tools-alpha/validate
 
-      - orb-tools-alpha/check-env-var-params:
+      - orb-tools-alpha/check-env-var-param:
           param: CIRCLE_BUILD_NUM
 
       - orb-tools-alpha/publish:
