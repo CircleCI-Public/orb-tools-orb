@@ -16,11 +16,13 @@ parameters:
       to pass a custom string to provide more specific information.
 
 steps:
-  - run: |
-      if [[ -z "${<<parameters.param>>}" ]]; then
-        echo "ERROR: Missing environment variable <<parameters.param>>" >&2
-        if [[ -n "<<parameters.error-message>>" ]]; then
-          echo "<<parameters.error-message>>" >&2
+  - run:
+      name: Checking if $<<parameters.param>> is defined...
+      command: |
+        if [[ -z "${<<parameters.param>>}" ]]; then
+          echo "ERROR: Missing environment variable <<parameters.param>>" >&2
+          if [[ -n "<<parameters.error-message>>" ]]; then
+            echo "<<parameters.error-message>>" >&2
+          fi
+          exit 1
         fi
-        exit 1
-      fi
