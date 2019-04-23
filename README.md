@@ -3,7 +3,7 @@ An orb for orb authors.
 
 
 ### Examples
-Following is a well-documented example of a full orb development pipeline, consisting of two workflows and making heavy use of multiple jobs from this orb. For further details/discussion, see [Emerging Testing Best Practices for Orbs](https://discuss.circleci.com/t/emerging-testing-best-practices-for-orbs), on CircleCI's Discuss forum.
+Following is a well-documented example of a full orb development pipeline, consisting of two workflows and making heavy use of multiple jobs from this orb. For further details, see [Creating automated build, test, and deploy workflows for orbs](https://circleci.com/blog/creating-automated-build-test-and-deploy-workflows-for-orbs/), on the CircleCI Blog.
 
 ```yaml
 version: 2.1
