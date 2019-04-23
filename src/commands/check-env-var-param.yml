@@ -1,11 +1,11 @@
 description: >
   Check that an env-var parameter is defined, produce an error otherwise.
-  
+
 parameters:
   param:
     type: env_var_name
     description: Name of the environment variable to check.
-    
+
   error-message:
     type: string
     default: ""
@@ -14,7 +14,7 @@ parameters:
       standard message describing the missing environment variable
       which produced the error is always printed, but this can be used
       to pass a custom string to provide more specific information.
-      
+
 steps:
   - run: |
       if [[ -z "${<<parameters.param>>}" ]]; then
