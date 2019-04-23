@@ -1,10 +1,10 @@
 description: >
-  Check that an env-var parameter is defined, produce an error otherwise.
+  Check that an env-var parameter is defined, produce an error otherwise
 
 parameters:
   param:
     type: env_var_name
-    description: Name of the environment variable to check.
+    description: Name of the environment variable to check
 
   error-message:
     type: string
