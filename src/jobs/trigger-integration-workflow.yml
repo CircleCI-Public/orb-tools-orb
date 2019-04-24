@@ -36,6 +36,7 @@ parameters:
 
   ssh-fingerprints:
     type: string
+    default: ""
     description: >
       Fingerprints for SSH deploy key (add the public key as a read/write
       key on GitHub; add the private key in CircleCI via SSH Permissions,
@@ -94,9 +95,12 @@ steps:
         - attach_workspace:
             at: <<parameters.workspace-root>>
 
-  - add_ssh_keys:
-      fingerprints:
-        - <<parameters.ssh-fingerprints>>
+  - when:
+      condition: <<parameters.ssh-fingerprints>>
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - <<parameters.ssh-fingerprints>>
 
   - run:
       name: git config
