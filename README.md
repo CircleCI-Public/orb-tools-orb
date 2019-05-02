@@ -1,9 +1,14 @@
 # Orb Tools Orb [![CircleCI status](https://circleci.com/gh/CircleCI-Public/orb-tools-orb.svg "CircleCI status")](https://circleci.com/gh/CircleCI-Public/orb-tools-orb) [![CircleCI Orb Version](https://img.shields.io/badge/endpoint.svg?url=https://badges.circleci.io/orb/circleci/orb-tools)](https://circleci.com/orbs/registry/orb/circleci/orb-tools) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/CircleCI-Public/orb-tools-orb/master/LICENSE) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com/c/orbs)
+
 An orb for orb authors.
 
+## Usage
 
-### Examples
-Following is a well-documented example of a full orb development pipeline, consisting of two workflows and making heavy use of multiple jobs from this orb. For further details/discussion, see [Emerging Testing Best Practices for Orbs](https://discuss.circleci.com/t/emerging-testing-best-practices-for-orbs), on CircleCI's Discuss forum.
+_For full usage guidelines, see the [orb registry listing](http://circleci.com/orbs/registry/orb/circleci/orb-tools)._
+
+### Example
+
+Following is a well-documented example of a full orb development pipeline, consisting of two workflows and making use of multiple jobs from this orb. For further details/discussion, see [Creating Automated Build/Test/Deploy Workflows for Orbs](https://circleci.com/blog/creating-automated-build-test-and-deploy-workflows-for-orbs), on the CircleCI Blog.
 
 ```yaml
 version: 2.1
@@ -127,3 +132,9 @@ workflows:
             tags:
               only: /master-major.*/
 ```
+
+## Contributing
+
+We welcome [issues](https://github.com/CircleCI-Public/orb-tools-orb/issues) to and [pull requests](https://github.com/CircleCI-Public/orb-tools-orb/pulls) against this repository!
+
+For further questions/comments about this or other orbs, visit [CircleCI's orbs discussion forum](https://discuss.circleci.com/c/orbs).
