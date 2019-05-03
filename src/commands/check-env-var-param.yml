@@ -25,4 +25,6 @@ steps:
             echo "<<parameters.error-message>>" >&2
           fi
           exit 1
+        else
+          echo "Yes, <<parameters.param>> is defined!"
         fi
