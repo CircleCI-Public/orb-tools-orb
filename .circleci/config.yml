@@ -17,6 +17,13 @@ jobs:
       executor:
         type: executor
 
+      segment:
+        description: >
+          The semver segment to increment 'major' or 'minor' or 'patch'
+        type: enum
+        enum: ["major", "minor", "patch"]
+        default: patch
+
     executor: <<parameters.executor>>
 
     steps:
@@ -36,6 +43,7 @@ jobs:
 
       - orb-tools-alpha/increment:
           orb-ref: sandbox/orb-tools
+          segment: <<parameters.segment>>
 
   # dev-promote-prod goes here: see workflow
 
@@ -137,6 +145,7 @@ workflows:
           context: orb-publishing
           filters: *integration-dev_filters
           pre-steps: [run: sleep 2]
+          segment: minor
 
       - test-commands:
           name: test-commands-dev-macos
@@ -144,6 +153,7 @@ workflows:
           context: orb-publishing
           filters: *integration-dev_filters
           pre-steps: [run: sleep 4]
+          segment: major
 
       - test-commands:
           name: test-commands-dev-node-cci
@@ -158,6 +168,7 @@ workflows:
           context: orb-publishing
           filters: *integration-dev_filters
           pre-steps: [run: sleep 8]
+          segment: minor
 
       - test-commands:
           name: test-commands-dev-ubuntu
@@ -165,6 +176,7 @@ workflows:
           context: orb-publishing
           filters: *integration-dev_filters
           pre-steps: [run: sleep 10]
+          segment: major
 
       # test jobs
       - orb-tools-alpha/pack:
@@ -226,6 +238,7 @@ workflows:
           context: orb-publishing
           filters: *integration-master_filters
           pre-steps: [run: sleep 2]
+          segment: minor
 
       - test-commands:
           name: test-commands-master-macos
@@ -233,6 +246,7 @@ workflows:
           context: orb-publishing
           filters: *integration-master_filters
           pre-steps: [run: sleep 4]
+          segment: major
 
       - test-commands:
           name: test-commands-master-node-cci
@@ -247,6 +261,7 @@ workflows:
           context: orb-publishing
           filters: *integration-master_filters
           pre-steps: [run: sleep 8]
+          segment: minor
 
       - test-commands:
           name: test-commands-master-ubuntu
@@ -254,6 +269,7 @@ workflows:
           context: orb-publishing
           filters: *integration-master_filters
           pre-steps: [run: sleep 10]
+          segment: major
 
       # test jobs
       - orb-tools-alpha/pack:
