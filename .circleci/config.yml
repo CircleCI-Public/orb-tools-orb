@@ -144,7 +144,7 @@ workflows:
           executor: orb-tools-alpha/machine
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 2]
+          # pre-steps: [run: sleep 2]
           segment: minor
 
       - test-commands:
@@ -152,7 +152,7 @@ workflows:
           executor: orb-tools-alpha/macos
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 4]
+          # pre-steps: [run: sleep 4]
           segment: major
 
       - test-commands:
@@ -160,14 +160,14 @@ workflows:
           executor: orb-tools-alpha/node-cci
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 6]
+          pre-steps: [run: sleep 2]
 
       - test-commands:
           name: test-commands-dev-node
           executor: orb-tools-alpha/node
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 8]
+          pre-steps: [run: sleep 2]
           segment: minor
 
       - test-commands:
@@ -175,7 +175,7 @@ workflows:
           executor: orb-tools-alpha/ubuntu
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 10]
+          pre-steps: [run: sleep 2]
           segment: major
 
       # test jobs
