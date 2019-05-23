@@ -1,3 +1,7 @@
+description: >
+  Docker's official Node image:
+  http://hub.docker.com/_/node
+
 parameters:
   resource-class:
     type: enum

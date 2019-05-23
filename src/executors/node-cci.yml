@@ -1,3 +1,7 @@
+description: >
+  CircleCI's Node.js convenience Docker image:
+  https://hub.docker.com/r/circleci/node
+
 parameters:
   resource-class:
     type: enum

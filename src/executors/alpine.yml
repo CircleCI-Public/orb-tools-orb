@@ -1,3 +1,8 @@
+description: >
+  An Alpine Linux-based Docker image:
+  https://hub.docker.com/r/cibuilds/base
+  https://github.com/cibuilds/base
+
 parameters:
   resource-class:
     type: enum

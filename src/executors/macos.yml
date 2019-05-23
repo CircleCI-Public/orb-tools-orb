@@ -1,3 +1,7 @@
+description: >
+  CircleCI's macOS executor VM:
+  https://circleci.com/docs/2.0/executor-types/#using-macos
+
 parameters:
   xcode-version:
     type: string

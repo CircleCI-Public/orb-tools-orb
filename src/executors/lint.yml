@@ -1,3 +1,7 @@
+description: >
+  A Docker image with linting tools:
+  https://hub.docker.com/r/singapore/lint-condo
+
 resource_class: small
 
 docker:

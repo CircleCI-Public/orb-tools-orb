@@ -1,3 +1,9 @@
+description: >
+  The Ubuntu Linux base image for CircleCI's revamped convenience
+  images pilot project:
+  http://github.com/circleci-public/cimg-base
+  https://github.com/circleci-public/cimg-overview
+
 parameters:
   resource-class:
     type: enum
