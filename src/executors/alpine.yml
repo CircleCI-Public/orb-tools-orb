@@ -1,0 +1,15 @@
+description: >
+  An Alpine Linux-based Docker image:
+  https://hub.docker.com/r/cibuilds/base
+  https://github.com/cibuilds/base
+
+parameters:
+  resource-class:
+    type: enum
+    default: small
+    enum: [small, medium, medium+, large, xlarge]
+
+resource_class: <<parameters.resource-class>>
+
+docker:
+  - image: cibuilds/base
