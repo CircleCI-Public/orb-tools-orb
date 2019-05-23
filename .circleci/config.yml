@@ -1,9 +1,9 @@
 version: 2.1
 
 orbs:
-  circle-compare-url: iynere/compare-url@0.4.9
+  circle-compare-url: iynere/compare-url@1.0.0
   cli: circleci/circleci-cli@0.1.2
-  orb-tools: circleci/orb-tools@8.5.0
+  orb-tools: circleci/orb-tools@8.9.2
   orb-tools-alpha: circleci/orb-tools@dev:alpha
 
 jobs:
@@ -13,7 +13,13 @@ jobs:
   # trigger-integration goes here: see workflow
 
   test-commands:
-    executor: cli/default
+    parameters:
+      executor:
+        type: executor
+        default: cli/default
+
+    executor: <<parameters.executor>>
+
     steps:
       - checkout
 
@@ -46,7 +52,18 @@ integration-master_filters: &integration-master_filters
     only: /master-.*/
 
 prod-deploy_requires: &prod-deploy_requires
-  [test-commands-master, test-in-builds-job-master, test-publish-job-master, test-increment-job-master]
+  [
+    test-commands-master-cli,
+    test-commands-master-alpine,
+    test-commands-master-machine,
+    test-commands-master-macos,
+    test-commands-master-node-cci,
+    test-commands-master-node,
+    test-commands-master-ubuntu,
+    test-in-builds-job-master,
+    test-publish-job-master,
+    test-increment-job-master
+  ]
 
 workflows:
   lint_pack-validate_publish-dev:
@@ -95,11 +112,49 @@ workflows:
   integration_tests-prod_deploy:
     jobs:
       # triggered by non-master branch commits
+      # test commands with executors
       - test-commands:
-          name: test-commands-dev
+          name: test-commands-dev-cli
           context: orb-publishing
           filters: *integration-dev_filters
 
+      - test-commands:
+          name: test-commands-dev-alpine
+          executor: orb-tools-alpha/alpine
+          context: orb-publishing
+          filters: *integration-dev_filters
+
+      - test-commands:
+          name: test-commands-dev-machine
+          executor: orb-tools-alpha/machine
+          context: orb-publishing
+          filters: *integration-dev_filters
+
+      - test-commands:
+          name: test-commands-dev-macos
+          executor: orb-tools-alpha/macos
+          context: orb-publishing
+          filters: *integration-dev_filters
+
+      - test-commands:
+          name: test-commands-dev-node-cci
+          executor: orb-tools-alpha/node-cci
+          context: orb-publishing
+          filters: *integration-dev_filters
+
+      - test-commands:
+          name: test-commands-dev-node
+          executor: orb-tools-alpha/node
+          context: orb-publishing
+          filters: *integration-dev_filters
+
+      - test-commands:
+          name: test-commands-dev-ubuntu
+          executor: orb-tools-alpha/ubuntu
+          context: orb-publishing
+          filters: *integration-dev_filters
+
+      # test jobs
       - orb-tools-alpha/pack:
           name: test-pack-job-dev
           workspace-path: orb.yml
@@ -146,11 +201,49 @@ workflows:
             - test-publish-job-dev
 
       # triggered by master branch commits
+      # test commands with executors
       - test-commands:
-          name: test-commands-master
+          name: test-commands-master-cli
           context: orb-publishing
           filters: *integration-master_filters
 
+      - test-commands:
+          name: test-commands-master-alpine
+          executor: orb-tools-alpha/alpine
+          context: orb-publishing
+          filters: *integration-master_filters
+
+      - test-commands:
+          name: test-commands-master-machine
+          executor: orb-tools-alpha/machine
+          context: orb-publishing
+          filters: *integration-master_filters
+
+      - test-commands:
+          name: test-commands-master-macos
+          executor: orb-tools-alpha/macos
+          context: orb-publishing
+          filters: *integration-master_filters
+
+      - test-commands:
+          name: test-commands-master-node-cci
+          executor: orb-tools-alpha/node-cci
+          context: orb-publishing
+          filters: *integration-master_filters
+
+      - test-commands:
+          name: test-commands-master-node
+          executor: orb-tools-alpha/node
+          context: orb-publishing
+          filters: *integration-master_filters
+
+      - test-commands:
+          name: test-commands-master-ubuntu
+          executor: orb-tools-alpha/ubuntu
+          context: orb-publishing
+          filters: *integration-master_filters
+
+      # test jobs
       - orb-tools-alpha/pack:
           name: test-pack-job-master
           workspace-path: orb.yml

@@ -4,7 +4,7 @@ description: >
   corresponding GitHub repo for the project. See examples for further
   usage details.
 
-executor: ci-base
+executor: alpine
 
 parameters:
   checkout:
