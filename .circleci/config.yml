@@ -167,6 +167,7 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
           filters: *integration-dev_filters
+          requires: *requires_commands_dev
 
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-dev
@@ -174,7 +175,7 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-dev_filters
-          requires: *requires_commands_dev
+          requires: [test-pack-job-dev]
           test-steps:
             - checkout
 
@@ -194,7 +195,7 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
           filters: *integration-dev_filters
-          requires: *requires_commands_dev
+          requires: [test-pack-job-dev]
 
       - orb-tools-alpha/increment:
           name: test-increment-job-dev
@@ -250,6 +251,7 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
           filters: *integration-master_filters
+          requires: *requires_commands_master
 
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job-master
@@ -257,7 +259,7 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-master_filters
-          requires: *requires_commands_master
+          requires: [test-pack-job-master]
           test-steps:
             - checkout
 
@@ -277,7 +279,7 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
           filters: *integration-master_filters
-          requires: *requires_commands_master
+          requires: [test-pack-job-master]
 
       - orb-tools-alpha/increment:
           name: test-increment-job-master
