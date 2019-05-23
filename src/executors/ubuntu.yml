@@ -1,0 +1,14 @@
+parameters:
+  resource-class:
+    type: enum
+    default: small
+    enum: [small, medium, medium+, large, xlarge]
+
+  tag:
+    type: string
+    default: latest
+
+resource_class: <<parameters.resource-class>>
+
+docker:
+  - image: circleciimages/base:<<parameters.tag>>

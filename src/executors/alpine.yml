@@ -1,0 +1,10 @@
+parameters:
+  resource-class:
+    type: enum
+    default: small
+    enum: [small, medium, medium+, large, xlarge]
+
+resource_class: <<parameters.resource-class>>
+
+docker:
+  - image: cibuilds/base

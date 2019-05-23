@@ -1,0 +1,7 @@
+parameters:
+  xcode-version:
+    type: string
+    default: "10.2.1"
+
+macos:
+  xcode: <<parameters.xcode-version>>
