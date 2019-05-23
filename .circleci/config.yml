@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   circle-compare-url: iynere/compare-url@1.0.0
-  cli: circleci/circleci-cli@0.1.2
+  cli: circleci/circleci-cli@0.1.4
   orb-tools: circleci/orb-tools@8.9.2
   orb-tools-alpha: circleci/orb-tools@dev:alpha
 
@@ -16,12 +16,13 @@ jobs:
     parameters:
       executor:
         type: executor
-        default: cli/default
 
     executor: <<parameters.executor>>
 
     steps:
       - checkout
+
+      - cli/install
 
       - orb-tools-alpha/install-bats
       - orb-tools-alpha/pack
@@ -53,16 +54,27 @@ integration-master_filters: &integration-master_filters
 
 prod-deploy_requires: &prod-deploy_requires
   [
-    test-commands-master-cli,
+    test-increment-job-master
+  ]
+
+requires_commands_dev: &requires_commands_dev
+  [
+    test-commands-dev-alpine,
+    test-commands-dev-machine,
+    test-commands-dev-macos,
+    test-commands-dev-node-cci,
+    test-commands-dev-node,
+    test-commands-dev-ubuntu
+  ]
+
+requires_commands_master: &requires_commands_master
+  [
     test-commands-master-alpine,
     test-commands-master-machine,
     test-commands-master-macos,
     test-commands-master-node-cci,
     test-commands-master-node,
-    test-commands-master-ubuntu,
-    test-in-builds-job-master,
-    test-publish-job-master,
-    test-increment-job-master
+    test-commands-master-ubuntu
   ]
 
 workflows:
@@ -114,11 +126,6 @@ workflows:
       # triggered by non-master branch commits
       # test commands with executors
       - test-commands:
-          name: test-commands-dev-cli
-          context: orb-publishing
-          filters: *integration-dev_filters
-
-      - test-commands:
           name: test-commands-dev-alpine
           executor: orb-tools-alpha/alpine
           context: orb-publishing
@@ -167,7 +174,7 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-dev_filters
-          requires: [test-pack-job-dev]
+          requires: *requires_commands_dev
           test-steps:
             - checkout
 
@@ -187,8 +194,7 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
           filters: *integration-dev_filters
-          requires:
-            - test-pack-job-dev
+          requires: *requires_commands_dev
 
       - orb-tools-alpha/increment:
           name: test-increment-job-dev
@@ -202,11 +208,6 @@ workflows:
 
       # triggered by master branch commits
       # test commands with executors
-      - test-commands:
-          name: test-commands-master-cli
-          context: orb-publishing
-          filters: *integration-master_filters
-
       - test-commands:
           name: test-commands-master-alpine
           executor: orb-tools-alpha/alpine
@@ -256,7 +257,7 @@ workflows:
           attach-workspace: true
           orb-name: orb-tools-alpha
           filters: *integration-master_filters
-          requires: [test-pack-job-master]
+          requires: *requires_commands_master
           test-steps:
             - checkout
 
@@ -276,8 +277,7 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
           filters: *integration-master_filters
-          requires:
-            - test-pack-job-master
+          requires: *requires_commands_master
 
       - orb-tools-alpha/increment:
           name: test-increment-job-master
