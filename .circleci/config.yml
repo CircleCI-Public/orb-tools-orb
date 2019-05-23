@@ -136,35 +136,35 @@ workflows:
           executor: orb-tools-alpha/machine
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 1]
+          pre-steps: [run: sleep 2]
 
       - test-commands:
           name: test-commands-dev-macos
           executor: orb-tools-alpha/macos
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 2]
+          pre-steps: [run: sleep 4]
 
       - test-commands:
           name: test-commands-dev-node-cci
           executor: orb-tools-alpha/node-cci
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 3]
+          pre-steps: [run: sleep 6]
 
       - test-commands:
           name: test-commands-dev-node
           executor: orb-tools-alpha/node
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 4]
+          pre-steps: [run: sleep 8]
 
       - test-commands:
           name: test-commands-dev-ubuntu
           executor: orb-tools-alpha/ubuntu
           context: orb-publishing
           filters: *integration-dev_filters
-          pre-steps: [run: sleep 5]
+          pre-steps: [run: sleep 10]
 
       # test jobs
       - orb-tools-alpha/pack:
@@ -225,35 +225,35 @@ workflows:
           executor: orb-tools-alpha/machine
           context: orb-publishing
           filters: *integration-master_filters
-          pre-steps: [run: sleep 1]
+          pre-steps: [run: sleep 2]
 
       - test-commands:
           name: test-commands-master-macos
           executor: orb-tools-alpha/macos
           context: orb-publishing
           filters: *integration-master_filters
-          pre-steps: [run: sleep 2]
+          pre-steps: [run: sleep 4]
 
       - test-commands:
           name: test-commands-master-node-cci
           executor: orb-tools-alpha/node-cci
           context: orb-publishing
           filters: *integration-master_filters
-          pre-steps: [run: sleep 3]
+          pre-steps: [run: sleep 6]
 
       - test-commands:
           name: test-commands-master-node
           executor: orb-tools-alpha/node
           context: orb-publishing
           filters: *integration-master_filters
-          pre-steps: [run: sleep 4]
+          pre-steps: [run: sleep 8]
 
       - test-commands:
           name: test-commands-master-ubuntu
           executor: orb-tools-alpha/ubuntu
           context: orb-publishing
           filters: *integration-master_filters
-          pre-steps: [run: sleep 5]
+          pre-steps: [run: sleep 10]
 
       # test jobs
       - orb-tools-alpha/pack:
