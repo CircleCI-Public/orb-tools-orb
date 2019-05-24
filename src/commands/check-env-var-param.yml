@@ -15,6 +15,12 @@ parameters:
       which produced the error is always printed, but this can be used
       to pass a custom string to provide more specific information.
 
+  exit-if-undefined:
+    type: boolean
+    default: true
+    description: >
+      Should a job automatically fail if the given parameter is not defined?
+
 steps:
   - run:
       name: Checking if $<<parameters.param>> is defined...
@@ -24,7 +30,7 @@ steps:
           if [[ -n "<<parameters.error-message>>" ]]; then
             echo "<<parameters.error-message>>" >&2
           fi
-          exit 1
+          <<#parameters.exit-if-undefined>>exit 1<</parameters.exit-if-undefined>>
         else
           echo "Yes, <<parameters.param>> is defined!"
         fi
