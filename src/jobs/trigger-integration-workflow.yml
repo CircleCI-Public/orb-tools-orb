@@ -11,7 +11,7 @@ parameters:
     type: boolean
     default: true
     description: >
-      Checkout as a first step? Default is true.
+      Checkout as a first step? Default is true
 
   attach-workspace:
     type: boolean
@@ -25,7 +25,7 @@ parameters:
     default: workspace
     description: >
       Workspace root path that is either an absolute path or a path relative
-      to the working directory.
+      to the working directory
 
   circle-token:
     type: env_var_name
@@ -73,7 +73,7 @@ parameters:
     default: false
     description: >
       Before proceeding with pushing a tag to trigger an integration testing
-      workflow, optionally cleanup all previous remote tags.
+      workflow, optionally cleanup all previous remote tags
 
   static-release-type:
     type: enum
@@ -81,7 +81,14 @@ parameters:
     enum: [patch, minor, major]
     description: >
       If not dynamically interpolating potential orb release type (see
-      previous parameter), select a release type using this parameter.
+      previous parameter), select a release type using this parameter
+
+  debug:
+    type: boolean
+    default: false
+    description: >
+      Pass a debug flag to the circle-compare-url orb's `reconstruct`
+      command
 
 steps:
   - when:
@@ -128,6 +135,7 @@ steps:
       steps:
         - circle-compare-url/reconstruct:
             circle-token: <<parameters.circle-token>>
+            debug: <<parameters.debug>>
 
         - run:
             name: construct/push git integration tag
