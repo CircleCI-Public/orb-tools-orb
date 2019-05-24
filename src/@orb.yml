@@ -6,5 +6,5 @@ description: |
 
 orbs:
   build-tools: circleci/build-tools@2.0.0
-  circle-compare-url: iynere/compare-url@1.0.1
+  circle-compare-url: iynere/compare-url@1.0.2
   cli: circleci/circleci-cli@0.1.2

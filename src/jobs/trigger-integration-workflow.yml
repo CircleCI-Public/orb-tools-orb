@@ -90,6 +90,13 @@ parameters:
       Pass a debug flag to the circle-compare-url orb's `reconstruct`
       command
 
+  project-path:
+    type: string
+    default: ~/project
+    description: >
+      Absolute path to your project's base directory, necessary for
+      running git commands (when `use-git-diff` is set to `true`)
+
 steps:
   - when:
       condition: <<parameters.checkout>>
@@ -135,6 +142,7 @@ steps:
       steps:
         - circle-compare-url/reconstruct:
             circle-token: <<parameters.circle-token>>
+            project-path: <<parameters.project-path>>
             debug: <<parameters.debug>>
 
         - run:
