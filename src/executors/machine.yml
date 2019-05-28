@@ -7,5 +7,11 @@ parameters:
     type: string
     default: ubuntu-1604:201903-01
 
+  dlc:
+    type: boolean
+    default: false
+    description: Enable Docker Layer Caching?
+
 machine:
   image: <<parameters.image>>
+  docker_layer_caching: <<parameters.dlc>>
