@@ -1,17 +1,11 @@
 version: 2.1
 
 orbs:
-  circle-compare-url: iynere/compare-url@1.0.0
   cli: circleci/circleci-cli@0.1.4
-  orb-tools: circleci/orb-tools@8.9.2
+  orb-tools: circleci/orb-tools@8.13.1
   orb-tools-alpha: circleci/orb-tools@dev:alpha
 
 jobs:
-  # lint goes here: see workflow
-  # validate goes here: see workflow
-  # publish-dev goes here: see workflow
-  # trigger-integration goes here: see workflow
-
   test-commands:
     parameters:
       executor:
@@ -44,8 +38,6 @@ jobs:
       - orb-tools-alpha/increment:
           orb-ref: sandbox/orb-tools
           segment: <<parameters.segment>>
-
-  # dev-promote-prod goes here: see workflow
 
 # yaml anchor filters
 integration-dev_filters: &integration-dev_filters

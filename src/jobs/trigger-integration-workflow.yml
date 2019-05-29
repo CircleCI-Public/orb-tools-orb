@@ -145,15 +145,9 @@ steps:
             project-path: <<parameters.project-path>>
             debug: <<parameters.debug>>
 
-        - run:
-            name: construct/push git integration tag
-            command: |
-              CIRCLE_COMPARE_URL=$(cat CIRCLE_COMPARE_URL.txt)
-
-              COMMIT_RANGE=$(echo $CIRCLE_COMPARE_URL | sed 's:^.*/compare/::g')
-
-              echo "Commit range: $COMMIT_RANGE"
-
+        - circle-compare-url/use:
+            step-name: construct/push git integration tag
+            custom-logic: |
               # only publish a major release if there are new jobs or commands
               if [[ $(git diff $COMMIT_RANGE --name-status | \
                 grep -e "A      src/commands" -e "A      src/jobs") ]]; then
@@ -164,7 +158,7 @@ steps:
                 grep -e "src/commands" -e "src/jobs") ]]; then
                 INTEGRATION_TAG=<<parameters.tag>>-minor-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
 
-              # patch release if any changers to examples, executors, @orb.yml
+              # patch release if any changes to examples, executors, @orb.yml
               elif [[ $(git diff $COMMIT_RANGE --name-status | \
                 grep -e "src/examples" -e "src/executors" -e "src/@orb.yml") ]]; then
                 INTEGRATION_TAG=<<parameters.tag>>-patch-$CIRCLE_BRANCH-${CIRCLE_SHA1:0:7}
