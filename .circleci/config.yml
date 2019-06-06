@@ -4,6 +4,7 @@ orbs:
   cli: circleci/circleci-cli@0.1.4
   orb-tools: circleci/orb-tools@8.14.0
   orb-tools-alpha: circleci/orb-tools@dev:alpha
+  queue: eddiewebb/queue@1.1.2
 
 jobs:
   test-commands:
@@ -81,31 +82,28 @@ workflows:
   lint_pack-validate_publish-dev:
     jobs:
       - orb-tools/lint:
-          name: lint
           use-default-rules: false
 
       - orb-tools/pack:
-          name: pack-validate
           source-dir: src
           destination-orb-path: orb.yml
           workspace-path: orb.yml
           artifact-path: orb.yml
-          requires:
-            - lint
+          requires: [orb-tools/lint]
 
       - orb-tools/publish-dev:
-          name: publish-dev
           context: orb-publishing
           orb-name: circleci/orb-tools
-          requires:
-            - pack-validate
+          requires: [orb-tools/pack]
+
+      - queue/block_workflow:
+          requires: [orb-tools/publish-dev]
 
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-dev
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           cleanup-tags: true
-          requires:
-            - publish-dev
+          requires: [queue/block_workflow]
           filters:
             branches:
               ignore: master
@@ -115,8 +113,7 @@ workflows:
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           cleanup-tags: true
           tag: master
-          requires:
-            - publish-dev
+          requires: [queue/block_workflow]
           filters:
             branches:
               only: master

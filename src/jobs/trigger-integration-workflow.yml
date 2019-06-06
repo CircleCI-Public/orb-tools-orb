@@ -31,8 +31,8 @@ parameters:
     type: env_var_name
     default: CIRCLE_TOKEN
     description: >
-      Name of environment variable storing your CircleCI API token,
-      defaults to CIRCLE_TOKEN
+      Name of environment variable storing a CircleCI API token, defaults
+      to CIRCLE_TOKEN
 
   ssh-fingerprints:
     type: string
