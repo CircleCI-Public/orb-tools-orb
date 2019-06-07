@@ -4,11 +4,15 @@ description: >
 executor: lint
 
 parameters:
+  executor:
+    type: executor
+    default: lint
+    description: Executor to use for this job
+
   checkout:
     type: boolean
     default: true
-    description: >
-      Checkout as a first step? Default is true
+    description: Checkout as a first step? Default is true
 
   attach-workspace:
     type: boolean
