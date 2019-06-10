@@ -311,6 +311,7 @@ workflows:
           name: dev-promote-patch
           context: orb-publishing
           orb-name: circleci/orb-tools
+          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           requires: *prod-deploy_requires
           filters:
             branches:
@@ -323,6 +324,7 @@ workflows:
           release: minor
           context: orb-publishing
           orb-name: circleci/orb-tools
+          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           requires: *prod-deploy_requires
           filters:
             branches:
@@ -335,6 +337,7 @@ workflows:
           release: major
           context: orb-publishing
           orb-name: circleci/orb-tools
+          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           requires: *prod-deploy_requires
           filters:
             branches:
