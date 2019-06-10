@@ -31,6 +31,23 @@ parameters:
       'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 7
       characters of the job's commit hash)
 
+  publish-version-tag:
+    type: boolean
+    default: true
+    description: >
+      Delete the tag used to trigger this workflow and replace it with
+      a tag describing the release that was just published. If `true`,
+      make sure to pass SSH fingerprints, as well.
+
+  ssh-fingerprints:
+    type: string
+    default: ""
+    description: >
+      Fingerprints for SSH deploy key (add the public key as a read/write
+      key on GitHub; add the private key in CircleCI via SSH Permissions,
+      with github.com as Hostname). Used to push a git tag back to the
+      project's repository.
+
 steps:
   - run:
       name: promote dev orb to production/semantic release
@@ -45,3 +62,32 @@ steps:
       command: |
         echo "visit your orb in the orb registry:"
         echo "https://circleci.com/orbs/registry/orb/<<parameters.orb-name>>"
+
+  - when:
+      condition: <<parameters.publish-version-tag>>
+      steps:
+        - add_ssh_keys:
+            fingerprints:
+              - <<parameters.ssh-fingerprints>>
+
+        - run:
+            name: git config
+            command: |
+              git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
+              git config --global user.name "$CIRCLE_USERNAME"
+
+              # delete local tag
+              git tag -d $(git tag -l "$CIRCLE_TAG")
+
+              # fetch remote tags
+              git fetch
+
+              # delete remote tag
+              git push origin --delete $(git tag -l "$CIRCLE_TAG")
+
+              # construct/push new tag
+              NEW_VERSION=$(circleci orb info <<parameters.orb-name>> | grep Latest | sed -E 's|Latest: <<parameters.orb-name>>@||')
+
+              TAG="v$NEW_VERSION-<<parameters.release>>"
+              git tag "$TAG"
+              git push origin "$TAG"
