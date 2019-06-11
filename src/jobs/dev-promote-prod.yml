@@ -49,6 +49,11 @@ parameters:
       project's repository.
 
 steps:
+  - when:
+      condition: <<parameters.publish-version-tag>>
+      steps:
+        - checkout
+
   - run:
       name: promote dev orb to production/semantic release
       command: |
