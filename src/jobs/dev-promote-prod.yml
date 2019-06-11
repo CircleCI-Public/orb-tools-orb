@@ -33,7 +33,7 @@ parameters:
 
   publish-version-tag:
     type: boolean
-    default: false
+    default: true
     description: >
       Delete the tag used to trigger this workflow and replace it with
       a tag describing the release that was just published. If `true`,
