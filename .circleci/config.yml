@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   cli: circleci/circleci-cli@0.1.4
-  orb-tools: circleci/orb-tools@8.17.0
+  orb-tools: circleci/orb-tools@8.16.0
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
 
@@ -311,7 +311,7 @@ workflows:
           name: dev-promote-patch
           context: orb-publishing
           orb-name: circleci/orb-tools
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
+          # ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           requires: *prod-deploy_requires
           filters:
             branches:
@@ -324,7 +324,7 @@ workflows:
           release: minor
           context: orb-publishing
           orb-name: circleci/orb-tools
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
+          # ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           requires: *prod-deploy_requires
           filters:
             branches:
@@ -337,7 +337,7 @@ workflows:
           release: major
           context: orb-publishing
           orb-name: circleci/orb-tools
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
+          # ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           requires: *prod-deploy_requires
           filters:
             branches:
