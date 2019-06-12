@@ -1,0 +1,13 @@
+description: >
+  Docker Library's OpenJDK 12 image, which is based on Oracle Linux
+
+parameters:
+  resource-class:
+    type: enum
+    default: small
+    enum: [small, medium, medium+, large, xlarge]
+
+resource_class: <<parameters.resource-class>>
+
+docker:
+  - image: openjdk:12-oracle
