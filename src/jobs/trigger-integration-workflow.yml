@@ -44,13 +44,10 @@ parameters:
       project's repository.
 
   tag:
-    type: enum
+    type: string
     default: integration
-    enum: [integration, master]
     description: >
-      Will this integration trigger integration (integration tests
-      only) or master (integration tests, plus potential deployment of
-      production/semantic orb release) workflow jobs?
+      Prefix used for the tag created on GitHub, default is "integration"
 
   use-git-diff:
     type: boolean
