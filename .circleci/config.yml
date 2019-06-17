@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   cli: circleci/circleci-cli@0.1.4
-  orb-tools: circleci/orb-tools@8.20.0
+  orb-tools: circleci/orb-tools@8.20.1
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
 
@@ -16,7 +16,7 @@ jobs:
         description: >
           The semver segment to increment 'major' or 'minor' or 'patch'
         type: enum
-        enum: ["major", "minor", "patch"]
+        enum: [major, minor, patch]
         default: patch
 
     executor: <<parameters.executor>>
@@ -102,7 +102,6 @@ workflows:
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-dev
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          cleanup-tags: true
           requires: [queue/block_workflow]
           filters:
             branches:
