@@ -16,7 +16,7 @@ jobs:
         description: >
           The semver segment to increment 'major' or 'minor' or 'patch'
         type: enum
-        enum: ["major", "minor", "patch"]
+        enum: [major, minor, patch]
         default: patch
 
     executor: <<parameters.executor>>
