@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   cli: circleci/circleci-cli@0.1.4
-  orb-tools: circleci/orb-tools@8.20.0
+  orb-tools: circleci/orb-tools@8.20.1
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
 
