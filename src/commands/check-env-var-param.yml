@@ -32,7 +32,7 @@ parameters:
 
 steps:
   - run:
-      name: Checking if parameters are defined...
+      name: <<parameters.command-name>>
       command: |
         IFS="," read -ra PARAMS \<<< "<<parameters.param>>"
 
