@@ -33,14 +33,14 @@ steps:
 
         for i in "${PARAMS[@]}"; do
           if [[ -z "${i}" ]]; then
-          echo "ERROR: Missing environment variable {i}" >&2
+            echo "ERROR: Missing environment variable {i}" >&2
 
-          if [[ -n "<<parameters.error-message>>" ]]; then
-            echo "<<parameters.error-message>>" >&2
+            if [[ -n "<<parameters.error-message>>" ]]; then
+              echo "<<parameters.error-message>>" >&2
+            fi
+
+            <<#parameters.exit-if-undefined>>exit 1<</parameters.exit-if-undefined>>
+          else
+            echo "Yes, ${i} is defined!"
           fi
-
-          <<#parameters.exit-if-undefined>>exit 1<</parameters.exit-if-undefined>>
-        else
-          echo "Yes, all parameters are defined!"
-        fi
         done
