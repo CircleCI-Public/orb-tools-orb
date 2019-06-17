@@ -1,10 +1,19 @@
 description: >
-  Check that an env-var parameter is defined, produce an error otherwise
+  Check that env-var parameters are defined, produce an error otherwise
 
 parameters:
+  command-name:
+    type: string
+    default: Checking if parameters are defined...
+    description: Name for CircleCI step output
+
   param:
-    type: env_var_name
-    description: Name of the environment variable to check
+    type: string
+    description: >
+      Comma-separated list of `env_var_name`-type value; all will be
+      checked to ensure they are defined. Designed to be called at the
+      beginning of an orb job or command, with a value like the following:
+      `<<parameters.foo>>,<<parameters.bar>>,<<parameters.baz>`, etc.
 
   error-message:
     type: string
@@ -23,14 +32,20 @@ parameters:
 
 steps:
   - run:
-      name: Checking if $<<parameters.param>> is defined...
+      name: <<parameters.command-name>>
       command: |
-        if [[ -z "${<<parameters.param>>}" ]]; then
-          echo "ERROR: Missing environment variable <<parameters.param>>" >&2
-          if [[ -n "<<parameters.error-message>>" ]]; then
-            echo "<<parameters.error-message>>" >&2
+        IFS="," read -ra PARAMS \<<< "<<parameters.param>>"
+
+        for i in "${PARAMS[@]}"; do
+          if [[ -z "${i}" ]]; then
+            echo "ERROR: Missing environment variable {i}" >&2
+
+            if [[ -n "<<parameters.error-message>>" ]]; then
+              echo "<<parameters.error-message>>" >&2
+            fi
+
+            <<#parameters.exit-if-undefined>>exit 1<</parameters.exit-if-undefined>>
+          else
+            echo "Yes, ${i} is defined!"
           fi
-          <<#parameters.exit-if-undefined>>exit 1<</parameters.exit-if-undefined>>
-        else
-          echo "Yes, <<parameters.param>> is defined!"
-        fi
+        done
