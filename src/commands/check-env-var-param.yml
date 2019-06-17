@@ -2,6 +2,11 @@ description: >
   Check that env-var parameters are defined, produce an error otherwise
 
 parameters:
+  command-name:
+    type: string
+    default: Checking if parameters are defined...
+    description: Name for CircleCI step output
+
   param:
     type: string
     description: >
