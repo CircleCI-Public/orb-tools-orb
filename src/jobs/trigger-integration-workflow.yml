@@ -47,7 +47,10 @@ parameters:
     type: string
     default: integration
     description: >
-      Prefix used for the tag created on GitHub, default is "integration"
+      If set to `integration`: trigger integration testing workflow jobs
+      only; if set to `master`: trigger integration testing workflow jobs,
+      plus potential production/semantic orb release jobs. Alternatively,
+      provide any other string and use as desired.
 
   use-git-diff:
     type: boolean
