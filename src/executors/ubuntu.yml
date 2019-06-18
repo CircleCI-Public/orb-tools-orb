@@ -12,9 +12,9 @@ parameters:
 
   tag:
     type: string
-    default: latest
+    default: edge
 
 resource_class: <<parameters.resource-class>>
 
 docker:
-  - image: circleciimages/base:<<parameters.tag>>
+  - image: cimg/base:<<parameters.tag>>
