@@ -93,9 +93,9 @@ steps:
               TAG="v$NEW_VERSION-<<parameters.release>>"
 
               git tag -a "$TAG" \
-                -m "### View this orb release in the [orb registry](https://circleci.com/orbs/registry)" \
+                -m "View this orb release in the orb registry:" \
                 -m "https://circleci.com/orbs/registry/orb/<<parameters.orb-name>>?version=$NEW_VERSION" \
-                -m "### View this orb release using the [CircleCI CLI](https://circleci-public.github.io/circleci-cli)" \
-                -m "`circleci orb source <<parameters.orb-name>>@$NEW_VERSION`"
+                -m "View this orb release using the CircleCI CLI:" \
+                -m "\`circleci orb source <<parameters.orb-name>>@$NEW_VERSION\`"
 
               git push origin "$TAG"
