@@ -62,10 +62,7 @@ steps:
           <<parameters.release>> --token \
           $<<parameters.publish-token-variable>>
 
-  - run:
-      name: success! your new orb release was published to the orb registry
-      command: |
-        echo "visit your orb in the orb registry:"
+        echo "View this orb release in the orb registry:"
         echo "https://circleci.com/orbs/registry/orb/<<parameters.orb-name>>"
 
   - when:
@@ -94,5 +91,11 @@ steps:
               NEW_VERSION=$(circleci orb info <<parameters.orb-name>> | grep Latest | sed -E 's|Latest: <<parameters.orb-name>>@||')
 
               TAG="v$NEW_VERSION-<<parameters.release>>"
-              git tag "$TAG"
+
+              git tag -a "$TAG" \
+                -m "### View this orb release in the [orb registry](https://circleci.com/orbs/registry)" \
+                -m "https://circleci.com/orbs/registry/orb/<<parameters.orb-name>>?version=$NEW_VERSION" \
+                -m "### View this orb release using the [CircleCI CLI](https://circleci-public.github.io/circleci-cli)" \
+                -m "`circleci orb source <<parameters.orb-name>>@$NEW_VERSION`"
+
               git push origin "$TAG"
