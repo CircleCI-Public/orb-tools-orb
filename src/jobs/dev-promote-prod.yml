@@ -90,9 +90,10 @@ steps:
               # construct/push new tag
               NEW_VERSION=$(circleci orb info <<parameters.orb-name>> | grep Latest | sed -E 's|Latest: <<parameters.orb-name>>@||')
 
-              TAG="v$NEW_VERSION-<<parameters.release>>"
+              TAG="v$NEW_VERSION"
 
               git tag -a "$TAG" \
+                -m "<<parameters.release>>" \
                 -m "View this orb release in the orb registry:" \
                 -m "https://circleci.com/orbs/registry/orb/<<parameters.orb-name>>?version=$NEW_VERSION" \
                 -m "View this orb release using the CircleCI CLI:" \
