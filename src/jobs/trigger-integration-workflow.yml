@@ -135,21 +135,6 @@ steps:
         git config --global user.name "$CIRCLE_USERNAME"
 
   - when:
-      condition: <<parameters.cleanup-tags>>
-      steps:
-        - run:
-            name: cleanup old remote tags
-            command: |
-              # delete local tags
-              git tag -d $(git tag -l "<<parameters.cleanup-tags-pattern>>")
-
-              # fetch remote tags
-              git fetch
-
-              # delete remote tag
-              git push origin --delete $(git tag -l git tag -l "<<parameters.cleanup-tags-pattern>>") || true
-
-  - when:
       condition: <<parameters.use-git-diff>>
       steps:
         - circle-compare-url/reconstruct:
@@ -190,3 +175,18 @@ steps:
 
               git tag $INTEGRATION_TAG
               git push origin $INTEGRATION_TAG
+
+  - when:
+      condition: <<parameters.cleanup-tags>>
+      steps:
+        - run:
+            name: cleanup old remote tags
+            command: |
+              # delete local tags
+              git tag -d $(git tag -l "<<parameters.cleanup-tags-pattern>>")
+
+              # fetch remote tags
+              git fetch
+
+              # delete remote tag
+              git push origin --delete $(git tag -l git tag -l "<<parameters.cleanup-tags-pattern>>") || true
