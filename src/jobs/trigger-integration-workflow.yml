@@ -73,7 +73,19 @@ parameters:
     default: false
     description: >
       Before proceeding with pushing a tag to trigger an integration testing
-      workflow, optionally cleanup all previous remote tags
+      workflow, optionally cleanup some previous remote tags? Use the
+      `cleanup-tags-pattern` parameter to specify which tags should be
+      removed
+
+  cleanup-tags-pattern:
+    type: string
+    default: "integration*"
+    description: >
+      Before proceeding with pushing a tag to trigger an integration testing
+      workflow, optionally clean up all older tags that meet a given
+      `git tag -l` wildcard pattern. Defaults to a wildcard pattern
+      including any tags starting with the string `integration`.
+      (Default is intended for use when `tag` parameter is set to `master`.)
 
   static-release-type:
     type: enum
@@ -123,23 +135,6 @@ steps:
         git config --global user.name "$CIRCLE_USERNAME"
 
   - when:
-      condition: <<parameters.cleanup-tags>>
-      steps:
-        - run:
-            name: cleanup old remote tags
-            command: |
-              # delete local tags
-              git tag -d $(git tag -l "<<parameters.tag>>-*")
-              git tag -d $(git tag -l "master-skip-master-*")
-
-              # fetch remote tags
-              git fetch
-
-              # delete remote tags
-              git push origin --delete $(git tag -l "<<parameters.tag>>-*") || true
-              git push origin --delete $(git tag -l "master-skip-master-*") || true # pushing once should be faster than multiple times
-
-  - when:
       condition: <<parameters.use-git-diff>>
       steps:
         - circle-compare-url/reconstruct:
@@ -180,3 +175,18 @@ steps:
 
               git tag $INTEGRATION_TAG
               git push origin $INTEGRATION_TAG
+
+  - when:
+      condition: <<parameters.cleanup-tags>>
+      steps:
+        - run:
+            name: cleanup old remote tags
+            command: |
+              # delete local tags
+              git tag -d $(git tag -l "<<parameters.cleanup-tags-pattern>>")
+
+              # fetch remote tags
+              git fetch
+
+              # delete remote tag
+              git push origin --delete $(git tag -l git tag -l "<<parameters.cleanup-tags-pattern>>") || true
