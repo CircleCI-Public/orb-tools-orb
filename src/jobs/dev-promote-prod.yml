@@ -35,9 +35,22 @@ parameters:
     type: boolean
     default: true
     description: >
-      Delete the tag used to trigger this workflow and replace it with
-      a tag describing the release that was just published. If `true`,
-      make sure to pass SSH fingerprints, as well.
+      Push a git tag describing the release that was just published? If `true`,
+      make sure to pass SSH fingerprints, as well
+
+  cleanup-tags:
+    type: boolean
+    default: false
+    description: >
+      After publishing a version tag for a successful orb deployment, clean
+      up older tags? Use the `cleanup-tags-pattern` parameter to specify
+      which tags should be removed
+
+  cleanup-tags-pattern:
+    type: string
+    default: "master*"
+    description: >
+      After publishing a version tag for a successful orb deployment, optionally clean up all older tags that meet a given `git tag -l` wildcard pattern. Defaults to a wildcard pattern including any tags starting with the string `master`.
 
   ssh-fingerprints:
     type: string
@@ -78,15 +91,6 @@ steps:
               git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
               git config --global user.name "$CIRCLE_USERNAME"
 
-              # delete local tag
-              git tag -d $(git tag -l "$CIRCLE_TAG")
-
-              # fetch remote tags
-              git fetch
-
-              # delete remote tag
-              git push origin --delete $(git tag -l "$CIRCLE_TAG")
-
               # construct/push new tag
               NEW_VERSION=$(circleci orb info <<parameters.orb-name>> | grep Latest | sed -E 's|Latest: <<parameters.orb-name>>@||')
 
@@ -100,3 +104,12 @@ steps:
                 -m "\`circleci orb source <<parameters.orb-name>>@$NEW_VERSION\`"
 
               git push origin "$TAG"
+
+              # delete local tags
+              git tag -d $(git tag -l "<<parameters.cleanup-tags-pattern>>")
+
+              # fetch remote tags
+              git fetch
+
+              # delete remote tag
+              git push origin --delete $(git tag -l git tag -l "<<parameters.cleanup-tags-pattern>>") || true
