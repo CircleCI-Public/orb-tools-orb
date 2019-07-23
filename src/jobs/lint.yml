@@ -55,6 +55,10 @@ steps:
   - when:
       condition: <<parameters.checkout>>
       steps:
+        - run:
+            name: "Install Git and Openssh"
+            command: |
+              apk --update add git openssh
         - checkout
 
   - when:
