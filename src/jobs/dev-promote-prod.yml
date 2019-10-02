@@ -5,13 +5,6 @@ description: >
 executor: cli/default
 
 parameters:
-  release:
-    type: enum
-    default: patch
-    enum: [patch, minor, major]
-    description: >
-      What type of release to publish (patch, minor, major)?
-
   publish-token-variable:
     type: env_var_name
     default: CIRCLE_TOKEN
@@ -30,6 +23,27 @@ parameters:
       Dev:reference to promote to a production release, defaults to
       'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 7
       characters of the job's commit hash)
+
+  add-pr-comment:
+    type: boolean
+    description: >
+      CircleCI can comment on the merged PR with the final production version. 
+      If you want contributors to see a message with the production version, 
+      please provide the username & token, and ensure the merge commit subject
+      includes the PR number in default format.
+      i.e. 'Merge pull request #XX from some-branch [semver:patch]' 
+
+  bot-user:
+    type: string
+    description: >
+      The GitHub user to post PR comment.
+    default: ""
+
+  bot-token:
+    type: string
+    description: >
+      The GitHub user's token to post PR comment.
+    default: ""
 
   publish-version-tag:
     type: boolean
@@ -67,16 +81,12 @@ steps:
       steps:
         - checkout
 
-  - run:
-      name: promote dev orb to production/semantic release
-      command: |
-        circleci orb publish promote \
-          <<parameters.orb-name>>@<<parameters.orb-ref>> \
-          <<parameters.release>> --token \
-          $<<parameters.publish-token-variable>>
-
-        echo "View this orb release in the orb registry:"
-        echo "https://circleci.com/orbs/registry/orb/<<parameters.orb-name>>"
+  - dev-promote-semver:
+      token-variable: <<parameters.publish-token-variable>>
+      dev-version: <<parameters.orb-name>>@<<parameters.orb-ref>>
+      add-pr-comment: <<parameters.add-pr-comment>>
+      bot-user: <<parameters.bot-user>>
+      bot-token: <<parameters.bot-token>>
 
   - when:
       condition: <<parameters.publish-version-tag>>
