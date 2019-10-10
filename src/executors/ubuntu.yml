@@ -7,7 +7,7 @@ description: >
 parameters:
   resource-class:
     type: enum
-    default: small
+    default:  medium
     enum: [small, medium, medium+, large, xlarge]
 
   tag:
