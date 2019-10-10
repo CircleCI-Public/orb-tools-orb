@@ -8,7 +8,7 @@ _For full usage guidelines, see the [orb registry listing](http://circleci.com/o
 
 ### Example
 
-Following is a well-documented example of a full orb development pipeline, consisting of two workflows and making use of multiple jobs from this orb. For further details/discussion, see [Creating Automated Build/Test/Deploy Workflows for Orbs](https://circleci.com/blog/creating-automated-build-test-and-deploy-workflows-for-orbs), on the CircleCI Blog.
+Following is a well-documented example of a full orb development pipeline, consisting of two workflows and making use of multiple jobs from this orb. For further details/discussion, see [Creating Automated Build/Test/Deploy Workflows for Orbs](https://circleci.com/blog/creating-automated-build-test-and-deploy-workflows-for-orbs), on the CircleCI Blog-access the blog [click here!](https://circleci.com/blog/index.html).
 
 ```yaml
 version: 2.1
