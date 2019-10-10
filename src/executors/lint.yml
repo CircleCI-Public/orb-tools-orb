@@ -2,7 +2,7 @@ description: >
   A Docker image with linting tools:
   https://hub.docker.com/r/singapore/lint-condo
 
-resource_class: small
+resource_class: medium
 
 docker:
   - image: singapore/lint-condo
