@@ -11,7 +11,7 @@ parameters:
     default: workspace/orb.yml
 
   orb-ref:
-    description: A versionless orb-ref in the form <namespace>/<orb-name>
+    description: A version-less orb-ref in the form <namespace>/<orb-name>
     type: string
 
   segment:
