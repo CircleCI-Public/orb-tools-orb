@@ -17,7 +17,7 @@ orbs:
   orb-tools: circleci/orb-tools@x.y.z
   # add your orb below, to be used in integration tests (note: a
   # @dev:alpha release must exist; if none exists, you'll need to
-  # publish manually once before this worklow can succeed)
+  # publish manually once before this workflow can succeed)
   your-orb: your-namespace/your-orb@dev:alpha
 
 workflows:
