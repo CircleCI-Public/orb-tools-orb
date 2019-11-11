@@ -128,11 +128,7 @@ steps:
             fingerprints:
               - <<parameters.ssh-fingerprints>>
 
-  - run:
-      name: git config
-      command: |
-        git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
-        git config --global user.name "$CIRCLE_USERNAME"
+  - configure-git
 
   - when:
       condition: <<parameters.use-git-diff>>
