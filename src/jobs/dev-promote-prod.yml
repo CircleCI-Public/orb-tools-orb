@@ -38,14 +38,6 @@ parameters:
       Push a git tag describing the release that was just published? If `true`,
       make sure to pass SSH fingerprints, as well
 
-  cleanup-tags:
-    type: boolean
-    default: false
-    description: >
-      After publishing a version tag for a successful orb deployment, clean
-      up older tags? Use the `cleanup-tags-pattern` parameter to specify
-      which tags should be removed
-
   cleanup-tags-pattern:
     type: string
     default: "master*"
