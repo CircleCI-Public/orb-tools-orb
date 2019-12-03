@@ -21,11 +21,11 @@ parameters:
 
   add-pr-comment:
     description: >
-      CircleCI can comment on the merged PR with the final production version. 
-      If you want contributors to see a message with the production version, 
+      CircleCI can comment on the merged PR with the final production version.
+      If you want contributors to see a message with the production version,
       please provide the username & token, and ensure the merge commit subject
       includes the PR number in default format.
-      i.e. 'Merge pull request #XX from some-branch [semver:patch]' 
+      i.e. 'Merge pull request #XX from some-branch [semver:patch]'
     type: boolean
 
   bot-user:
@@ -44,7 +44,7 @@ steps:
       - run:
           name: Grab Commit Info
           command: |
-            curl "https://circleci.com/api/v1.1/project/gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}?circle-token=<< parameters.token-variable >>" > /tmp/build_info.txt            
+            curl "https://circleci.com/api/v1.1/project/gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}?circle-token=<< parameters.token-variable >>" > /tmp/build_info.txt
       - run:
           name: Promote to prod
           command: |

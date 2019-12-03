@@ -27,11 +27,11 @@ parameters:
   add-pr-comment:
     type: boolean
     description: >
-      CircleCI can comment on the merged PR with the final production version. 
-      If you want contributors to see a message with the production version, 
+      CircleCI can comment on the merged PR with the final production version.
+      If you want contributors to see a message with the production version,
       please provide the username & token, and ensure the merge commit subject
       includes the PR number in default format.
-      i.e. 'Merge pull request #XX from some-branch [semver:patch]' 
+      i.e. 'Merge pull request #XX from some-branch [semver:patch]'
 
   bot-user:
     type: string
