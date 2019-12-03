@@ -52,7 +52,7 @@ integration-master_filters: &integration-master_filters
   branches:
     ignore: /.*/
   tags:
-    only: /master-.*/
+    only: /promote-semver-test-branch-.*/
 
 prod-deploy_requires: &prod-deploy_requires
   [
@@ -106,7 +106,7 @@ workflows:
           requires: [queue/block_workflow]
           filters:
             branches:
-              ignore: master
+              ignore: promote-semver-test-branch
 
       - orb-tools/trigger-integration-workflow:
           name: trigger-integration-promote-semver-test
