@@ -39,11 +39,14 @@ parameters:
       The GitHub user to post PR comment.
     default: ""
 
-  bot-token:
-    type: string
+  bot-token-variable:
     description: >
-      The GitHub user's token to post PR comment.
-    default: ""
+      Name of env var containing the GitHub token value of the GitHub user that
+      to be used for posting the PR comment. Pass this as a raw string such
+      as GITHUB_TOKEN. Do not paste the actual token into your
+      configuration.
+    type: env_var_name
+    default: PR_COMMENTER_GITHUB_TOKEN
 
   publish-version-tag:
     type: boolean
@@ -86,7 +89,7 @@ steps:
       dev-version: <<parameters.orb-name>>@<<parameters.orb-ref>>
       add-pr-comment: <<parameters.add-pr-comment>>
       bot-user: <<parameters.bot-user>>
-      bot-token: <<parameters.bot-token>>
+      bot-token-variable: <<parameters.bot-token-variable>>
 
   - when:
       condition: <<parameters.publish-version-tag>>

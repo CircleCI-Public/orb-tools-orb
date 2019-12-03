@@ -34,11 +34,14 @@ parameters:
     type: string
     default: ""
 
-  bot-token:
+  bot-token-variable:
     description: >
-      The GitHub user's token to post PR comment.
-    type: string
-    default: ""
+      Name of env var containing the GitHub token value of the GitHub user that
+      to be used for posting the PR comment. Pass this as a raw string such
+      as GITHUB_TOKEN. Do not paste the actual token into your
+      configuration.
+    type: env_var_name
+    default: PR_COMMENTER_GITHUB_TOKEN
 
 steps:
       - run:
@@ -70,4 +73,4 @@ steps:
                     echo "\tMerge pull request #XX from some-branch [semver:patch]"
                     exit 0
                   fi
-                  curl -X POST -u "<<parameters.bot-user>>:<<parameters.bot-token>>" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"*Production* version of orb available for use - \`${ORB_VERSION}\`\"}"
+                  curl -X POST -u "<<parameters.bot-user>>:$<<parameters.bot-token-variable>>" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"*Production* version of orb available for use - \`${ORB_VERSION}\`\"}"

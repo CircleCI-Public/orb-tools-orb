@@ -2,7 +2,9 @@ version: 2.1
 
 orbs:
   cli: circleci/circleci-cli@0.1.4
-  orb-tools: circleci/orb-tools@8.27.3
+  # Use temporary dev version in order to make use of
+  # the new dev-promote-semver command
+  orb-tools: circleci/orb-tools@dev:promote-semver
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
 
@@ -309,6 +311,9 @@ workflows:
       # patch, minor, or major publishing
       - orb-tools/dev-promote-prod:
           name: dev-promote-patch
+          add-pr-comment: true
+          bot-user: cpe-bot
+          bot-token-variable: GHI_TOKEN
           context: orb-publishing
           orb-name: circleci/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
@@ -322,7 +327,9 @@ workflows:
 
       - orb-tools/dev-promote-prod:
           name: dev-promote-minor
-          release: minor
+          add-pr-comment: true
+          bot-user: cpe-bot
+          bot-token-variable: GHI_TOKEN
           context: orb-publishing
           orb-name: circleci/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
@@ -336,7 +343,9 @@ workflows:
 
       - orb-tools/dev-promote-prod:
           name: dev-promote-major
-          release: major
+          add-pr-comment: true
+          bot-user: cpe-bot
+          bot-token-variable: GHI_TOKEN
           context: orb-publishing
           orb-name: circleci/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
