@@ -43,6 +43,7 @@ parameters:
     default: PR_COMMENTER_GITHUB_TOKEN
 
 steps:
+      - checkout
       - run:
           name: Grab Commit Info
           command: |
