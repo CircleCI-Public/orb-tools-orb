@@ -109,14 +109,14 @@ workflows:
               ignore: master
 
       - orb-tools/trigger-integration-workflow:
-          name: trigger-integration-master
+          name: trigger-integration-promote-semver-test
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           cleanup-tags: true
-          tag: master
+          tag: promote-semver-test
           requires: [queue/block_workflow]
           filters:
             branches:
-              only: master
+              only: promote-semver-test-branch
 
   integration_tests-prod_deploy:
     jobs:
@@ -310,7 +310,7 @@ workflows:
       - orb-tools/dev-promote-prod:
           name: dev-promote-patch
           context: orb-publishing
-          orb-name: circleci/orb-tools
+          orb-name: sandbox/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           cleanup-tags: true
           requires: *prod-deploy_requires
@@ -318,13 +318,13 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /master-patch.*/
+              only: /promote-semver-test-patch.*/
 
       - orb-tools/dev-promote-prod:
           name: dev-promote-minor
           release: minor
           context: orb-publishing
-          orb-name: circleci/orb-tools
+          orb-name: sandbox/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           cleanup-tags: true
           requires: *prod-deploy_requires
@@ -332,13 +332,13 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /master-minor.*/
+              only: /promote-semver-test-minor.*/
 
       - orb-tools/dev-promote-prod:
           name: dev-promote-major
           release: major
           context: orb-publishing
-          orb-name: circleci/orb-tools
+          orb-name: sandbox/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
           cleanup-tags: true
           requires: *prod-deploy_requires
@@ -346,4 +346,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /master-major.*/
+              only: /promote-semver-test-major.*/
