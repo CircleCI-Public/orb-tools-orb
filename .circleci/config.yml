@@ -94,7 +94,7 @@ workflows:
 
       - orb-tools/publish-dev:
           context: orb-publishing
-          orb-name: circleci/orb-tools
+          orb-name: sandbox/orb-tools
           requires: [orb-tools/pack]
 
       - queue/block_workflow:
@@ -306,7 +306,7 @@ workflows:
             - test-in-builds-job-master
             - test-publish-job-master
 
-      # publish semver version.
+      # publish semver version
       - orb-tools/dev-promote-prod:
           name: dev-promote
           add-pr-comment: true
