@@ -107,7 +107,6 @@ steps:
               TAG="v$NEW_VERSION"
 
               git tag -a "$TAG" \
-                -m "<<parameters.release>>" \
                 -m "View this orb release in the orb registry:" \
                 -m "https://circleci.com/orbs/registry/orb/<<parameters.orb-name>>?version=$NEW_VERSION" \
                 -m "View this orb release using the CircleCI CLI:" \

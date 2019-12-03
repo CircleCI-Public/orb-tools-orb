@@ -1,8 +1,8 @@
 description: >
-  Uses the CLI to promote a dev version of an orb to the registry. 
+  Uses the CLI to promote a dev version of an orb to the registry.
   This command supports Semantic Versioning support. In order to promote
   the commit subject must include the `[semver:FOO]` pattern.
-  i.e. 'Merge pull request #XX from some-branch [semver:minor]' 
+  i.e. 'Merge pull request #XX from some-branch [semver:minor]'
 
 parameters:
   dev-version:
@@ -48,7 +48,7 @@ steps:
       - run:
           name: Promote to prod
           command: |
-            SEMVER_INCREMENT=`jq -r '.subject' /tmp/build_info.txt | sed -En 's/.*\[semver:(major|minor|patch)\].*/\1/p'`
+            SEMVER_INCREMENT=`git log -1 --pretty=%s. | sed -En 's/.*\[semver:(major|minor|patch)\].*/\1/p'`
             if [ -z ${SEMVER_INCREMENT} ];then
               echo "Merge commit did not indicate which SemVer increment to make. Please ammend commit with [semver:FOO] where FOO is major, minor, or patch"
               exit 1
@@ -58,15 +58,16 @@ steps:
             ORB_VERSION=$(echo $PUBLISH_MESSAGE | sed -n 's/Orb .* was promoted to `\(.*\)`.*/\1/p')
             echo "export ORB_VERSION=\"${ORB_VERSION}\"" >> $BASH_ENV
       - when:
-          conditions: <<parameters.add-pr-comment>>
-            run:
-          name: Publish Prod version to PR
-          command: |
-            PR_NUMBER=`jq -r '.subject' /tmp/build_info.txt | sed -n 's/Merge pull request #\([0-9]*\) from.*/\1/p'`
-            echo "PR_NUMBER is ${PR_NUMBER}"
-            if [ "$PR_NUMBER" == "" ];then
-              echo "No pr found, do nothing. If this is a mistake, be sure your commit subject includes the pattern:"
-              echo "\tMerge pull request #XX from some-branch [semver:patch]"
-              exit 0
-            fi
-            curl -X POST -u "<<parameters.bot-user>>:<<parameters.bot-token>>" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"*Production* version of orb available for use - \`${ORB_VERSION}\`\"}"
+          condition: <<parameters.add-pr-comment>>
+          steps:
+            - run:
+                name: Publish Prod version to PR
+                command: |
+                  PR_NUMBER=`jq -r '.subject' /tmp/build_info.txt | sed -n 's/Merge pull request #\([0-9]*\) from.*/\1/p'`
+                  echo "PR_NUMBER is ${PR_NUMBER}"
+                  if [ "$PR_NUMBER" == "" ];then
+                    echo "No pr found, do nothing. If this is a mistake, be sure your commit subject includes the pattern:"
+                    echo "\tMerge pull request #XX from some-branch [semver:patch]"
+                    exit 0
+                  fi
+                  curl -X POST -u "<<parameters.bot-user>>:<<parameters.bot-token>>" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"*Production* version of orb available for use - \`${ORB_VERSION}\`\"}"
