@@ -45,10 +45,6 @@ parameters:
 steps:
       - checkout
       - run:
-          name: Grab Commit Info
-          command: |
-            curl "https://circleci.com/api/v1.1/project/gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}?circle-token=<< parameters.token-variable >>" > /tmp/build_info.txt
-      - run:
           name: Promote to prod
           command: |
             SEMVER_INCREMENT=`git log -1 --pretty=%s. | sed -En 's/.*\[semver:(major|minor|patch)\].*/\1/p'`
@@ -66,7 +62,7 @@ steps:
             - run:
                 name: Publish Prod version to PR
                 command: |
-                  PR_NUMBER=`jq -r '.subject' /tmp/build_info.txt | sed -n 's/Merge pull request #\([0-9]*\) from.*/\1/p'`
+                  PR_NUMBER=`git log -1 --pretty=%s. | sed -n 's/Merge pull request #\([0-9]*\) from.*/\1/p'`
                   echo "PR_NUMBER is ${PR_NUMBER}"
                   if [ "$PR_NUMBER" == "" ];then
                     echo "No pr found, do nothing. If this is a mistake, be sure your commit subject includes the pattern:"
