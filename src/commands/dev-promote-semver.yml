@@ -1,7 +1,8 @@
 description: >
   Uses the CLI to promote a dev version of an orb to the registry.
   This command supports Semantic Versioning support. In order to promote
-  the commit subject must include the `[semver:FOO]` pattern.
+  the commit subject must include the `[semver:FOO]` pattern,
+  where FOO is major, minor, patch, or skip (to skip promotion).
   i.e. 'Merge pull request #XX from some-branch [semver:minor]'
 
 parameters:
@@ -49,13 +50,17 @@ steps:
           command: |
             SEMVER_INCREMENT=`git log -1 --pretty=%s. | sed -En 's/.*\[semver:(major|minor|patch)\].*/\1/p'`
             if [ -z ${SEMVER_INCREMENT} ];then
-              echo "Merge commit did not indicate which SemVer increment to make. Please ammend commit with [semver:FOO] where FOO is major, minor, or patch"
+              echo "Merge commit did not indicate which SemVer increment to make. Please ammend commit with [semver:FOO] where FOO is major, minor, patch, or skip (to skip promotion)"
               exit 1
-            fi
-            PUBLISH_MESSAGE=`circleci orb publish promote <<parameters.dev-version>> ${SEMVER_INCREMENT} --token $<< parameters.token-variable >>`
-            echo $PUBLISH_MESSAGE
-            ORB_VERSION=$(echo $PUBLISH_MESSAGE | sed -n 's/Orb .* was promoted to `\(.*\)`.*/\1/p')
-            echo "export ORB_VERSION=\"${ORB_VERSION}\"" >> $BASH_ENV
+            elif [ "$SEMVER_INCREMENT" == "skip" ];then
+              echo "SEMVER in commit indicated to skip orb release"
+              echo "export PR_MESSAGE=\"BotComment: Orb publish was skipped due to [semver:skip] in commit message.\""  >> $BASH_ENV
+              exit 0
+            else
+              PUBLISH_MESSAGE=`circleci orb publish promote <<parameters.dev-version>> ${SEMVER_INCREMENT} --token $<< parameters.token-variable >>`
+              echo $PUBLISH_MESSAGE
+              ORB_VERSION=$(echo $PUBLISH_MESSAGE | sed -n 's/Orb .* was promoted to `\(.*\)`.*/\1/p')
+              echo "export PR_MESSAGE=\"BotComment: *Production* version of orb available for use - \\\`${ORB_VERSION}\\\`\"" >> $BASH_ENV
       - when:
           condition: <<parameters.add-pr-comment>>
           steps:
@@ -69,4 +74,4 @@ steps:
                     echo "\tMerge pull request #XX from some-branch [semver:patch]"
                     exit 0
                   fi
-                  curl -X POST -u "<<parameters.bot-user>>:$<<parameters.bot-token-variable>>" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"*Production* version of orb available for use - \`${ORB_VERSION}\`\"}"
+                  curl -X POST -u "<<parameters.bot-user>>:$<<parameters.bot-token-variable>>" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"${PR_MESSAGE}\"}"

@@ -1,5 +1,8 @@
 description: >
   Promote a dev version of an orb to a semantic production release.
+  In order to promote the orb, the commit subject must include the `[semver:FOO]`
+  pattern, where FOO is major, minor, patch, or skip (to skip promotion).
+  i.e. 'Merge pull request #XX from some-branch [semver:minor]'
   Designed to run at the conclusion of an integration-testing workflow.
 
 executor: cli/default
