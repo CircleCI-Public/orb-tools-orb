@@ -18,7 +18,6 @@ parameters:
     type: env_var_name
     default: CIRCLE_TOKEN
 
-
   add-pr-comment:
     description: >
       CircleCI can comment on the merged PR with the final production version.
@@ -56,7 +55,7 @@ steps:
               echo "Merge commit did not indicate which SemVer increment to make. Please ammend commit with [semver:FOO] where FOO is major, minor, or patch"
               exit 1
             fi
-            PUBLISH_MESSAGE=`circleci orb publish promote <<parameters.dev-version>> ${SEMVER_INCREMENT} --token << parameters.token-variable >>`
+            PUBLISH_MESSAGE=`circleci orb publish promote <<parameters.dev-version>> ${SEMVER_INCREMENT} --token $<< parameters.token-variable >>`
             echo $PUBLISH_MESSAGE
             ORB_VERSION=$(echo $PUBLISH_MESSAGE | sed -n 's/Orb .* was promoted to `\(.*\)`.*/\1/p')
             echo "export ORB_VERSION=\"${ORB_VERSION}\"" >> $BASH_ENV

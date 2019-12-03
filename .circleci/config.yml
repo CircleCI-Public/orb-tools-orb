@@ -308,9 +308,9 @@ workflows:
             - test-in-builds-job-master
             - test-publish-job-master
 
-      # patch, minor, or major publishing
+      # semver publishing
       - orb-tools/dev-promote-prod:
-          name: dev-promote-patch
+          name: dev-promote-semver
           add-pr-comment: true
           bot-user: cpe-bot
           bot-token-variable: GHI_TOKEN
@@ -323,36 +323,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /master-patch.*/
-
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-minor
-          add-pr-comment: true
-          bot-user: cpe-bot
-          bot-token-variable: GHI_TOKEN
-          context: orb-publishing
-          orb-name: circleci/orb-tools
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          cleanup-tags: true
-          requires: *prod-deploy_requires
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /master-minor.*/
-
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-major
-          add-pr-comment: true
-          bot-user: cpe-bot
-          bot-token-variable: GHI_TOKEN
-          context: orb-publishing
-          orb-name: circleci/orb-tools
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          cleanup-tags: true
-          requires: *prod-deploy_requires
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /master-major.*/
+              only: /master-.*/
