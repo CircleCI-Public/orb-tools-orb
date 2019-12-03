@@ -306,7 +306,7 @@ workflows:
             - test-in-builds-job-master
             - test-publish-job-master
 
-      # semver publishing
+      # publish semver version
       - orb-tools/dev-promote-prod:
           name: dev-promote
           add-pr-comment: true
