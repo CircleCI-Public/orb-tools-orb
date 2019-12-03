@@ -2,8 +2,8 @@ version: 2.1
 
 orbs:
   cli: circleci/circleci-cli@0.1.4
-  # published in https://circleci.com/gh/CircleCI-Public/orb-tools-orb/1930
-  orb-tools: circleci/orb-tools@dev:50ceb34
+  # published in https://circleci.com/gh/CircleCI-Public/orb-tools-orb/1961
+  orb-tools: circleci/orb-tools@dev:63f96ba
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
 
