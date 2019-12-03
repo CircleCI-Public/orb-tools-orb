@@ -306,9 +306,9 @@ workflows:
             - test-in-builds-job-master
             - test-publish-job-master
 
-      # patch, minor, or major publishing
+      # semver publishing
       - orb-tools/dev-promote-prod:
-          name: dev-promote-patch
+          name: dev-promote
           context: orb-publishing
           orb-name: sandbox/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
@@ -318,32 +318,4 @@ workflows:
             branches:
               ignore: /.*/
             tags:
-              only: /promote-semver-test-patch.*/
-
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-minor
-          release: minor
-          context: orb-publishing
-          orb-name: sandbox/orb-tools
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          cleanup-tags: true
-          requires: *prod-deploy_requires
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /promote-semver-test-minor.*/
-
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-major
-          release: major
-          context: orb-publishing
-          orb-name: sandbox/orb-tools
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          cleanup-tags: true
-          requires: *prod-deploy_requires
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /promote-semver-test-major.*/
+              only: /promote-semver-test-.*/
