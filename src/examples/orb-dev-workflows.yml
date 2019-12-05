@@ -94,9 +94,10 @@ usage:
                 only: /master-.*/
 
         # publish a semver version of the orb. relies on
-        # the commit subject containing the text "[semver:patch|minor|major]"
+        # the commit subject containing the text "[semver:patch|minor|major|skip]"
         # as that will determine whether a patch, minor or major
-        # version will be published.
+        # version will be published or if publishing should
+        # be skipped.
         # e.g. [semver:patch] will cause a patch version to be published.
         - orb-tools/dev-promote-prod:
             orb-name: your-namespace/your-orb
