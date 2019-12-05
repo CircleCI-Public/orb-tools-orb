@@ -4,8 +4,8 @@ orbs:
   cli: circleci/circleci-cli@0.1.4
   # Use temporary dev version in order to make use of
   # the new dev-promote-semver command
-  #  Published in https://circleci.com/gh/CircleCI-Public/orb-tools-orb/2260
-  orb-tools: circleci/orb-tools@dev:cf9f554
+  # Published in https://circleci.com/gh/CircleCI-Public/orb-tools-orb/2368
+  orb-tools: circleci/orb-tools@dev:688c761
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
 
@@ -318,7 +318,6 @@ workflows:
           context: orb-publishing
           orb-name: circleci/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          cleanup-tags: true
           requires: *prod-deploy_requires
           filters:
             branches:
