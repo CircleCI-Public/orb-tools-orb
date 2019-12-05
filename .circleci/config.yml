@@ -3,7 +3,8 @@ version: 2.1
 orbs:
   cli: circleci/circleci-cli@0.1.4
   # To be replaced with production orb reference
-  # Published in https://circleci.com/gh/CircleCI-Public/orb-tools-orb/2165
+  # Published in
+  # https://circleci.com/gh/CircleCI-Public/orb-tools-orb/2165
   orb-tools: circleci/orb-tools@dev:0dad3e4
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
