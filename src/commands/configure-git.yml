@@ -1,0 +1,32 @@
+description: >
+  Sets mandatory git config fields to allow creating and pushing of tags.
+  If not set it will default to details from the VCS system, composed from the $CIRCLE_USERNAME variable.
+  If both $GIT_CONFIG_USER_NAME and $GIT_CONFIG_USER_EMAIL is set, they will be used instead.
+
+parameters:
+  git-config-user-name:
+    description: >
+      Set both GIT_CONFIG_USER_NAME and GIT_CONFIG_USER_EMAIL environment variables in order to override the default
+      user.name and user.email the git client is configured with. This parameter should not be changed.
+    type: env_var_name
+    default: GIT_CONFIG_USER_NAME
+
+  git-config-user-email:
+    description: >
+      Set both GIT_CONFIG_USER_NAME and GIT_CONFIG_USER_EMAIL environment variables in order to override the default
+      user.name and user.email the git client is configured with. This parameter should not be changed.
+    type: env_var_name
+    default: GIT_CONFIG_USER_EMAIL
+
+steps:
+  - run:
+      name: git config
+      command: |
+        if [ -z "$GIT_CONFIG_USER_NAME" ] || [ -z "$GIT_CONFIG_USER_EMAIL" ]; then
+          # No user name or email set, default to CIRCLE_USERNAME-based identifiers
+          git config --global user.name "$CIRCLE_USERNAME"
+          git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
+        else
+          git config --global user.name ${<< parameters.git-config-user-name >>}
+          git config --global user.email ${<< parameters.git-config-user-email >>}
+        fi
