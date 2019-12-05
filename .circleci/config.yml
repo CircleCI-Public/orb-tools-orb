@@ -3,8 +3,8 @@ version: 2.1
 orbs:
   cli: circleci/circleci-cli@0.1.4
   # To be replaced with production orb reference
-  # Published in https://circleci.com/gh/CircleCI-Public/orb-tools-orb/2306
-  orb-tools: circleci/orb-tools@dev:e87e232
+  # Published in https://circleci.com/gh/CircleCI-Public/orb-tools-orb/2384
+  orb-tools: circleci/orb-tools@dev:67d405d
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
 
@@ -318,7 +318,6 @@ workflows:
           context: orb-publishing
           orb-name: sandbox/orb-tools
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          cleanup-tags: true
           requires: *prod-deploy_requires
           filters:
             branches:
