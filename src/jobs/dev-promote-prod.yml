@@ -102,6 +102,7 @@ steps:
       token-variable: <<parameters.publish-token-variable>>
       dev-version: <<parameters.orb-name>>@<<parameters.orb-ref>>
       add-pr-comment: <<parameters.add-pr-comment>>
+      pr-number-sed-expression: <<parameters.pr-number-sed-expression>>
       bot-user: <<parameters.bot-user>>
       bot-token-variable: <<parameters.bot-token-variable>>
 
