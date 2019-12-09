@@ -1,9 +1,15 @@
 description: >
   Promote a dev version of an orb to a semantic production release.
-  In order to promote the orb, the commit subject must include the `[semver:FOO]`
-  pattern, where FOO is major, minor, patch, or skip (to skip promotion).
-  i.e. 'Merge pull request #XX from some-branch [semver:minor]'
-  Designed to run at the conclusion of an integration-testing workflow.
+  It assumes the context of a GitHub pull request, and promotion of
+  the orb to a new major/minor/patch version is
+  based on information that must be contained in the subject of
+  the commit that merges the pull request.
+  Namely, the commit subject must include the `[semver:FOO]` pattern,
+  where FOO is major, minor, patch, or skip (to skip promotion).
+  e.g. 'Merge pull request #XX from some-branch [semver:minor]'
+
+  This job is designed to run at the conclusion of an
+  integration-testing workflow.
 
 executor: cli/default
 
@@ -34,7 +40,7 @@ parameters:
       If you want contributors to see a message with the production version,
       please provide the username & token, and ensure the merge commit subject
       includes the PR number in default format.
-      i.e. 'Merge pull request #XX from some-branch [semver:patch]'
+      i.e. 'Merge pull request #XX from some-branch'
 
   pr-number-sed-expression:
     description: >
@@ -69,12 +75,6 @@ parameters:
       Push a git tag describing the release that was just published? If `true`,
       make sure to pass SSH fingerprints, as well
 
-  cleanup-tags-pattern:
-    type: string
-    default: "master*"
-    description: >
-      After publishing a version tag for a successful orb deployment, optionally clean up all older tags that meet a given `git tag -l` wildcard pattern. Defaults to a wildcard pattern including any tags starting with the string `master`.
-
   ssh-fingerprints:
     type: string
     default: ""
@@ -84,19 +84,26 @@ parameters:
       with github.com as Hostname). Used to push a git tag back to the
       project's repository.
 
+  do-project-checkout:
+    description: >
+      Whether to perform the CircleCI checkout step.
+    type: boolean
+    default: true
+
 steps:
   - when:
       condition: <<parameters.publish-version-tag>>
       steps:
         - checkout
 
-  - dev-promote-semver:
+  - dev-promote-from-commit-subject:
       token-variable: <<parameters.publish-token-variable>>
       dev-version: <<parameters.orb-name>>@<<parameters.orb-ref>>
       add-pr-comment: <<parameters.add-pr-comment>>
       pr-number-sed-expression: <<parameters.pr-number-sed-expression>>
       bot-user: <<parameters.bot-user>>
       bot-token-variable: <<parameters.bot-token-variable>>
+      do-project-checkout: <<parameters.do-project-checkout>>
 
   - when:
       condition: <<parameters.publish-version-tag>>
@@ -108,7 +115,7 @@ steps:
         - configure-git
 
         - run:
-            name: construct/push git integration tag
+            name: construct/push git release tag
             command: |
 
               # construct/push new tag
@@ -123,12 +130,3 @@ steps:
                 -m "\`circleci orb source <<parameters.orb-name>>@$NEW_VERSION\`"
 
               git push origin "$TAG"
-
-              # delete local tags
-              git tag -d $(git tag -l "<<parameters.cleanup-tags-pattern>>")
-
-              # fetch remote tags
-              git fetch
-
-              # delete remote tag
-              git push origin --delete $(git tag -l git tag -l "<<parameters.cleanup-tags-pattern>>") || true

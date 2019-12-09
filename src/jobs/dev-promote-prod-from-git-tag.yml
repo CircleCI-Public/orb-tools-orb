@@ -1,0 +1,129 @@
+description: >
+  Uses the CLI to promote a dev version of an orb to the registry.
+  This command supports Semantic Versioning support.
+  Whether the new release of the orb will be a patch, minor or major
+  release is determined based on the information in the commit's git tag
+  which must match the regex pattern defined in the major-release-tag-regex,
+  minor-release-tag-regex and patch-release-tag-regex parameters.
+  Hence this command should be used in a job with an "only" tag filter set to
+  the above 3 patterns (e.g. /^(major|minor|patch)-release-v\d+\.\d+\.\d+$/ would
+  match the default patterns) and a branch filter set to ignore /.*/ .
+
+  Requires bash.
+
+executor: cli/default
+
+parameters:
+  publish-token-variable:
+    type: env_var_name
+    default: CIRCLE_TOKEN
+    description: >
+      Name of environment variable containing your CircleCI API token
+
+  orb-name:
+    type: string
+    description: >
+      Semver-less name of the orb to be promoted into production
+      , e.g. circleci/orb-tools
+
+  orb-ref:
+    description: >
+      Dev:reference to promote to a production release, defaults to
+      'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 7
+      characters of the job's commit hash)
+    type: string
+    default: dev:${CIRCLE_SHA1:0:7}
+
+  major-release-tag-regex:
+    description: >
+      The regex pattern that the commit's tag will be matched against
+      to check if a major release of the orb should be done.
+    type: string
+    default: ^major-release-v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$
+
+  minor-release-tag-regex:
+    description: >
+      The regex pattern that the commit's tag will be matched against
+      to check if a minor release of the orb should be done.
+    type: string
+    default: ^minor-release-v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$
+
+  patch-release-tag-regex:
+    description: >
+      The regex pattern that the commit's tag will be matched against
+      to check if a patch release of the orb should be done.
+    type: string
+    default: ^patch-release-v[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+$
+
+  perform-branch-check:
+    description: >
+      Whether to check whether the tagged commit is contained by a particular
+      branch.
+    type: boolean
+    default: true
+
+  required-branch:
+    description: >
+      Checks whether the tagged commit is contained by the
+      specified branch.
+      Only applicable if the perform-branch-check parameter is set to true.
+    type: string
+    default: master
+
+  add-pr-comment:
+    description: >
+      CircleCI can comment on the merged PR with the final production version.
+      If you want contributors to see a message with the production version,
+      please provide the username & token, and ensure the merge commit subject
+      includes the PR number in default format.
+      i.e. 'Merge pull request #XX from some-branch'
+    type: boolean
+
+  pr-number-sed-expression:
+    description: >
+      Used to extract the PR number from the commit subject with sed.
+      The default value works with the default
+      GitHub PR merge commit subject.
+      Only applicable when add-pr-comment is set to true.
+    type: string
+    default: 's/Merge pull request #\([0-9]*\) from.*/\1/p'
+
+  bot-user:
+    description: >
+      The GitHub user to post PR comment.
+      Only applicable when add-pr-comment is set to true.
+    type: string
+    default: ""
+
+  bot-token-variable:
+    description: >
+      Name of env var containing the GitHub token value of the GitHub user that
+      to be used for posting the PR comment. Pass this as a raw string such
+      as GITHUB_TOKEN. Do not paste the actual token into your
+      configuration.
+      Only applicable when add-pr-comment is set to true.
+    type: env_var_name
+    default: PR_COMMENTER_GITHUB_TOKEN
+
+  do-project-checkout:
+    description: >
+      Whether to perform the CircleCI checkout step.
+    type: boolean
+    default: true
+
+steps:
+
+  - dev-promote-from-git-tag:
+      orb-name: <<parameters.orb-name>>
+      orb-ref: <<parameters.orb-ref>>
+      major-release-tag-regex: <<parameters.major-release-tag-regex>>
+      minor-release-tag-regex: <<parameters.minor-release-tag-regex>>
+      patch-release-tag-regex: <<parameters.patch-release-tag-regex>>
+      perform-branch-check: <<parameters.perform-branch-check>>
+      required-branch: <<parameters.required-branch>>
+      token-variable: <<parameters.publish-token-variable>>
+      add-pr-comment: <<parameters.add-pr-comment>>
+      pr-number-sed-expression: <<parameters.pr-number-sed-expression>>
+      bot-user: <<parameters.bot-user>>
+      bot-token-variable: <<parameters.bot-token-variable>>
+      do-project-checkout: <<parameters.do-project-checkout>>

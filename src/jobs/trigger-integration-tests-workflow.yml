@@ -1,0 +1,36 @@
+description: >
+  Trigger an integration-testing workflow for a just-published
+  alpha version of an orb using CircleCI v2 API.
+  See examples for further usage details.
+
+executor: ubuntu
+
+parameters:
+  checkout:
+    type: boolean
+    default: true
+    description: >
+      Checkout as a first step? Default is true
+
+  pipeline-param-map:
+    type: string
+    default: "{\"run-integration-tests\": true}"
+    description: >
+      Map of pipeline parameters that the new pipeline will be invoked with.
+      Make use of this to target the integration workflow that should be triggered
+      and exclude other workflows from being triggered.
+
+steps:
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
+
+  - run:
+      name: Trigger integration test workflow
+      command: |
+        VCS_TYPE=$(echo ${CIRCLE_BUILD_URL} | cut -d '/' -f 4)
+        curl -u ${CIRCLE_TOKEN}: -X POST --header "Content-Type: application/json" -d "{
+          \"branch\": \"${CIRCLE_BRANCH}\",
+          \"parameters\": <<parameters.pipeline-param-map>>
+        }" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline"

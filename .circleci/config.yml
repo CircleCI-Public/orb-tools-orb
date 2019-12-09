@@ -3,12 +3,24 @@ version: 2.1
 orbs:
   cli: circleci/circleci-cli@0.1.4
   # Use temporary dev version in order to make use of
-  # the new dev-promote-semver command
-  # Published in https://circleci.com/gh/CircleCI-Public/orb-tools-orb/2368
-  orb-tools: circleci/orb-tools@dev:688c761
+  # the new features of the dev orb
+  orb-tools: circleci/orb-tools@dev:newworkflow
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   queue: eddiewebb/queue@1.1.2
 
+parameters:
+  run-integration-tests:
+    type: boolean
+    default: false
+
+commands:
+  check-pr-message:
+    steps:
+      - run:
+          name: Check PR message
+          command: |
+            echo $PR_MESSAGE
+            echo $PR_MESSAGE | grep "was promoted to"
 jobs:
   test-commands:
     parameters:
@@ -38,52 +50,97 @@ jobs:
           param: CIRCLE_BUILD_NUM,CIRCLE_BRANCH,CIRCLE_BUILD_URL,CIRCLE_JOB
 
       - orb-tools-alpha/publish:
-          orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
+          orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
 
       - orb-tools-alpha/increment:
           orb-ref: sandbox/orb-tools
           segment: <<parameters.segment>>
 
+  test-promote-from-commit-subject:
+    parameters:
+      executor:
+        type: executor
+
+      segment:
+        description: >
+          The semver segment to increment 'major' or 'minor' or 'patch'
+        type: enum
+        enum: [major, minor, patch, skip]
+        default: patch
+
+    executor: <<parameters.executor>>
+
+    steps:
+      - checkout
+      - cli/install
+      - run:
+          name: Set up test repository
+          command: |
+            cd ..
+            rm -rf project
+            mkdir project
+            git init
+            echo "test" > test
+            git add . && git commit -am "Merge pull request #99 from dummy-branch [semver:<<parameters.segment>>]"
+      - orb-tools-alpha/dev-promote-from-commit-subject:
+          dev-version: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
+          add-pr-comment: true
+          bot-user: cpe-bot
+          bot-token-variable: GHI_TOKEN
+      - check-pr-message
+
+  test-promote-from-git-tag:
+    parameters:
+      executor:
+        type: executor
+
+      segment:
+        description: >
+          The semver segment to increment 'major' or 'minor' or 'patch'
+        type: enum
+        enum: [major, minor, patch]
+        default: patch
+
+    executor: <<parameters.executor>>
+    environment:
+      # mock the built-in CIRCLE_TAG environment variable
+      CIRCLE_TAG: "<<parameters.segment>>-release-v1"
+
+    steps:
+      - checkout
+      - cli/install
+      - orb-tools-alpha/dev-promote-from-git-tag:
+          orb-name: sandbox/orb-tools
+          add-pr-comment: true
+          bot-user: cpe-bot
+          bot-token-variable: GHI_TOKEN
+      - check-pr-message
+
 # yaml anchor filters
-integration-dev_filters: &integration-dev_filters
-  branches:
-    ignore: /.*/
-  tags:
-    only: /integration-.*/
-
-integration-master_filters: &integration-master_filters
-  branches:
-    ignore: /.*/
-  tags:
-    only: /master-.*/
-
 prod-deploy_requires: &prod-deploy_requires
   [
-    test-increment-job-master
+    test-promote-from-git-tag
   ]
 
-requires_commands_dev: &requires_commands_dev
+requires_commands: &requires_commands
   [
-    test-commands-dev-alpine,
-    test-commands-dev-machine,
-    test-commands-dev-macos,
-    test-commands-dev-node-cci,
-    test-commands-dev-node,
-    test-commands-dev-ubuntu
+    test-commands-alpine,
+    test-commands-machine,
+    test-commands-macos,
+    test-commands-node-cci,
+    test-commands-node,
+    test-commands-ubuntu
   ]
 
-requires_commands_master: &requires_commands_master
-  [
-    test-commands-master-alpine,
-    test-commands-master-machine,
-    test-commands-master-macos,
-    test-commands-master-node-cci,
-    test-commands-master-node,
-    test-commands-master-ubuntu
-  ]
+orb_promotion_filters: &orb_promotion_filters
+  branches:
+    ignore: /.*/
+  tags:
+    only: /^(major|minor|patch)-release-v\d+\.\d+\.\d+$/
 
 workflows:
   lint_pack-validate_publish-dev:
+    unless: << pipeline.parameters.run-integration-tests >>
     jobs:
       - orb-tools/lint:
           use-default-rules: false
@@ -103,88 +160,66 @@ workflows:
       - queue/block_workflow:
           requires: [orb-tools/publish-dev]
 
-      - orb-tools/trigger-integration-workflow:
-          name: trigger-integration-dev
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
+      - orb-tools/trigger-integration-tests-workflow:
+          name: trigger-integration
           requires: [queue/block_workflow]
-          filters:
-            branches:
-              ignore: master
-
-      - orb-tools/trigger-integration-workflow:
-          name: trigger-integration-master
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          cleanup-tags: true
-          tag: master
-          requires: [queue/block_workflow]
-          filters:
-            branches:
-              only: master
 
   integration_tests-prod_deploy:
+    when: << pipeline.parameters.run-integration-tests >>
     jobs:
-      # triggered by non-master branch commits
       # test commands with executors
       - test-commands:
-          name: test-commands-dev-alpine
+          name: test-commands-alpine
           executor: orb-tools-alpha/alpine
           context: orb-publishing
-          filters: *integration-dev_filters
 
       - test-commands:
-          name: test-commands-dev-machine
+          name: test-commands-machine
           executor: orb-tools-alpha/machine
           context: orb-publishing
-          filters: *integration-dev_filters
           # pre-steps: [run: sleep 2]
           segment: minor
 
       - test-commands:
-          name: test-commands-dev-macos
+          name: test-commands-macos
           executor: orb-tools-alpha/macos
           context: orb-publishing
-          filters: *integration-dev_filters
           # pre-steps: [run: sleep 4]
           segment: major
 
       - test-commands:
-          name: test-commands-dev-node-cci
+          name: test-commands-node-cci
           executor: orb-tools-alpha/node-cci
           context: orb-publishing
-          filters: *integration-dev_filters
           pre-steps: [run: sleep 2]
 
       - test-commands:
-          name: test-commands-dev-node
+          name: test-commands-node
           executor: orb-tools-alpha/node
           context: orb-publishing
-          filters: *integration-dev_filters
           pre-steps: [run: sleep 2]
           segment: minor
 
       - test-commands:
-          name: test-commands-dev-ubuntu
+          name: test-commands-ubuntu
           executor: orb-tools-alpha/ubuntu
           context: orb-publishing
-          filters: *integration-dev_filters
           pre-steps: [run: sleep 2]
           segment: major
 
       # test jobs
       - orb-tools-alpha/pack:
-          name: test-pack-job-dev
+          name: test-pack-job
           workspace-path: orb.yml
           artifact-path: orb.yml
-          filters: *integration-dev_filters
-          requires: *requires_commands_dev
+          requires: *requires_commands
 
       - orb-tools-alpha/test-in-builds:
-          name: test-in-builds-job-dev
+          name: test-in-builds-job
           context: orb-publishing
           attach-workspace: true
           orb-name: orb-tools-alpha
-          filters: *integration-dev_filters
-          requires: [test-pack-job-dev]
+          requires: [test-pack-job]
           test-steps:
             - checkout
 
@@ -193,124 +228,43 @@ workflows:
             - orb-tools-alpha/validate
 
             - orb-tools-alpha/publish:
-                orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
+                orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
 
             - orb-tools-alpha/increment:
                 orb-ref: sandbox/orb-tools
 
       - orb-tools-alpha/publish:
-          name: test-publish-job-dev
+          name: test-publish-job
           attach-workspace: true
           context: orb-publishing
-          orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
-          filters: *integration-dev_filters
-          requires: [test-pack-job-dev]
+          orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
+          requires: [test-pack-job]
 
       - orb-tools-alpha/increment:
-          name: test-increment-job-dev
+          name: test-increment-job
           attach-workspace: true
           context: orb-publishing
           orb-ref: sandbox/orb-tools
-          filters: *integration-dev_filters
           requires:
-            - test-in-builds-job-dev
-            - test-publish-job-dev
+            - test-in-builds-job
+            - test-publish-job
 
-      # triggered by master branch commits
-      # test commands with executors
-      - test-commands:
-          name: test-commands-master-alpine
-          executor: orb-tools-alpha/alpine
-          context: orb-publishing
-          filters: *integration-master_filters
-
-      - test-commands:
-          name: test-commands-master-machine
-          executor: orb-tools-alpha/machine
-          context: orb-publishing
-          filters: *integration-master_filters
-          pre-steps: [run: sleep 2]
-          segment: minor
-
-      - test-commands:
-          name: test-commands-master-macos
-          executor: orb-tools-alpha/macos
-          context: orb-publishing
-          filters: *integration-master_filters
-          pre-steps: [run: sleep 4]
-          segment: major
-
-      - test-commands:
-          name: test-commands-master-node-cci
-          executor: orb-tools-alpha/node-cci
-          context: orb-publishing
-          filters: *integration-master_filters
-          pre-steps: [run: sleep 6]
-
-      - test-commands:
-          name: test-commands-master-node
-          executor: orb-tools-alpha/node
-          context: orb-publishing
-          filters: *integration-master_filters
-          pre-steps: [run: sleep 8]
-          segment: minor
-
-      - test-commands:
-          name: test-commands-master-ubuntu
+      - test-promote-from-commit-subject:
           executor: orb-tools-alpha/ubuntu
+          segment: patch
           context: orb-publishing
-          filters: *integration-master_filters
-          pre-steps: [run: sleep 10]
-          segment: major
-
-      # test jobs
-      - orb-tools-alpha/pack:
-          name: test-pack-job-master
-          workspace-path: orb.yml
-          artifact-path: orb.yml
-          filters: *integration-master_filters
-          requires: *requires_commands_master
-
-      - orb-tools-alpha/test-in-builds:
-          name: test-in-builds-job-master
-          context: orb-publishing
-          attach-workspace: true
-          orb-name: orb-tools-alpha
-          filters: *integration-master_filters
-          requires: [test-pack-job-master]
-          test-steps:
-            - checkout
-
-            - orb-tools-alpha/install-bats
-            - orb-tools-alpha/pack
-            - orb-tools-alpha/validate
-
-            - orb-tools-alpha/publish:
-                orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
-
-            - orb-tools-alpha/increment:
-                orb-ref: sandbox/orb-tools
-
-      - orb-tools-alpha/publish:
-          name: test-publish-job-master
-          attach-workspace: true
-          context: orb-publishing
-          orb-ref: sandbox/orb-tools@dev:$CIRCLE_TAG
-          filters: *integration-master_filters
-          requires: [test-pack-job-master]
-
-      - orb-tools-alpha/increment:
-          name: test-increment-job-master
-          attach-workspace: true
-          context: orb-publishing
-          orb-ref: sandbox/orb-tools
-          filters: *integration-master_filters
           requires:
-            - test-in-builds-job-master
-            - test-publish-job-master
+            - test-increment-job
+
+      - test-promote-from-git-tag:
+          executor: orb-tools-alpha/ubuntu
+          segment: patch
+          context: orb-publishing
+          requires:
+            - test-promote-from-commit-subject
 
       # semver publishing
-      - orb-tools/dev-promote-prod:
+      - orb-tools/dev-promote-prod-from-commit-subject:
           name: dev-promote-semver
           add-pr-comment: true
           bot-user: cpe-bot
@@ -321,6 +275,23 @@ workflows:
           requires: *prod-deploy_requires
           filters:
             branches:
-              ignore: /.*/
-            tags:
-              only: /master-.*/
+              only: master
+
+  # Tag-triggered workflow to promote a dev orb into production.
+  # The tag is expected to have been applied manually.
+  tag-triggered-orb-publishing:
+    unless: << pipeline.parameters.run-integration-tests >>
+    jobs:
+      - hold-for-approval:
+          type: approval
+          filters: *orb_promotion_filters
+      - orb-tools/dev-promote-prod-from-git-tag:
+          orb-name: sandbox/orb-tools
+          #orb-name: circleci/orb-tools
+          context: orb-publishing
+          add-pr-comment: true
+          bot-user: cpe-bot
+          bot-token-variable: GHI_TOKEN
+          requires:
+            - hold-for-approval
+          filters: *orb_promotion_filters

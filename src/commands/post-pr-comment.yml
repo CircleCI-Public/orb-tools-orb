@@ -1,0 +1,48 @@
+description: >
+  Posts a comment on a pull request.
+  Requires that the subject of the commit that merged the pull
+  request includes the PR number
+  i.e. 'Merge pull request #XX from some-branch',
+  but the PR number extraction can be customized using the
+  pr-number-sed-expression parameter.
+  
+parameters:
+  comment:
+    description: >
+      The message of the comment to be added to the pull request.
+    type: string
+
+  pr-number-sed-expression:
+    description: >
+      Used to extract the PR number from the commit subject with sed.
+      The default value works with the default
+      GitHub PR merge commit subject.
+    type: string
+    default: 's/Merge pull request #\([0-9]*\) from.*/\1/p'
+
+  bot-user:
+    description: >
+      The GitHub user to post PR comment.
+    type: string
+    default: ""
+
+  bot-token-variable:
+    description: >
+      Name of env var containing the GitHub token value of the GitHub user that
+      to be used for posting the PR comment. Pass this as a raw string such
+      as GITHUB_TOKEN. Do not paste the actual token into your
+      configuration.
+    type: env_var_name
+    default: PR_COMMENTER_GITHUB_TOKEN
+
+steps:
+  - run:
+      name: Post comment to GitHub pull request
+      command: |
+        PR_NUMBER=`git log -1 --pretty=%s. | sed -n '<<parameters.pr-number-sed-expression>>'`
+        echo "PR_NUMBER is ${PR_NUMBER}"
+        if [ "$PR_NUMBER" == "" ];then
+          echo "No pr found; do nothing. If this is a mistake, check if your PR commit message matches the <<parameters.pr-number-sed-expression>> sed expression."
+          exit 0
+        fi
+        curl -X POST -u "<<parameters.bot-user>>:$<<parameters.bot-token-variable>>" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"<<parameters.comment>>\"}"
