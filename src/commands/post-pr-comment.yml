@@ -5,7 +5,7 @@ description: >
   i.e. 'Merge pull request #XX from some-branch',
   but the PR number extraction can be customized using the
   pr-number-sed-expression parameter.
-  
+
 parameters:
   comment:
     description: >
