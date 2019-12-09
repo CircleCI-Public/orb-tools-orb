@@ -94,43 +94,22 @@ workflows:
             tags:
               only: /master-.*/
 
-      # patch, minor, or major publishing, depending on which orb source
-      # files have been modified (that logic lives in the
-      # trigger-integration-workflow job's source)
+      # publish a semver version of the orb. relies on
+      # the commit subject containing the text "[semver:patch|minor|major|skip]"
+      # as that will determine whether a patch, minor or major
+      # version will be published or if publishing should
+      # be skipped.
+      # e.g. [semver:patch] will cause a patch version to be published.
       - orb-tools/dev-promote-prod:
-          name: dev-promote-patch
           orb-name: your-namespace/your-orb
+          add-pr-comment: false
           requires:
             - integration-tests-master
           filters:
             branches:
               ignore: /.*/
             tags:
-              only: /master-patch.*/
-
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-minor
-          release: minor
-          orb-name: your-namespace/your-orb
-          requires:
-            - integration-tests-master
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /master-minor.*/
-
-      - orb-tools/dev-promote-prod:
-          name: dev-promote-major
-          release: major
-          orb-name: your-namespace/your-orb
-          requires:
-            - integration-tests-master
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /master-major.*/
+              only: /master-.*/
 ```
 
 ## Contributing
