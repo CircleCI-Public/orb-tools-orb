@@ -3,8 +3,6 @@ description: >
   alpha version of an orb using CircleCI v2 API.
   See examples for further usage details.
 
-executor: ubuntu
-
 parameters:
   checkout:
     type: boolean
@@ -27,7 +25,16 @@ parameters:
       Name of environment variable containing your personal CircleCI API token
 
 steps:
-  - trigger-integration-tests-workflow:
-      checkout: <<parameters.checkout>>
-      pipeline-param-map: <<parameters.pipeline-param-map>>
-      token-variable: <<parameters.token-variable>>
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
+
+  - run:
+      name: Trigger integration test workflow
+      command: |
+        VCS_TYPE=$(echo ${CIRCLE_BUILD_URL} | cut -d '/' -f 4)
+        curl -u ${<<parameters.token-variable>>}: -X POST --header "Content-Type: application/json" -d "{
+          \"branch\": \"${CIRCLE_BRANCH}\",
+          \"parameters\": <<parameters.pipeline-param-map>>
+        }" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline"

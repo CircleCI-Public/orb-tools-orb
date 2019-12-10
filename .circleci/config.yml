@@ -165,6 +165,7 @@ workflows:
 
       - orb-tools/trigger-integration-tests-workflow:
           name: trigger-integration
+          context: orb-publishing
           requires: [queue/block_workflow]
 
   integration_tests-prod_deploy:
