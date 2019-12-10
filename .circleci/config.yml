@@ -26,7 +26,7 @@ commands:
           name: Check PR message
           command: |
             echo $PR_MESSAGE
-            echo $PR_MESSAGE | grep "orb available for use - `<<parameters.orb-name>>"
+            echo $PR_MESSAGE | grep -e "orb available for use.*<<parameters.orb-name>>"
 jobs:
   test-commands:
     parameters:
