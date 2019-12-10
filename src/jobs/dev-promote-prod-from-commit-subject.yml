@@ -84,7 +84,7 @@ parameters:
       with github.com as Hostname). Used to push a git tag back to the
       project's repository.
 
-  do-project-checkout:
+  checkout:
     description: >
       Whether to perform the CircleCI checkout step.
     type: boolean
@@ -92,7 +92,7 @@ parameters:
 
 steps:
   - when:
-      condition: <<parameters.publish-version-tag>>
+      condition: <<parameters.checkout>>
       steps:
         - checkout
 
@@ -103,7 +103,7 @@ steps:
       pr-number-sed-expression: <<parameters.pr-number-sed-expression>>
       bot-user: <<parameters.bot-user>>
       bot-token-variable: <<parameters.bot-token-variable>>
-      do-project-checkout: <<parameters.do-project-checkout>>
+      checkout: <<parameters.checkout>>
 
   - when:
       condition: <<parameters.publish-version-tag>>

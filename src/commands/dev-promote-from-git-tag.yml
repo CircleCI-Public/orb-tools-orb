@@ -106,14 +106,14 @@ parameters:
     type: env_var_name
     default: PR_COMMENTER_GITHUB_TOKEN
 
-  do-project-checkout:
+  checkout:
     description: >
       Whether to perform the CircleCI checkout step.
     type: boolean
     default: true
 steps:
   - when:
-      condition: <<parameters.do-project-checkout>>
+      condition: <<parameters.checkout>>
       steps:
         - checkout
   - when:

@@ -88,6 +88,7 @@ jobs:
             echo "test" > test
             git add . && git commit -am "Merge pull request #99 from dummy-branch [semver:<<parameters.segment>>]"
       - orb-tools-alpha/dev-promote-from-commit-subject:
+          checkout: false
           dev-version: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
           add-pr-comment: true
           bot-user: cpe-bot
@@ -112,9 +113,9 @@ jobs:
       CIRCLE_TAG: "<<parameters.segment>>-release-v1"
 
     steps:
-      - checkout
       - cli/install
       - orb-tools-alpha/dev-promote-from-git-tag:
+          checkout: false
           orb-name: sandbox/orb-tools
           add-pr-comment: true
           bot-user: cpe-bot

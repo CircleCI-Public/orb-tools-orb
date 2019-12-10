@@ -105,7 +105,7 @@ parameters:
     type: env_var_name
     default: PR_COMMENTER_GITHUB_TOKEN
 
-  do-project-checkout:
+  checkout:
     description: >
       Whether to perform the CircleCI checkout step.
     type: boolean
@@ -126,4 +126,4 @@ steps:
       pr-number-sed-expression: <<parameters.pr-number-sed-expression>>
       bot-user: <<parameters.bot-user>>
       bot-token-variable: <<parameters.bot-token-variable>>
-      do-project-checkout: <<parameters.do-project-checkout>>
+      checkout: <<parameters.checkout>>
