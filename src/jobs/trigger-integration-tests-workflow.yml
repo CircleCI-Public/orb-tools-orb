@@ -14,7 +14,7 @@ parameters:
 
   pipeline-param-map:
     type: string
-    default: "{\"run-integration-tests\": true}"
+    default: "\\\"{\\\"run-integration-tests\\\": true, \\\"dev-orb-version\\\": \\\"dev:${CIRCLE_SHA1:0:7}\\\"}\\\""
     description: >
       Map of pipeline parameters that the new pipeline will be invoked with.
       Make use of this to target the integration workflow that should be triggered

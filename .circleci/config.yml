@@ -5,13 +5,16 @@ orbs:
   # Use temporary dev version in order to make use of
   # the new features of the dev orb
   orb-tools: circleci/orb-tools@dev:newworkflow
-  orb-tools-alpha: circleci/orb-tools@dev:alpha
+  orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
   queue: eddiewebb/queue@1.1.2
 
 parameters:
   run-integration-tests:
     type: boolean
     default: false
+  dev-orb-version:
+    type: string
+    default: "dev:alpha"
 
 commands:
   check-pr-message:
