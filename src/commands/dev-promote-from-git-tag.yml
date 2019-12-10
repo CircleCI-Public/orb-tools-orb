@@ -125,7 +125,8 @@ steps:
               TEMP_DIR=`mktemp -d 2>/dev/null || mktemp -d -t 'orbtoolsorbtempdir'`
               git clone "$CIRCLE_REPOSITORY_URL" ${TEMP_DIR}
               cd ${TEMP_DIR}
-              git branch --contains ${CIRCLE_SHA1} | grep -E '(^|\s)<<parameters.required-branch>>$'
+              git checkout <<parameters.required-branch>>
+              git branch --contains ${CIRCLE_SHA1} | grep -E "(^|\s)<<parameters.required-branch>>$"
   - run:
       name: Promote dev orb to production
       command: |
