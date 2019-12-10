@@ -113,14 +113,16 @@ jobs:
         default: patch
 
     executor: <<parameters.executor>>
-    environment:
-      # mock the built-in CIRCLE_TAG environment variable
-      CIRCLE_TAG: "<<parameters.segment>>-release-v1"
 
     steps:
       - cli/install
+      - checkout
+      - run:
+          name: Mock the built-in CIRCLE_TAG environment variable
+          command: |
+            echo "export CIRCLE_TAG=\"<<parameters.segment>>-release-v1\"" >> $BASH_ENV
       - orb-tools-alpha/dev-promote-from-git-tag:
-          checkout: true
+          checkout: false
           orb-name: sandbox/orb-tools
           add-pr-comment: true
           bot-user: cpe-bot
