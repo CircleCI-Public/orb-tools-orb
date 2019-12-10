@@ -18,12 +18,15 @@ parameters:
 
 commands:
   check-pr-message:
+    parameters:
+      orb-name:
+        type: string
     steps:
       - run:
           name: Check PR message
           command: |
             echo $PR_MESSAGE
-            echo $PR_MESSAGE | grep "was promoted to"
+            echo $PR_MESSAGE | grep "orb available for use - `<<parameters.orb-name>>"
 jobs:
   test-commands:
     parameters:
@@ -86,14 +89,16 @@ jobs:
             cd project
             git init
             echo "test" > test
-            git add . && git commit -am "Merge pull request #99 from dummy-branch [semver:<<parameters.segment>>]"
+            git add . && git commit -am "Merge pull request #99TEST from dummy-branch [semver:<<parameters.segment>>]"
       - orb-tools-alpha/dev-promote-from-commit-subject:
           checkout: false
           dev-version: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
           add-pr-comment: true
           bot-user: cpe-bot
           bot-token-variable: GHI_TOKEN
-      - check-pr-message
+          pr-number-sed-expression: 's/Merge pull request #\([0-9]*\)TEST from.*/\1/p'
+      - check-pr-message:
+          orb-name: sandbox/orb-tools
 
   test-promote-from-git-tag:
     parameters:
@@ -120,7 +125,8 @@ jobs:
           add-pr-comment: true
           bot-user: cpe-bot
           bot-token-variable: GHI_TOKEN
-      - check-pr-message
+      - check-pr-message:
+          orb-name: sandbox/orb-tools
 
 # yaml anchor filters
 prod-deploy_requires: &prod-deploy_requires
