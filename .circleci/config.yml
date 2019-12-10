@@ -76,12 +76,14 @@ jobs:
     steps:
       - checkout
       - cli/install
+      - orb-tools-alpha/configure-git
       - run:
           name: Set up test repository
           command: |
             cd ..
             rm -rf project
             mkdir project
+            cd project
             git init
             echo "test" > test
             git add . && git commit -am "Merge pull request #99 from dummy-branch [semver:<<parameters.segment>>]"
