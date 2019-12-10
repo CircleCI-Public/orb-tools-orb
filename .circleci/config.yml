@@ -120,7 +120,7 @@ jobs:
       - run:
           name: Mock the built-in CIRCLE_TAG environment variable
           command: |
-            echo "export CIRCLE_TAG=\"<<parameters.segment>>-release-v1\"" >> $BASH_ENV
+            echo "export CIRCLE_TAG=\"<<parameters.segment>>-release-v10.8.10\"" >> $BASH_ENV
       - orb-tools-alpha/dev-promote-from-git-tag:
           checkout: false
           orb-name: sandbox/orb-tools
