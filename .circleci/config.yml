@@ -96,7 +96,7 @@ jobs:
           add-pr-comment: true
           bot-user: cpe-bot
           bot-token-variable: GHI_TOKEN
-          pr-number-sed-expression: 's/Merge pull request #\([0-9]*\)TEST from.*/\1/p'
+          pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
       - check-pr-message:
           orb-name: sandbox/orb-tools
 
@@ -120,7 +120,7 @@ jobs:
     steps:
       - cli/install
       - orb-tools-alpha/dev-promote-from-git-tag:
-          checkout: false
+          checkout: true
           orb-name: sandbox/orb-tools
           add-pr-comment: true
           bot-user: cpe-bot
