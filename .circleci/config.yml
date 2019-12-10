@@ -127,6 +127,7 @@ jobs:
           add-pr-comment: true
           bot-user: cpe-bot
           bot-token-variable: GHI_TOKEN
+          required-branch: $CIRCLE_BRANCH
       - check-pr-message:
           orb-name: sandbox/orb-tools
 
