@@ -88,7 +88,7 @@ steps:
       command: |
         COMMIT_SUBJECT=`git log -1 --pretty=%s.`
         SEMVER_INCREMENT=`echo ${COMMIT_SUBJECT} | sed -En 's/.*\[semver:(major|minor|patch|skip)\].*/\1/p'`
-        echo "Commit subject: ${COMMIT_SUBJECT}\n"
+        echo "Commit subject: ${COMMIT_SUBJECT}"
         if [ -z ${SEMVER_INCREMENT} ];then
           echo "Commit subject did not indicate which SemVer increment to make."
           echo "To publish orb, you can ammend the commit or push another commit with [semver:FOO] in the subject where FOO is major, minor, patch."

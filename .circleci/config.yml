@@ -306,7 +306,7 @@ workflows:
 
       - test-promote-from-git-tag:
           executor: orb-tools-alpha/ubuntu
-          segment: patch
+          segment: minor
           context: orb-publishing
           requires:
             - test-promote-from-commit-subject-semver-patch

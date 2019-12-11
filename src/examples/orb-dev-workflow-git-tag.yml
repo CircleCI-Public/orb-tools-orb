@@ -1,16 +1,22 @@
 description: >
   Use the lint, pack, publish-dev, and trigger-integration-workflow jobs
   to lint a destructured orb's YAML source code, pack it into a single
-  orb.yml file, release a @dev:alpha version of the orb, and trigger
+  orb.yml file, release a @dev:${CIRCLE_SHA1:0:7} version of the orb, and trigger
   an integration testing workflow that will run against the new dev
-  release of the orb. After running integration tests, use the orb's
-  dev-promote-prod job to promote the orb's @dev:alpha release to a
+  release of the orb. After the integration tests succeed, trigger the orb's
+  dev-promote-prod-from-git-tag job to promote the orb's @dev:${CIRCLE_SHA1:0:7} release to a
   production release. See the orb's GitHub README for a version of this
   example with extensive usage and context comments:
   https://github.com/circleci-public/orb-tools-orb#examples
 
 usage:
   version: 2.1
+
+  orb_promotion_filters: &orb_promotion_filters
+    branches:
+      ignore: /.*/
+    tags:
+      only: /^(major|minor|patch)-release-v\d+\.\d+\.\d+$/
 
   orbs:
     orb-tools: circleci/orb-tools@x.y.z
@@ -73,7 +79,7 @@ usage:
     # when the run-integration-tests pipeline parameter is set to true.
     # It is meant to be triggered by the "trigger-integration-tests-workflow"
     # job, and run tests on <your orb>@dev:${CIRCLE_SHA1:0:7}.
-    integration-tests_prod-release:
+    integration-tests:
       when: << pipeline.parameters.run-integration-tests >>
       jobs:
         # your integration test jobs go here: essentially, run all your orb's
@@ -83,19 +89,21 @@ usage:
         # an example job
         - integration-tests-for-your-orb
 
-        # publish a semver version of the orb. relies on
-        # the commit subject containing the text "[semver:patch|minor|major|skip]"
-        # as that will determine whether a patch, minor or major
-        # version will be published or if publishing should
-        # be skipped.
-        # e.g. [semver:patch] will cause a patch version to be published.
-        - orb-tools/dev-promote-prod-from-commit-subject:
-            orb-name: your-namespace/your-orb
-            add-pr-comment: false
-            publish-version-tag: false
-            fail-if-semver-not-indicated: false
+    # Tag-triggered workflow to promote a dev orb into production.
+    # The tag is expected to have been applied outside of
+    # workflows configured here, e.g. by running git tag patch-release-v0.0.1
+    # and then git push origin patch-release-v0.0.1
+    tag-triggered-orb-publishing:
+      unless: << pipeline.parameters.run-integration-tests >>
+      jobs:
+        - hold-for-approval:
+            type: approval
+            filters: *orb_promotion_filters
+        - orb-tools/dev-promote-prod-from-git-tag:
+            orb-name: your-namespace/your-orb-name
+            add-pr-comment: true
+            bot-user: your-bot-username
+            bot-token-variable: YOUR_BOT_TOKEN
             requires:
-              - integration-tests
-            filters:
-              branches:
-                only: master
+              - hold-for-approval
+            filters: *orb_promotion_filters
