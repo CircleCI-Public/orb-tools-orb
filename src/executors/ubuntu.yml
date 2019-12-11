@@ -12,7 +12,7 @@ parameters:
 
   tag:
     type: string
-    default: edge
+    default: stable
 
 resource_class: <<parameters.resource-class>>
 

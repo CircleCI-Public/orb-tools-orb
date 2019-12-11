@@ -70,7 +70,6 @@ parameters:
 
   publish-version-tag:
     type: boolean
-    default: true
     description: >
       Push a git tag describing the release that was just published? If `true`,
       make sure to pass SSH fingerprints, as well
@@ -90,6 +89,11 @@ parameters:
     type: boolean
     default: true
 
+  fail-if-semver-not-indicated:
+    description: >
+      Whether to fail if the commit subject did not include [semver:patch|minor|release|skip]
+    type: boolean
+
 steps:
   - when:
       condition: <<parameters.checkout>>
@@ -97,13 +101,15 @@ steps:
         - checkout
 
   - dev-promote-from-commit-subject:
+      orb-name: <<parameters.orb-name>>
+      orb-ref: <<parameters.orb-ref>>
       token-variable: <<parameters.publish-token-variable>>
-      dev-version: <<parameters.orb-name>>@<<parameters.orb-ref>>
       add-pr-comment: <<parameters.add-pr-comment>>
       pr-number-sed-expression: <<parameters.pr-number-sed-expression>>
       bot-user: <<parameters.bot-user>>
       bot-token-variable: <<parameters.bot-token-variable>>
       checkout: <<parameters.checkout>>
+      fail-if-semver-not-indicated: <<parameters.fail-if-semver-not-indicated>>
 
   - when:
       condition: <<parameters.publish-version-tag>>
