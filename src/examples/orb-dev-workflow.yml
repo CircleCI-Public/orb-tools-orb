@@ -17,7 +17,7 @@ usage:
     # add your orb below, to be used in integration tests (note: a
     # @dev:alpha release must exist; if none exists, you'll need to
     # publish manually once before this worklow can succeed)
-    your-orb: your-namespace/your-orb@<<parameters.dev-orb-version>>
+    your-orb: your-namespace/your-orb@<<pipeline.parameters.dev-orb-version>>
 
   # Pipeline parameters
   parameters:
@@ -95,7 +95,7 @@ usage:
             publish-version-tag: false
             fail-if-semver-not-indicated: false
             requires:
-              - integration-tests
+              - integration-tests-for-your-orb
             filters:
               branches:
                 only: master

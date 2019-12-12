@@ -23,7 +23,7 @@ usage:
     # add your orb below, to be used in integration tests (note: a
     # @dev:alpha release must exist; if none exists, you'll need to
     # publish manually once before this worklow can succeed)
-    your-orb: your-namespace/your-orb@<<parameters.dev-orb-version>>
+    your-orb: your-namespace/your-orb@<<pipeline.parameters.dev-orb-version>>
 
   # Pipeline parameters
   parameters:
@@ -96,6 +96,7 @@ usage:
     tag-triggered-orb-publishing:
       unless: << pipeline.parameters.run-integration-tests >>
       jobs:
+        # To approve the job, visit the Workflows page for your project
         - hold-for-approval:
             type: approval
             filters: *orb_promotion_filters

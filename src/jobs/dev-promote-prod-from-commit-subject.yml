@@ -95,10 +95,6 @@ parameters:
     type: boolean
 
 steps:
-  - when:
-      condition: <<parameters.checkout>>
-      steps:
-        - checkout
 
   - dev-promote-from-commit-subject:
       orb-name: <<parameters.orb-name>>
