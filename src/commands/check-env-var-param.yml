@@ -41,7 +41,7 @@ steps:
           IFS="," read -ra PARAMS \<<< "<<parameters.param>>"
 
           for i in "${PARAMS[@]}"; do
-            if [[ -z "${i}" ]]; then
+            if [[ -z "${!i}" ]]; then
               echo "ERROR: Missing environment variable {i}" >&2
 
               if [[ -n "<<parameters.error-message>>" ]]; then
