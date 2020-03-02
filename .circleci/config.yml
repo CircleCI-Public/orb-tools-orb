@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  cli: circleci/circleci-cli@0.1.4
+  cli: circleci/circleci-cli@0.1
   # Temporarily use dev version in order to make use of
   # the new features of the dev orb
   orb-tools: circleci/orb-tools@dev:newworkflow
