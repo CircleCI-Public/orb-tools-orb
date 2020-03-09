@@ -118,7 +118,7 @@ steps:
               if [ -z "${ORB_VERSION}" ] || [ -z "${SEMVER_INCREMENT}" ] || [ "${SEMVER_INCREMENT}" == "skip" ]; then
                 echo "Release tags will not be published."
                 echo "Reason: \"skip\" or no semver increment was indicated, or the orb was not published."
-                circleci step halt
+                circleci step halt --skip-update-check
               fi
 
         - add_ssh_keys:
