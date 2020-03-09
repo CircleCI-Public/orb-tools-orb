@@ -107,6 +107,7 @@ steps:
           echo $PUBLISH_MESSAGE
           ORB_VERSION=$(echo $PUBLISH_MESSAGE | sed -n 's/Orb .* was promoted to `\(.*\)`.*/\1/p')
           echo "export PR_MESSAGE=\"BotComment: *Production* version of orb available for use - \\\`${ORB_VERSION}\\\`\"" >> $BASH_ENV
+          echo "export ORB_VERSION=\"$ORB_VERSION\"" >> $BASH_ENV
         fi
   - when:
       condition: <<parameters.add-pr-comment>>
