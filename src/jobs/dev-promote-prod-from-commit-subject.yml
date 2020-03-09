@@ -119,6 +119,11 @@ steps:
         - run:
             name: construct/push git release tag
             command: |
+              if [ -z "${SEMVER_INCREMENT}" ] || [ "${SEMVER_INCREMENT}" == "skip" ]; then
+                echo "Indicated semver increment was: ${SEMVER_INCREMENT}"
+                echo "Release tags will not be pushed because either \"skip\" or no semver increment was indicated"
+                exit 0
+              fi
 
               # construct/push new tag
               NEW_VERSION=$(circleci orb info <<parameters.orb-name>> | grep Latest | sed -E 's|Latest: <<parameters.orb-name>>@||')

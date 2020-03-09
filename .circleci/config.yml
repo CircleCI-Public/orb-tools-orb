@@ -2,11 +2,10 @@ version: 2.1
 
 orbs:
   cli: circleci/circleci-cli@0.1
-  # Temporarily use dev version in order to make use of
-  # the new features of the dev orb
-  orb-tools: circleci/orb-tools@dev:newworkflow
+  orb-tools: circleci/orb-tools@9.0
   orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
   queue: eddiewebb/queue@1.1.2
+  jq: circleci/jq@1.9.1
 
 parameters:
   run-integration-tests:
@@ -17,6 +16,27 @@ parameters:
     default: "dev:alpha"
 
 commands:
+  set-up-test-repository:
+    parameters:
+      segment:
+        description: >
+          The semver segment to increment 'major' or 'minor' or 'patch'
+        type: enum
+        enum: [major, minor, patch, skip, none]
+        default: patch
+    steps:
+      - orb-tools-alpha/configure-git
+      - run:
+          name: Set up test repository
+          command: |
+            cd ..
+            rm -rf project
+            mkdir project
+            cd project
+            git init
+            echo "test" > test
+            git add . && git commit -am "Merge pull request #99TEST from dummy-branch [semver:<<parameters.segment>>]"
+
   check-pr-message:
     parameters:
       orb-name:
@@ -88,17 +108,8 @@ jobs:
     steps:
       - checkout
       - cli/install
-      - orb-tools-alpha/configure-git
-      - run:
-          name: Set up test repository
-          command: |
-            cd ..
-            rm -rf project
-            mkdir project
-            cd project
-            git init
-            echo "test" > test
-            git add . && git commit -am "Merge pull request #99TEST from dummy-branch [semver:<<parameters.segment>>]"
+      - set-up-test-repository:
+          segment: <<parameters.segment>>
       - orb-tools-alpha/dev-promote-from-commit-subject:
           checkout: false
           orb-name: sandbox/orb-tools
@@ -139,16 +150,13 @@ jobs:
           bot-user: cpe-bot
           bot-token-variable: GHI_TOKEN
           required-branch: $CIRCLE_BRANCH
+          # Make it unmatchable to avoid an actual PR being commented on
+          pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
       - check-pr-message:
           orb-name: sandbox/orb-tools
           expect-orb-to-be-published: true
 
 # yaml anchor filters
-prod-deploy_requires: &prod-deploy_requires
-  [
-    test-promote-from-git-tag
-  ]
-
 requires_commands: &requires_commands
   [
     test-commands-alpine,
@@ -225,7 +233,9 @@ workflows:
           name: test-commands-node
           executor: orb-tools-alpha/node
           context: orb-publishing
-          pre-steps: [run: sleep 2]
+          pre-steps:
+            - run: sleep 2
+            - jq/install
           segment: minor
 
       - test-commands:
@@ -313,7 +323,45 @@ workflows:
             - test-promote-from-commit-subject-semver-skip
             - test-promote-from-commit-subject-semver-none
 
-      # semver publishing
+      - orb-tools-alpha/dev-promote-prod-from-commit-subject:
+          name: test-publish-tags-skipped-on-semver-skip
+          checkout: false
+          orb-name: sandbox/orb-tools
+          fail-if-semver-not-indicated: false
+          add-pr-comment: true
+          bot-user: cpe-bot
+          bot-token-variable: GHI_TOKEN
+          pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
+          publish-version-tag: true
+          # use invalid fingerprints to make the job fail if it doesn't skip tag publishing
+          ssh-fingerprints: 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+          pre-steps:
+            - checkout
+            - set-up-test-repository:
+                segment: "skip"
+          requires:
+            - test-promote-from-git-tag
+
+      - orb-tools-alpha/dev-promote-prod-from-commit-subject:
+          name: test-publish-tags-skipped-on-missing-semver
+          checkout: false
+          orb-name: sandbox/orb-tools
+          fail-if-semver-not-indicated: false
+          add-pr-comment: true
+          bot-user: cpe-bot
+          bot-token-variable: GHI_TOKEN
+          pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
+          publish-version-tag: true
+          # use invalid fingerprints to make the job fail if it doesn't skip tag publishing
+          ssh-fingerprints: 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+          pre-steps:
+            - checkout
+            - set-up-test-repository:
+                segment: "none"
+          requires:
+            - test-promote-from-git-tag
+
+      # Actually publish the orb
       - orb-tools/dev-promote-prod-from-commit-subject:
           name: dev-promote-semver
           add-pr-comment: true
@@ -324,7 +372,9 @@ workflows:
           orb-name: circleci/orb-tools
           publish-version-tag: true
           ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
-          requires: *prod-deploy_requires
+          requires:
+            - test-publish-tags-skipped-on-semver-skip
+            - test-publish-tags-skipped-on-missing-semver
           filters:
             branches:
               only: master
