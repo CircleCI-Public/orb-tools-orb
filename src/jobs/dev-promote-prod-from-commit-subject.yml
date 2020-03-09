@@ -110,6 +110,17 @@ steps:
   - when:
       condition: <<parameters.publish-version-tag>>
       steps:
+        - run:
+            name: Check if release tags should be published
+            command: |
+              echo "Indicated semver increment was: ${SEMVER_INCREMENT}"
+              echo "Version of orb published: ${ORB_VERSION}"
+              if [ -z "${ORB_VERSION}" ] || [ -z "${SEMVER_INCREMENT}" ] || [ "${SEMVER_INCREMENT}" == "skip" ]; then
+                echo "Release tags will not be published."
+                echo "Reason: \"skip\" or no semver increment was indicated, or the orb was not published."
+                circleci step halt
+              fi
+
         - add_ssh_keys:
             fingerprints:
               - <<parameters.ssh-fingerprints>>
@@ -119,9 +130,8 @@ steps:
         - run:
             name: construct/push git release tag
             command: |
-
               # construct/push new tag
-              NEW_VERSION=$(circleci orb info <<parameters.orb-name>> | grep Latest | sed -E 's|Latest: <<parameters.orb-name>>@||')
+              NEW_VERSION=$(echo ${ORB_VERSION}| sed -E 's|<<parameters.orb-name>>@||')
 
               TAG="v$NEW_VERSION"
 
