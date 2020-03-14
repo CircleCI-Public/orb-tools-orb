@@ -2,8 +2,10 @@ version: 2.1
 
 description: |
   Various tools for creating, testing, and publishing Orbs.
+
 display:
   source_url: https://github.com/CircleCI-Public/orb-tools-orb
+
 orbs:
   build-tools: circleci/build-tools@2.6.3
   cli: circleci/circleci-cli@0.1.7

@@ -1,0 +1,31 @@
+description: |
+  Automatically shellcheck the run statements within your jobs and commands.
+
+executor: cli/default
+
+parameters:
+  source-dir:
+      description: Path containing the orb source files.
+      type: string
+      default: "src"
+
+steps:
+  - checkout
+  - run:
+      name: Install shellcheck
+      command: apt-get install shellcheck
+  - run:
+      name: Install YQ
+      command: |
+        wget -O yq -P /usr/bin/ https://github.com/mikefarah/yq/releases/download/3.2.1/yq_linux_amd64
+  - run:
+    name: ShellCheck
+    command: |
+      ORB_SOURCE_FILES=<<parameters.source-dir>>/*
+      for file in $ORB_SOURCE_FILES
+        ORB_STEP_COUNT=$(yq r $file --length steps)
+        for i in {1..$ORB_STEP_COUNT}
+      do
+      if[x = cat test.yml]
+      fi
+      done
