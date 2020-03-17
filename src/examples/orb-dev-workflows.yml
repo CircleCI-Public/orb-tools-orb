@@ -23,7 +23,7 @@ usage:
     [
       orb-tools/lint,
       orb-tools/shellcheck,
-      tools/pack
+      orb-tools/pack
     ]
 
   # Pipeline parameters
