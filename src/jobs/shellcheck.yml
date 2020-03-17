@@ -18,7 +18,9 @@ steps:
   - checkout
   - run:
       name: Install shellcheck
-      command: apt-get install shellcheck
+      command: |
+        if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+        $SUDO apt-get install shellcheck
   - run:
       name: Install YQ
       command: |
