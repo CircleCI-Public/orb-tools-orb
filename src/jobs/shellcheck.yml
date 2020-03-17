@@ -24,9 +24,10 @@ steps:
   - run:
       name: Install YQ
       command: |
-        sudo add-apt-repository ppa:rmescandon/yq
-        sudo apt update
-        sudo apt install yq -y
+        if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+        $SUDO add-apt-repository ppa:rmescandon/yq
+        $SUDO apt update
+        $SUDO apt install yq -y
   - run:
       name: ShellCheck
       command: |
