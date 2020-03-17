@@ -19,6 +19,13 @@ usage:
     # publish manually once before this worklow can succeed)
     your-orb: your-namespace/your-orb@<<pipeline.parameters.dev-orb-version>>
 
+  orb_prep_jobs: &orb_prep_jobs
+    [
+      orb-tools/lint,
+      orb-tools/shellcheck,
+      tools/pack
+    ]
+
   # Pipeline parameters
   parameters:
     # These pipeline parameters are required by the "trigger-integration-tests-workflow"
@@ -57,8 +64,7 @@ usage:
         # if using Contexts, add your context below
         - orb-tools/publish-dev:
             orb-name: your-namespace/your-orb-name
-            requires:
-              - orb-tools/pack
+            requires: *orb_prep_jobs
 
         # trigger an integration workflow to test the
         # dev:${CIRCLE_SHA1:0:7} version of your orb

@@ -12,6 +12,13 @@ description: >
 usage:
   version: 2.1
 
+  orb_prep_jobs: &orb_prep_jobs
+    [
+      orb-tools/lint,
+      orb-tools/shellcheck,
+      tools/pack
+    ]
+
   orb_promotion_filters: &orb_promotion_filters
     branches:
       ignore: /.*/
@@ -63,8 +70,7 @@ usage:
         # if using Contexts, add your context below
         - orb-tools/publish-dev:
             orb-name: your-namespace/your-orb-name
-            requires:
-              - orb-tools/pack
+            requires: *orb_prep_jobs
 
         # trigger an integration workflow to test the
         # dev:${CIRCLE_SHA1:0:7} version of your orb
