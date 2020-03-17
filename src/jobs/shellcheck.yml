@@ -25,9 +25,9 @@ steps:
       name: Install YQ
       command: |
         if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
-        $SUDO add-apt-repository ppa:rmescandon/yq
-        $SUDO apt update
-        $SUDO apt install yq -y
+        wget https://github.com/mikefarah/yq/releases/download/3.2.1/yq_linux_386
+        $SUDO mv yq_linux_386 /usr/local/bin/yq
+        $SUDO chmod +x /usr/local/bin/yq
   - run:
       name: ShellCheck
       command: |
