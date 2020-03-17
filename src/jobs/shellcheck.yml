@@ -51,7 +51,7 @@ steps:
               ###
               # EXCLUSIONS
                 # SC2148 - Missing shebang, this is to be expected.
-                # SC1044 - "<<" parameter notation before the text replacement will appear like a here document with no EOF. Ignore this error for now.
+                # SC1044 - "\<<" parameter notation before the text replacement will appear like a here document with no EOF. Ignore this error for now.
                 # SC1072 - Not entirely sure on this one: https://github.com/koalaman/shellcheck/wiki/SC1072. Temporarily adding.
               yq r $file steps[$i].run.command | shellcheck -e SC2148 -e SC1044 -e SC1072 -
               if [[ $? == 1 ]]; then
