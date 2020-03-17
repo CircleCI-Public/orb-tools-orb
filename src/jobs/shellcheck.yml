@@ -40,7 +40,13 @@ steps:
         ORB_SOURCE_FILES="<< parameters.source-dir >>/**/*.yml"
         SC_ERROR_COUNT=0
 
-        EXCLUDED_SHELL_ERRORS=SC2148,SC1044,SC1072<<#parameters.exclude>>,<</parameters.exclude>><<parameters.exclude>>
+        # EXCLUSIONS
+        # SC2148 - Missing shebang, this is to be expected.
+        # SC1044 - "\<<" parameter notation before the text replacement will appear like a here document with no EOF. Ignore this error for now.
+        # SC1072 - Not entirely sure on this one: https://github.com/koalaman/shellcheck/wiki/SC1072. Temporarily adding.
+        # SC1090 - https://github.com/koalaman/shellcheck/wiki/SC1090
+
+        EXCLUDED_SHELL_ERRORS=SC2148,SC1044,SC1072,SC1090<<#parameters.exclude>>,<</parameters.exclude>><<parameters.exclude>>
 
         ###
         # For each file
@@ -61,10 +67,6 @@ steps:
               ###
               # If that step is a "run" step with a "command" key
               ###
-              # EXCLUSIONS
-                # SC2148 - Missing shebang, this is to be expected.
-                # SC1044 - "\<<" parameter notation before the text replacement will appear like a here document with no EOF. Ignore this error for now.
-                # SC1072 - Not entirely sure on this one: https://github.com/koalaman/shellcheck/wiki/SC1072. Temporarily adding.
               yq r $file steps[$i].run.command | shellcheck --exclude $EXCLUDED_SHELL_ERRORS -
               if [[ $? == 1 ]]; then
                 # When an error is discovered

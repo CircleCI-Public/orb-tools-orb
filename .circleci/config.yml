@@ -153,7 +153,6 @@ jobs:
       - check-pr-message:
           orb-name: sandbox/orb-tools
           expect-orb-to-be-published: true
-
 # yaml anchor filters
 requires_commands: &requires_commands
   [
