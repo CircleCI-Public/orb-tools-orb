@@ -70,9 +70,7 @@ jobs:
 
     steps:
       - checkout
-
       - cli/install
-
       - orb-tools-alpha/install-bats
       - orb-tools-alpha/pack
       - orb-tools-alpha/validate
