@@ -210,14 +210,12 @@ workflows:
           name: test-commands-machine
           executor: orb-tools-alpha/machine
           context: orb-publishing
-          # pre-steps: [run: sleep 2]
           segment: minor
 
       - test-commands:
           name: test-commands-macos
           executor: orb-tools-alpha/macos
           context: orb-publishing
-          # pre-steps: [run: sleep 4]
           segment: major
 
       - test-commands:
