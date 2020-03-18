@@ -63,11 +63,21 @@ steps:
             # For each step in that file
             ###
           do
-            if [[ $(yq r $file steps[$i].run.command) ]]; then
-              ###
-              # If that step is a "run" step with a "command" key
-              ###
-              yq r $file steps[$i].run.command | shellcheck --exclude $EXCLUDED_SHELL_ERRORS -
+            # flag to determine if the command should be sent to shellcheck
+            SCRIPT_TO_SHELLCHECK=""
+
+            if [[ $(yq r $file steps[$i] --length) == "1" && $(yq r $file steps[$i].run) ]]
+              # Step is a single run statement with no other keys
+              SCRIPT_TO_SHELLCHECK=$(yq r $file steps[$i].run)
+            fi
+
+            if [[ $(yq r $file steps[$i].run.command) && ! $(yq r $file steps[$i].run.shell)]]
+              # Step has a command key, and no shell key
+              SCRIPT_TO_SHELLCHECK=$(yq r $file steps[$i].run.command)
+            fi
+
+            if [[ -n "$SCRIPT_TO_SHELLCHECK" ]]; then
+              echo $SCRIPT_TO_SHELLCHECK | shellcheck --exclude $EXCLUDED_SHELL_ERRORS -
               if [[ $? == 1 ]]; then
                 # When an error is discovered
                 printf "${term_red}Error discovered in $file at step $(($i+1))${term_end}\n"
