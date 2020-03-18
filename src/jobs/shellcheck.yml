@@ -37,7 +37,7 @@ steps:
         term_green=$'\e[1;32m'
         term_end=$'\e[0m'
 
-        ORB_SOURCE_FILES="<< parameters.source-dir >>/**/*.yml"
+        ORB_SOURCE_FILES=$(find << parameters.source-dir >> -type f -name "*.yml" -o -name "*.yaml")
         SC_ERROR_COUNT=0
 
         # EXCLUSIONS
