@@ -56,7 +56,7 @@ steps:
           # Get the number of steps
           echo -----
           echo "Scanning $file"
-          ORB_STEP_COUNT=$(yq r "$file" steps --length)
+          ORB_STEP_COUNT=$(yq r "$file" --length steps)
           i=0
           while [[ $i -lt $ORB_STEP_COUNT ]]
             ###
@@ -66,14 +66,20 @@ steps:
             # flag to determine if the command should be sent to shellcheck
             SCRIPT_TO_SHELLCHECK=""
 
-            if [[ $(yq r "$file" steps[$i] --length) == "1" && $(yq r "$file" steps[$i].run) ]]; then
-              # Step is a single run statement with no other keys
-              SCRIPT_TO_SHELLCHECK=$(yq r "$file" steps[$i].run)
-            fi
-
-            if [[ $(yq r "$file" steps[$i].run.command) && ! $(yq r "$file" steps[$i].run.shell) ]]; then
-              # Step has a command key, and no shell key
-              SCRIPT_TO_SHELLCHECK=$(yq r "$file" steps[$i].run.command)
+            if [[ $(yq r "$file" steps[$i].run) ]]; then
+              # if the step is a run step ->
+              if [[ ! $(yq r "$file" steps[$i].run.*) ]]; then
+                # if the run step has no other sub-keys ->
+                SCRIPT_TO_SHELLCHECK=$(yq r "$file" steps[$i].run)
+              elif [[ ! $(yq r "$file" steps[$i].run.shell) ]]; then
+                # If there is no shell key. ->
+                if [[ $(yq r "$file" steps[$i].run.command) ]]; then
+                  # if there is a command key ->
+                  SCRIPT_TO_SHELLCHECK=$(yq r "$file" steps[$i].run.command)
+                else
+                  echo "This run statement appears to be missing the command key"
+                fi
+              fi
             fi
 
             if [[ -n "$SCRIPT_TO_SHELLCHECK" ]]; then
