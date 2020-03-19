@@ -56,7 +56,7 @@ steps:
           # Get the number of steps
           echo -----
           echo "Scanning $file"
-          ORB_STEP_COUNT=$(yq r $file --length steps)
+          ORB_STEP_COUNT=$(yq r "$file" --length steps)
           i=0
           while [[ $i -lt $ORB_STEP_COUNT ]]
             ###
@@ -66,21 +66,21 @@ steps:
             # flag to determine if the command should be sent to shellcheck
             SCRIPT_TO_SHELLCHECK=""
 
-            if [[ $(yq r $file steps[$i] --length) == "1" && $(yq r $file steps[$i].run) ]]
+            if [[ $(yq r "$file" steps[$i] --length) == "1" && $(yq r "$file" steps[$i].run) ]]; then
               # Step is a single run statement with no other keys
-              SCRIPT_TO_SHELLCHECK=$(yq r $file steps[$i].run)
+              SCRIPT_TO_SHELLCHECK=$(yq r "$file" steps[$i].run)
             fi
 
-            if [[ $(yq r $file steps[$i].run.command) && ! $(yq r $file steps[$i].run.shell)]]
+            if [[ $(yq r "$file" steps[$i].run.command) && ! $(yq r "$file" steps[$i].run.shell) ]]; then
               # Step has a command key, and no shell key
-              SCRIPT_TO_SHELLCHECK=$(yq r $file steps[$i].run.command)
+              SCRIPT_TO_SHELLCHECK=$(yq r "$file" steps[$i].run.command)
             fi
 
             if [[ -n "$SCRIPT_TO_SHELLCHECK" ]]; then
-              echo $SCRIPT_TO_SHELLCHECK | shellcheck --exclude $EXCLUDED_SHELL_ERRORS -
+              echo "$SCRIPT_TO_SHELLCHECK" | shellcheck --exclude $EXCLUDED_SHELL_ERRORS -
               if [[ $? == 1 ]]; then
                 # When an error is discovered
-                printf "${term_red}Error discovered in $file at step $(($i+1))${term_end}\n"
+                printf "${term_red}Error discovered in $file at step $((i+1))${term_end}\n"
                 echo ---
                 echo
                 ((SC_ERROR_COUNT++))
@@ -91,7 +91,7 @@ steps:
           echo
         done
         set -e
-        if [ $SC_ERROR_COUNT -gt 0 ]; then
+        if [ "$SC_ERROR_COUNT" -gt 0 ]; then
           echo -------------------------------------
           printf "${term_red}Shellcheck has discovered errors. Please view and correct the errors shown above.${term_end}\n"
           printf "${term_red}If desired, error codes may also be added to the exclusion list via the exclude parameter${term_end}\n"
