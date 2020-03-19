@@ -45,8 +45,9 @@ steps:
         # SC1044 - "\<<" parameter notation before the text replacement will appear like a here document with no EOF. Ignore this error for now.
         # SC1072 - Not entirely sure on this one: https://github.com/koalaman/shellcheck/wiki/SC1072. Temporarily adding.
         # SC1090 - https://github.com/koalaman/shellcheck/wiki/SC1090
+        # SC2154 - https://github.com/koalaman/shellcheck/wiki/SC2154 Expects bash env vars to be set. Ignoring will allow you to reference env vars from outside the script
 
-        EXCLUDED_SHELL_ERRORS=SC2148,SC1044,SC1072,SC1090<<#parameters.exclude>>,<</parameters.exclude>><<parameters.exclude>>
+        EXCLUDED_SHELL_ERRORS=SC2148,SC1044,SC1072,SC1090,SC2154<<#parameters.exclude>>,<</parameters.exclude>><<parameters.exclude>>
 
         ###
         # For each file
