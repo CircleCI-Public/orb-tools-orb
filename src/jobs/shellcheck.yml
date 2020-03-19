@@ -56,7 +56,7 @@ steps:
           # Get the number of steps
           echo -----
           echo "Scanning $file"
-          ORB_STEP_COUNT=$(yq r "$file" --length steps)
+          ORB_STEP_COUNT=$(yq r "$file" steps --length)
           i=0
           while [[ $i -lt $ORB_STEP_COUNT ]]
             ###
@@ -85,6 +85,15 @@ steps:
                 echo
                 ((SC_ERROR_COUNT++))
               fi
+            else
+              echo ---
+              echo
+              echo $(yq r "$file" steps[$i])
+              echo
+              echo Unable to shellcheck this command. Skipping.
+              echo
+              echo ---
+              echo
             fi
             ((i++))
           done
