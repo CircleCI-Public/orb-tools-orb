@@ -247,7 +247,7 @@ workflows:
           artifact-path: orb.yml
           requires: *requires_commands
 
-      - orb-tools-alpha/shellcheck:
+      - orb-tools/shellcheck:
           name: test-shellcheck-job
           source: ./tests/shellcheck
           requires: *requires_commands
