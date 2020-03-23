@@ -247,12 +247,17 @@ workflows:
           artifact-path: orb.yml
           requires: *requires_commands
 
+      - orb-tools-alpha/shellcheck:
+          name: test-shellcheck-job
+          source: ./tests/shellcheck
+          requires: *requires_commands
+
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job
           context: orb-publishing
           attach-workspace: true
           orb-name: orb-tools-alpha
-          requires: [test-pack-job]
+          requires: [test-pack-job, test-shellcheck-job]
           test-steps:
             - checkout
 
@@ -271,7 +276,7 @@ workflows:
           attach-workspace: true
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
-          requires: [test-pack-job]
+          requires: [test-pack-job, test-shellcheck-job]
 
       - orb-tools-alpha/increment:
           name: test-increment-job
