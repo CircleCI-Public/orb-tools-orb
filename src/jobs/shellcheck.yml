@@ -7,7 +7,7 @@ parameters:
   source-dir:
     description: Path containing the orb source files.
     type: string
-    default: "src"
+    default: "./src"
   exclude:
     description: >
       Enter a comma-separated list, with no spaces, of errors to ignore. Example: "SC1009,SC1073"
