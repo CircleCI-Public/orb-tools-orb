@@ -36,7 +36,7 @@ steps:
 
   - run:
       name: compile test config
-      command: circleci config process uncompiled-config.yml > config.yml
+      command: circleci config process --skip-update-check uncompiled-config.yml > config.yml
 
   - run:
       name: run test job locally

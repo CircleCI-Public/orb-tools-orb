@@ -10,4 +10,4 @@ parameters:
 steps:
   - run:
       name: "Validate whether this is a well-formed orb."
-      command: circleci orb validate << parameters.orb-path >>
+      command: circleci orb --skip-update-check validate << parameters.orb-path >>
