@@ -12,13 +12,6 @@ description: >
 usage:
   version: 2.1
 
-  orb_prep_jobs: &orb_prep_jobs
-    [
-      orb-tools/lint,
-      orb-tools/shellcheck,
-      orb-tools/pack
-    ]
-
   orb_promotion_filters: &orb_promotion_filters
     branches:
       ignore: /.*/
@@ -55,13 +48,15 @@ usage:
     lint_pack-validate_publish-dev:
       unless: << pipeline.parameters.run-integration-tests >>
       jobs:
-        # This `lint-pack_validate_publish-dev` workflow will run on any commit
-        # Lint your YAML
+        # this `lint-pack_validate_publish-dev` workflow will run on any commit
         - orb-tools/lint
-        # Linting for BASH commands
-        - orb-tools/shellcheck
-        # Pack the orb into a single file and validate the result.
-        - orb-tools/pack
+
+        # pack your orb YAML files to a single orb.yml
+        # validate the orb.yml file to ensure it is well-formed
+        - orb-tools/pack:
+            requires:
+              - orb-tools/lint
+
         # release dev version of orb, for testing & possible publishing.
         # orb will be published as dev:alpha and dev:${CIRCLE_SHA1:0:7}.
         # requires a CircleCI API token to be stored as CIRCLE_TOKEN (default)
@@ -70,7 +65,8 @@ usage:
         # if using Contexts, add your context below
         - orb-tools/publish-dev:
             orb-name: your-namespace/your-orb-name
-            requires: *orb_prep_jobs
+            requires:
+              - orb-tools/pack
 
         # trigger an integration workflow to test the
         # dev:${CIRCLE_SHA1:0:7} version of your orb
