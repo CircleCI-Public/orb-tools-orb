@@ -37,4 +37,4 @@ steps:
         << parameters.orb-path >>
         << parameters.orb-ref >>
         << parameters.segment >>
-        <<# parameters.token-variable >>--token $<< parameters.token-variable >> <</ parameters.token-variable >>
+        <<# parameters.token-variable >>--token $<< parameters.token-variable >> <</ parameters.token-variable >> --skip-update-check
