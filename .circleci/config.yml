@@ -70,9 +70,7 @@ jobs:
 
     steps:
       - checkout
-
       - cli/install
-
       - orb-tools-alpha/install-bats
       - orb-tools-alpha/pack
       - orb-tools-alpha/validate
@@ -155,7 +153,6 @@ jobs:
       - check-pr-message:
           orb-name: sandbox/orb-tools
           expect-orb-to-be-published: true
-
 # yaml anchor filters
 requires_commands: &requires_commands
   [
@@ -213,14 +210,12 @@ workflows:
           name: test-commands-machine
           executor: orb-tools-alpha/machine
           context: orb-publishing
-          # pre-steps: [run: sleep 2]
           segment: minor
 
       - test-commands:
           name: test-commands-macos
           executor: orb-tools-alpha/macos
           context: orb-publishing
-          # pre-steps: [run: sleep 4]
           segment: major
 
       - test-commands:
@@ -252,12 +247,17 @@ workflows:
           artifact-path: orb.yml
           requires: *requires_commands
 
+      - orb-tools-alpha/shellcheck:
+          name: test-shellcheck-job
+          source-dir: ./tests/shellcheck
+          requires: *requires_commands
+
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job
           context: orb-publishing
           attach-workspace: true
           orb-name: orb-tools-alpha
-          requires: [test-pack-job]
+          requires: [test-pack-job, test-shellcheck-job]
           test-steps:
             - checkout
 
@@ -276,7 +276,7 @@ workflows:
           attach-workspace: true
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
-          requires: [test-pack-job]
+          requires: [test-pack-job, test-shellcheck-job]
 
       - orb-tools-alpha/increment:
           name: test-increment-job
