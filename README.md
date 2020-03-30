@@ -15,7 +15,7 @@ Following is a well-documented example of a full orb development pipeline, consi
 version: 2.1
 
   orbs:
-    orb-tools: circleci/orb-tools@x.y.z
+    orb-tools: circleci/orb-tools@x.y
     # add your orb below, to be used in integration tests (note: a
     # @dev:alpha release must exist; if none exists, you'll need to
     # publish manually once before this worklow can succeed)
