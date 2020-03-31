@@ -1,0 +1,18 @@
+description: This is a job.
+
+docker:
+  - image: buildpack-deps:trusty
+
+steps:
+  - run: echo "This is a single line run statement"
+  - run:
+      name: This command has a name
+      command: |
+        echo "And the command is a muilti-line command"
+        echo "With two echo statements"
+  - someOrb/fakeCommand:
+      comment: "This command from an orb will not be checked."
+  - run:
+      shell: /bin/python
+      name: This command has a custom shell
+      command: echo "This non-bash shell or modified shell will not be checked."
