@@ -14,7 +14,7 @@ parameters:
       Comma-separated list of `env_var_name`-type values; all will be
       checked to ensure they are defined. Designed to be called at the
       beginning of an orb job or command, with a value like the following:
-      `<<parameters.foo>>,<<parameters.bar>>,<<parameters.baz>`, etc.
+      `<<parameters.foo>>,<<parameters.bar>>,<<parameters.baz>>`, etc.
 
   error-message:
     type: string
