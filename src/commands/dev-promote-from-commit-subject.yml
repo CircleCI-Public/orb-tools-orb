@@ -92,7 +92,7 @@ steps:
         echo "export SEMVER_INCREMENT=\"$SEMVER_INCREMENT\""  >> $BASH_ENV
         if [ -z ${SEMVER_INCREMENT} ];then
           echo "Commit subject did not indicate which SemVer increment to make."
-          echo "To publish orb, you can ammend the commit or push another commit with [semver:FOO] in the subject where FOO is major, minor, patch."
+          echo "To publish orb, you can amend the commit or push another commit with [semver:FOO] in the subject where FOO is major, minor, patch."
           echo "Note: To indicate intention to skip promotion, include [semver:skip] in the commit subject instead."
           if [ "<<parameters.fail-if-semver-not-indicated>>" == "true" ];then
             exit 1
