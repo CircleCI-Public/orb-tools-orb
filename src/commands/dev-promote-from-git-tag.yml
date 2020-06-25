@@ -145,7 +145,7 @@ steps:
           PUBLISH_MESSAGE=`circleci orb publish promote \
             <<parameters.orb-name>>@<<parameters.orb-ref>> \
             ${RELEASE_TYPE} --token \
-            ${CIRCLE_TOKEN} \
+            ${<<parameters.token-variable>>} \
             --skip-update-check`
             echo $PUBLISH_MESSAGE
           ORB_VERSION=$(echo $PUBLISH_MESSAGE | sed -n 's/Orb .* was promoted to `\(.*\)`.*/\1/p')
