@@ -30,11 +30,13 @@ steps:
       steps:
         - checkout
 
+  - jq/install
+
   - run:
       name: Trigger integration test workflow
       command: |
         VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
-        curl -u "${CIRCLE_TOKEN}": -X POST --header "Content-Type: application/json" -d "{
+        curl -u "${<<parameters.token-variable>>}": -X POST --header "Content-Type: application/json" -d "{
             \"branch\": \"${CIRCLE_BRANCH}\",
             \"parameters\": <<parameters.pipeline-param-map>>
         }" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline" -o /tmp/curl-result.txt
