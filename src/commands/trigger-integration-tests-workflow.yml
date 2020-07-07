@@ -37,4 +37,13 @@ steps:
         curl -u ${<<parameters.token-variable>>}: -X POST --header "Content-Type: application/json" -d "{
           \"branch\": \"${CIRCLE_BRANCH}\",
           \"parameters\": <<parameters.pipeline-param-map>>
-        }" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline"
+        }" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline" -o /tmp/curl-result.txt
+        CURL_RESULT=$(cat /tmp/curl-result.txt)
+
+        if [[ $(echo $CURL_RESULT | jq -M .message) == '"Project not found"' || $(echo $CURL_RESULT | jq -M .message) == '"Permission denied"' ]]; then
+          echo "Was unable to trigger integration test workflow. API response: $(cat /tmp/curl-result.txt | jq .message)"
+          exit 1
+        else
+          echo "Pipeline triggered!"
+          cat /tmp/curl-result.txt
+        fi
