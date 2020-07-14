@@ -1,7 +1,10 @@
 description: >
   Lint an orb with yamllint
 
-executor: lint
+resource_class: small
+
+docker:
+  - image: singapore/lint-condo
 
 parameters:
   executor:

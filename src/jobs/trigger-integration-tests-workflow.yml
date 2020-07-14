@@ -3,7 +3,8 @@ description: >
   alpha version of an orb using CircleCI v2 API.
   See examples for further usage details.
 
-executor: ubuntu
+docker:
+  - image: cimg/base:edge
 
 parameters:
   checkout:
