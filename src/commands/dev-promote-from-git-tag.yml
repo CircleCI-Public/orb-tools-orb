@@ -129,7 +129,7 @@ steps:
               git branch --contains ${CIRCLE_SHA1} | grep -E "(^|\s)<<parameters.required-branch>>$"
   - run:
       name: Promote dev orb to production
-      command: <<includes(scripts/dev-promote-from-git-tag.sh)>>
+      command: <<include(scripts/dev-promote-from-git-tag.sh)>>
   - when:
       condition: <<parameters.add-pr-comment>>
       steps:

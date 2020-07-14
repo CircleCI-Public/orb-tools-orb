@@ -21,4 +21,4 @@ parameters:
 steps:
   - run:
       name: git config
-      command: <<includes(script/configure-git.sh)>>
+      command: <<include(scripts/configure-git.sh)>>

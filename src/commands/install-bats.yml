@@ -4,4 +4,4 @@ description: >
 steps:
   - run:
       name: install BATS
-      command: <<includes(scripts/install-bats.sh)
+      command: <<include(scripts/install-bats.sh)>>

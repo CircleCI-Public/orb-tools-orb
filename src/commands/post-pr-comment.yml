@@ -38,4 +38,4 @@ parameters:
 steps:
   - run:
       name: Post comment to GitHub pull request
-      command: <<includes(scripts/post-pr-comment.sh)>>
+      command: <<include(scripts/post-pr-comment.sh)>>

@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   cli: circleci/circleci-cli@0.1
-  orb-tools: circleci/orb-tools@9.0
+  orb-tools: circleci/orb-tools@dev:orb-pack
   orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
   queue: eddiewebb/queue@1.1.2
   jq: circleci/jq@1.9.1

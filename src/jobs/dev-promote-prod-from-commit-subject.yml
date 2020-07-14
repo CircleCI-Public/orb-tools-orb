@@ -122,4 +122,4 @@ steps:
 
         - run:
             name: construct/push git release tag
-            command: <<includes(scripts/construct-push-tag.sh)>>
+            command: <<include(scripts/construct-push-tag.sh)>>

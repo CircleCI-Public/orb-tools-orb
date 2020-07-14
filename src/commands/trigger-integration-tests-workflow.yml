@@ -34,4 +34,4 @@ steps:
 
   - run:
       name: Trigger integration test workflow
-      command: <<includes(scripts/trigger-integration-tests-workflow.sh)>>
+      command: <<include(scripts/trigger-integration-tests-workflow.sh)>>
