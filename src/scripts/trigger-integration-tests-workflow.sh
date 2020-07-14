@@ -1,7 +1,7 @@
 VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
-curl -u "${<<parameters.token-variable>>}": -X POST --header "Content-Type: application/json" -d "{
+curl -u "${TOKEN}": -X POST --header "Content-Type: application/json" -d "{
     \"branch\": \"${CIRCLE_BRANCH}\",
-    \"parameters\": <<parameters.pipeline-param-map>>
+    \"parameters\": "${PARAM_MAP}
 }" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline" -o /tmp/curl-result.txt
 CURL_RESULT=$(cat /tmp/curl-result.txt)
 

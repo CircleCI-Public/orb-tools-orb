@@ -129,6 +129,13 @@ steps:
               git branch --contains ${CIRCLE_SHA1} | grep -E "(^|\s)<<parameters.required-branch>>$"
   - run:
       name: Promote dev orb to production
+      environment:
+        ORB_NAME: <<parameters.orb-name>>
+        ORB_REF: <<parameters.orb-ref>>
+        TOKEN: "$<<parameters.token-variable>>"
+        MAJOR_RELEASE_TAG_REGEX: "<<parameters.major-release-tag-regex>>"
+        MINOR_RELEASE_TAG_REGEX: "<<parameters.minor-release-tag-regex>>"
+        PATCH_RELEASE_TAG_REGEX: "<<parameters.patch-release-tag-regex>>"
       command: <<include(scripts/dev-promote-from-git-tag.sh)>>
   - when:
       condition: <<parameters.add-pr-comment>>

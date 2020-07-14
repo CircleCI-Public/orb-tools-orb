@@ -85,6 +85,11 @@ steps:
         - checkout
   - run:
       name: Promote dev orb to production
+      environment:
+        ORB_NAME: <<parameters.orb-name>>
+        ORB_REF: <<parameters.orb-ref>>
+        TOKEN: "$<<parameters.token-variable>>"
+        SHOULD_FAIL: <<parameters.fail-if-semver-not-indicated>>
       command: <<include(scripts/dev-promote-from-commit-subject.sh)>>
   - when:
       condition: <<parameters.add-pr-comment>>

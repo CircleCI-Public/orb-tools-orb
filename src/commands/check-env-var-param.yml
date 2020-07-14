@@ -34,4 +34,8 @@ parameters:
 steps:
   - run:
       name: <<parameters.command-name>>
+      environment:
+        PARAM: <<parameters.param>>
+        ERR_MSG: <<parameters.error-message>>
+        EXIT_IF_UNDEFINED: <<#parameters.exit-if-undefined>>1<</parameters.exit-if-undefined>>
       command: <<include(scripts/check-env-var-param.sh)>>

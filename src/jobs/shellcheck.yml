@@ -26,4 +26,7 @@ steps:
       command: <<include(scripts/install-yq.sh)>>
   - run:
       name: ShellCheck
+      environment:
+        SOURCE_DIR: "<<parameters.source-dir>>"
+        EXCLUDED_ERRORS: "<<#parameters.exclude>>,<<parameters.exclude>><</parameters.exclude>>"
       command: <<include(scripts/shellcheck.sh)>>

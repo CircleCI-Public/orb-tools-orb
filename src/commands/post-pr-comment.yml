@@ -38,4 +38,9 @@ parameters:
 steps:
   - run:
       name: Post comment to GitHub pull request
+      environment:
+        BOT_USER: <<parameters.bot-user>>
+        BOT_TOKEN: "$<<parameters.bot-token-variable>>"
+        COMMENT: <<parameters.comment>>
+        SED_EXP: <<parameters.pr-number-sed-expression>>
       command: <<include(scripts/post-pr-comment.sh)>>

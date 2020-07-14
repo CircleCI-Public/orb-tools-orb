@@ -34,4 +34,7 @@ steps:
 
   - run:
       name: Trigger integration test workflow
+      environment:
+        PARAM_MAP: <<parameters.pipeline-param-map>>
+        TOKEN: "$<<parameters.token-variable>>"
       command: <<include(scripts/trigger-integration-tests-workflow.sh)>>

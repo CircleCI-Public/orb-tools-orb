@@ -122,4 +122,6 @@ steps:
 
         - run:
             name: construct/push git release tag
+            environment:
+              ORB_NAME: <<parameters.orb-name>>
             command: <<include(scripts/construct-push-tag.sh)>>
