@@ -22,4 +22,4 @@ steps:
   - run:
       name: "Pack << parameters.source>> to << parameters.destination >>"
       command: |
-        circleci config pack --skip-update-check << parameters.source >> > << parameters.destination >>
+        circleci orb pack --skip-update-check << parameters.source >> > << parameters.destination >>

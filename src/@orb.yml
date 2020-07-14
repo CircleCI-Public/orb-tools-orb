@@ -8,5 +8,5 @@ display:
 
 orbs:
   build-tools: circleci/build-tools@2.6.3
-  cli: circleci/circleci-cli@0.1.7
+  cli: circleci/circleci-cli@0.1.8
   jq: circleci/jq@2.2
