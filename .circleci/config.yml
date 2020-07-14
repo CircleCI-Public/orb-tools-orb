@@ -56,9 +56,6 @@ commands:
 jobs:
   test-commands:
     parameters:
-      executor:
-        type: executor
-
       segment:
         description: >
           The semver segment to increment 'major' or 'minor' or 'patch'
@@ -66,7 +63,8 @@ jobs:
         enum: [major, minor, patch]
         default: patch
 
-    executor: <<parameters.executor>>
+    docker:
+      - image: cimg/base:edge
 
     steps:
       - checkout
@@ -88,9 +86,6 @@ jobs:
 
   test-promote-from-commit-subject:
     parameters:
-      executor:
-        type: executor
-
       segment:
         description: >
           The semver segment to increment 'major' or 'minor' or 'patch'
@@ -101,7 +96,8 @@ jobs:
       expect-orb-to-be-published:
         type: boolean
 
-    executor: <<parameters.executor>>
+    docker:
+      - image: cimg/base:edge
 
     steps:
       - checkout
@@ -122,9 +118,6 @@ jobs:
 
   test-promote-from-git-tag:
     parameters:
-      executor:
-        type: executor
-
       segment:
         description: >
           The semver segment to increment 'major' or 'minor' or 'patch'
@@ -132,7 +125,8 @@ jobs:
         enum: [major, minor, patch]
         default: patch
 
-    executor: <<parameters.executor>>
+    docker:
+      - image: cimg/base:edge
 
     steps:
       - cli/install
@@ -153,15 +147,11 @@ jobs:
       - check-pr-message:
           orb-name: sandbox/orb-tools
           expect-orb-to-be-published: true
+
 # yaml anchor filters
 requires_commands: &requires_commands
   [
-    test-commands-alpine,
-    test-commands-machine,
-    test-commands-macos,
-    test-commands-node-cci,
-    test-commands-node,
-    test-commands-ubuntu
+    test-commands-cimg
   ]
 
 orb_promotion_filters: &orb_promotion_filters
@@ -202,43 +192,8 @@ workflows:
     jobs:
       # test commands with executors
       - test-commands:
-          name: test-commands-alpine
-          executor: orb-tools-alpha/alpine
+          name: test-commands-cimg
           context: orb-publishing
-
-      - test-commands:
-          name: test-commands-machine
-          executor: orb-tools-alpha/machine
-          context: orb-publishing
-          segment: minor
-
-      - test-commands:
-          name: test-commands-macos
-          executor: orb-tools-alpha/macos
-          context: orb-publishing
-          segment: major
-
-      - test-commands:
-          name: test-commands-node-cci
-          executor: orb-tools-alpha/node-cci
-          context: orb-publishing
-          pre-steps: [run: sleep 2]
-
-      - test-commands:
-          name: test-commands-node
-          executor: orb-tools-alpha/node
-          context: orb-publishing
-          pre-steps:
-            - run: sleep 2
-            - jq/install
-          segment: minor
-
-      - test-commands:
-          name: test-commands-ubuntu
-          executor: orb-tools-alpha/ubuntu
-          context: orb-publishing
-          pre-steps: [run: sleep 2]
-          segment: major
 
       # test jobs
       - orb-tools-alpha/pack:
@@ -289,7 +244,6 @@ workflows:
 
       - test-promote-from-commit-subject:
           name: test-promote-from-commit-subject-semver-patch
-          executor: orb-tools-alpha/ubuntu
           segment: patch
           expect-orb-to-be-published: true
           context: orb-publishing
@@ -298,7 +252,6 @@ workflows:
 
       - test-promote-from-commit-subject:
           name: test-promote-from-commit-subject-semver-skip
-          executor: orb-tools-alpha/ubuntu
           segment: skip
           expect-orb-to-be-published: false
           context: orb-publishing
@@ -307,7 +260,6 @@ workflows:
 
       - test-promote-from-commit-subject:
           name: test-promote-from-commit-subject-semver-none
-          executor: orb-tools-alpha/ubuntu
           segment: none
           expect-orb-to-be-published: false
           context: orb-publishing
@@ -315,7 +267,6 @@ workflows:
             - test-increment-job
 
       - test-promote-from-git-tag:
-          executor: orb-tools-alpha/ubuntu
           segment: minor
           context: orb-publishing
           requires:
