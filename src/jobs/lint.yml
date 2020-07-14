@@ -7,11 +7,6 @@ docker:
   - image: singapore/lint-condo
 
 parameters:
-  executor:
-    type: executor
-    default: lint
-    description: Executor to use for this job
-
   checkout:
     type: boolean
     default: true
