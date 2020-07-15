@@ -150,9 +150,7 @@ jobs:
 
 # yaml anchor filters
 requires_commands: &requires_commands
-  [
-    test-commands-cimg
-  ]
+  - test-commands-cimg
 
 orb_promotion_filters: &orb_promotion_filters
   branches:
