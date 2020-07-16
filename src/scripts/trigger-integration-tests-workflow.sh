@@ -1,6 +1,9 @@
 VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
 
-T=$(eval echo \$$TOKEN)
+T=$(eval echo "$TOKEN")
+
+echo "parameter map:"
+echo "${PARAM_MAP}"
 
 curl -u "${T}": -X POST --header "Content-Type: application/json" -d "{
     \"branch\": \"${CIRCLE_BRANCH}\",
