@@ -5,7 +5,7 @@ T=$(eval echo "$TOKEN")
 
 # Remove later
 echo "parameter map:"
-echo "{\"branch\": \"${CIRCLE_BRANCH}\",\"parameters\": \"${PARAM_MAP}\"}" > pipelineparams.json
+echo "{\"branch\": \"${CIRCLE_BRANCH}\",\"parameters\": ${PARAM_MAP}}" > pipelineparams.json
 echo "Pipeline params:"
 cat pipelineparams.json
 
