@@ -2,6 +2,8 @@ VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
 
 T=$(eval echo "$TOKEN")
 
+
+# Remove later
 echo "parameter map:"
 echo "${PARAM_MAP}"
 
