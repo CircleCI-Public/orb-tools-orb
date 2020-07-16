@@ -5,7 +5,10 @@ T=$(eval echo "$TOKEN")
 
 # Remove later
 echo "parameter map:"
-echo "${PARAM_MAP}"
+echo "{
+    \"branch\": \"${CIRCLE_BRANCH}\",
+    \"parameters\": \"${PARAM_MAP}\"
+}" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline"
 
 curl -u "${T}": -X POST --header "Content-Type: application/json" -d "{
     \"branch\": \"${CIRCLE_BRANCH}\",
