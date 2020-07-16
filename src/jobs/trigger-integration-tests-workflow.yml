@@ -30,5 +30,5 @@ parameters:
 steps:
   - trigger-integration-tests-workflow:
       checkout: <<parameters.checkout>>
-      pipeline-param-map: <<parameters.pipeline-param-map>>
+      pipeline-param-map: '<<parameters.pipeline-param-map>>'
       token-variable: <<parameters.token-variable>>
