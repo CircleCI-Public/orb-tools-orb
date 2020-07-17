@@ -1,11 +1,17 @@
 VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
 
-T=$(eval echo \$$TOKEN)
+T=$(eval echo "$TOKEN")
+PARAMS=$(eval echo "$PARAM_MAP")
 
-curl -u "${T}": -X POST --header "Content-Type: application/json" -d "{
-    \"branch\": \"${CIRCLE_BRANCH}\",
-    \"parameters\": \"${PARAM_MAP}\"
-}" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline" -o /tmp/curl-result.txt
+# Remove later
+echo "parameter map:"
+echo "{\"branch\": \"${CIRCLE_BRANCH}\",\"parameters\": ${PARAMS}}" > pipelineparams.json
+echo "Pipeline params:"
+cat pipelineparams.json
+
+curl -u "${T}": -X POST --header "Content-Type: application/json" -d @pipelineparams.json "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline" -o /tmp/curl-result.txt
+
+echo "Result $(cat /tmp/curl-result.txt)"
 
 CURL_RESULT=$(cat /tmp/curl-result.txt)
 
