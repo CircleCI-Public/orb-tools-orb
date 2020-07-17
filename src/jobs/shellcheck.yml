@@ -2,7 +2,7 @@ description: |
   Automatically shellcheck all of the shell scripts within a directory.
 
 docker:
-  - image: cimg/default
+  - image: cimg/base:stable
 
 parameters:
   source-dir:
