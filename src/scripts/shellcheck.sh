@@ -1,6 +1,7 @@
 if ! command -v shellcheck &> /dev/null
 then
     if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
+    $SUDO apt-get update
     $SUDO apt-get install shellcheck
 fi
 
