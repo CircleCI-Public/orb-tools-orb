@@ -202,7 +202,7 @@ workflows:
 
       - orb-tools-alpha/shellcheck:
           name: test-shellcheck-job
-          source-dir: ./tests/shellcheck
+          source-dir: ./src/scripts
           requires: *requires_commands
 
       - orb-tools-alpha/test-in-builds:
