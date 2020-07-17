@@ -1,11 +1,11 @@
 VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
 
 T=$(eval echo "$TOKEN")
-
+PARAMS=$(eval echo "$PARAM_MAP")
 
 # Remove later
 echo "parameter map:"
-echo "{\"branch\": \"${CIRCLE_BRANCH}\",\"parameters\": ${PARAM_MAP}}" > pipelineparams.json
+echo "{\"branch\": \"${CIRCLE_BRANCH}\",\"parameters\": ${PARAMS}}" > pipelineparams.json
 echo "Pipeline params:"
 cat pipelineparams.json
 
