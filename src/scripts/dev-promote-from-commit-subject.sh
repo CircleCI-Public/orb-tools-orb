@@ -1,4 +1,6 @@
 COMMIT_SUBJECT=`git log -1 --pretty=%s.`
+T=$(eval echo "$TOKEN")
+
 SEMVER_INCREMENT=`echo ${COMMIT_SUBJECT} | sed -En 's/.*\[semver:(major|minor|patch|skip)\].*/\1/p'`
 echo "Commit subject: ${COMMIT_SUBJECT}"
 echo "export SEMVER_INCREMENT=\"$SEMVER_INCREMENT\""  >> $BASH_ENV
