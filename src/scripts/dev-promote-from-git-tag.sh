@@ -1,4 +1,6 @@
 RELEASE_TYPE=''
+T=$(eval echo "$TOKEN")
+REF=$(eval echo "$ORB_REF")
 
 if [[ "${CIRCLE_TAG}" =~ ${MAJOR_RELEASE_TAG_REGEX} ]]; then
     RELEASE_TYPE='major'
@@ -9,9 +11,9 @@ elif [[ "${CIRCLE_TAG}" =~ ${PATCH_RELEASE_TAG_REGEX} ]]; then
 fi
 if [ -n "${RELEASE_TYPE}" ]; then
     PUBLISH_MESSAGE=`circleci orb publish promote \
-    ${ORB_NAME}@${ORB_REF} \
+    ${ORB_NAME}@${REF} \
     ${RELEASE_TYPE} --token \
-    ${TOKEN} \
+    ${T} \
     --skip-update-check`
     echo $PUBLISH_MESSAGE
     ORB_VERSION=$(echo $PUBLISH_MESSAGE | sed -n 's/Orb .* was promoted to `\(.*\)`.*/\1/p')
