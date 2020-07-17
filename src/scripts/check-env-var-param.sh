@@ -1,7 +1,7 @@
-if [[ $PARAM == "" ]]; then
+if [[ "$PARAM" == "" ]]; then
   echo "No required environment variables to check; moving on"
 else
-  IFS="," read -ra PARAMS \<<< $PARAM
+  IFS="," read -ra PARAMS \<<< "$PARAM"
 
   for i in "${PARAMS[@]}"; do
     if [[ -z "${!i}" ]]; then
@@ -11,7 +11,7 @@ else
         echo "<<parameters.error-message>>" >&2
       fi
 
-      exit $EXIT_IF_UNDEFINED
+      exit "$EXIT_IF_UNDEFINED"
     else
       echo "Yes, ${i} is defined!"
     fi
