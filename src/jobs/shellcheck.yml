@@ -1,13 +1,14 @@
 description: |
-  Automatically shellcheck the run statements within your jobs and commands.
+  Automatically shellcheck all of the shell scripts within a directory.
 
-executor: cli/default
+docker:
+  - image: cimg/default
 
 parameters:
   source-dir:
     description: Path containing the orb source files.
     type: string
-    default: "./src"
+    default: "./src/scripts"
   exclude:
     description: >
       Enter a comma-separated list, with no spaces, of errors to ignore. Example: "SC1009,SC1073"
@@ -16,14 +17,6 @@ parameters:
 
 steps:
   - checkout
-  - run:
-      name: Install shellcheck
-      command: |
-        if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
-        $SUDO apt-get install shellcheck
-  - run:
-      name: Install YQ
-      command: <<include(scripts/install-yq.sh)>>
   - run:
       name: ShellCheck
       environment:
