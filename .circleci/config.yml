@@ -73,10 +73,6 @@ jobs:
       - orb-tools-alpha/pack
       - orb-tools-alpha/validate
 
-      - orb-tools-alpha/check-env-var-param:
-          command-name: Test `check-env-var-param` command with built-in env vars
-          param: CIRCLE_BUILD_NUM,CIRCLE_BRANCH,CIRCLE_BUILD_URL,CIRCLE_JOB
-
       - orb-tools-alpha/publish:
           orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
 
