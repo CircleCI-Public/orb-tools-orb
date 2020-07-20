@@ -166,12 +166,11 @@ workflows:
           destination-orb-path: orb.yml
           workspace-path: orb.yml
           artifact-path: orb.yml
-          requires: [orb-tools/lint]
 
       - orb-tools/publish-dev:
           context: orb-publishing
           orb-name: circleci/orb-tools
-          requires: [orb-tools/pack]
+          requires: [orb-tools/pack, orb-tools/lint]
 
       - queue/block_workflow:
           requires: [orb-tools/publish-dev]
