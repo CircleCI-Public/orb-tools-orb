@@ -5,7 +5,7 @@ orbs:
   orb-tools: circleci/orb-tools@dev:orb-pack
   orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
   queue: eddiewebb/queue@1.1.2
-  jq: circleci/jq@1.9.1
+  jq: circleci/jq@2.2
 
 parameters:
   run-integration-tests:
@@ -72,10 +72,6 @@ jobs:
       - orb-tools-alpha/install-bats
       - orb-tools-alpha/pack
       - orb-tools-alpha/validate
-
-      - orb-tools-alpha/check-env-var-param:
-          command-name: Test `check-env-var-param` command with built-in env vars
-          param: CIRCLE_BUILD_NUM,CIRCLE_BRANCH,CIRCLE_BUILD_URL,CIRCLE_JOB
 
       - orb-tools-alpha/publish:
           orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
@@ -170,12 +166,11 @@ workflows:
           destination-orb-path: orb.yml
           workspace-path: orb.yml
           artifact-path: orb.yml
-          requires: [orb-tools/lint]
 
       - orb-tools/publish-dev:
           context: orb-publishing
           orb-name: circleci/orb-tools
-          requires: [orb-tools/pack]
+          requires: [orb-tools/pack, orb-tools/lint]
 
       - queue/block_workflow:
           requires: [orb-tools/publish-dev]
@@ -200,17 +195,12 @@ workflows:
           artifact-path: orb.yml
           requires: *requires_commands
 
-      - orb-tools-alpha/shellcheck:
-          name: test-shellcheck-job
-          source-dir: ./tests/shellcheck
-          requires: *requires_commands
-
       - orb-tools-alpha/test-in-builds:
           name: test-in-builds-job
           context: orb-publishing
           attach-workspace: true
           orb-name: orb-tools-alpha
-          requires: [test-pack-job, test-shellcheck-job]
+          requires: [test-pack-job]
           test-steps:
             - checkout
 
@@ -229,7 +219,7 @@ workflows:
           attach-workspace: true
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
-          requires: [test-pack-job, test-shellcheck-job]
+          requires: [test-pack-job]
 
       - orb-tools-alpha/increment:
           name: test-increment-job

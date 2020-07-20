@@ -1,5 +1,5 @@
 # construct/push new tag
-NEW_VERSION=$(echo ${ORB_VERSION}| sed -E "s|$ORB_NAME@||")
+NEW_VERSION=$(echo "${ORB_VERSION}"| sed -E "s|$ORB_NAME@||")
 
 TAG="v$NEW_VERSION"
 

@@ -15,7 +15,7 @@ else
     fi
 fi
 
-cd bats
+cd bats || exit 1
 $SUDO ./install.sh /usr/local
 cd ..
 rm -rf bats

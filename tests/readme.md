@@ -1,1 +1,0 @@
-This directory contains additional data that may be used in aiding of testing the Orbs-Tool orb functionality.
