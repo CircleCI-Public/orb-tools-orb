@@ -5,7 +5,7 @@ orbs:
   orb-tools: circleci/orb-tools@dev:orb-pack
   orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
   queue: eddiewebb/queue@1.1.2
-  jq: circleci/jq@1.9.1
+  jq: circleci/jq@2.2
 
 parameters:
   run-integration-tests:
