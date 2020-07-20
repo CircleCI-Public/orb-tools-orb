@@ -1,22 +1,16 @@
-if which git > /dev/null; then
-    git clone https://github.com/sstephenson/bats.git
-else
+if ! which git > /dev/null; then
     echo "git is required to install BATS"
     exit 1
 fi
 
-if [[ $EUID == 0 ]]; then
-    export SUDO=""
-else
-    export SUDO="sudo"
-    if ! which sudo > /dev/null; then
-    echo "root access is required - install sudo or run as root"
+cd /tmp && \
+git clone https://github.com/bats-core/bats-core.git && \
+cd bats-core ||  echo "Failed to open cloned directory" && exit 1
+./install.sh /usr/local
+if ! which bats > /dev/null; then
+    echo "BATS has failed to install."
     exit 1
-    fi
 fi
-
-cd bats || exit 1
-$SUDO ./install.sh /usr/local
-cd ..
-rm -rf bats
-bats --version
+echo
+echo "BATS installed"
+echo
