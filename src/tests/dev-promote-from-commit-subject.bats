@@ -1,5 +1,4 @@
 setup() {
-    mkdir -p ./.command_functions
     awk -f ./src/tests/funcshion.awk -v path=./.command_functions ./src/scripts/dev-promote-from-commit-subject.sh
     export T="fakeToken"
     export REF="55555555"
@@ -55,5 +54,5 @@ setup() {
 }
 
 function teardown() {
-    rm -rf .command_functions .yamllint /tmp/BASH_ENV
+    rm -rf .command_functions /tmp/BASH_ENV
 }
