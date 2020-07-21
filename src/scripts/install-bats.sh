@@ -3,9 +3,9 @@ if ! which git > /dev/null; then
     exit 1
 fi
 
-cd /tmp || echo "Unable to open /tmp" && exit 1
+cd /tmp
 git clone https://github.com/bats-core/bats-core.git
-cd bats-core || exit
+cd /tmp/bats-core
 if [[ $EUID == 0 ]]; then export SUDO=""; else export SUDO="sudo"; fi
 $SUDO ./install.sh /usr/local
 if ! which bats > /dev/null; then
