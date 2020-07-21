@@ -5,21 +5,26 @@
 
 BEGIN {
   split(ARGV[ARGC-1], directoryNameSplit, "/")
-  split(directoryNameSplit[length(directoryNameSplit)], fileNameSplit, ".")
-  dirPath = length(path) ? path : ENVIRON["PWD"]
-  dirName = length(subdir) ? subdir : fileNameSplit[1]
+
+  # Running length() on an array is only supported by GNU awk
+  for ( item in directoryNameSplit ) ++arrayLength
+
+  split(directoryNameSplit[arrayLength], fileNameSplit, ".")
+  dirPath = length(path) > 0 ? path : ENVIRON["PWD"]
+  dirName = length(subdir) > 0 ? subdir : fileNameSplit[1]
   outputDirectory = dirPath "/" dirName
+
   system("mkdir -p " outputDirectory)
 }
 
-match($0, /^((func(tion)?)?\s*?\w+)\s*?(\(.*?\))?\s*?{/, matched) {
-  if ( sub(/func(tion)? /, "", matched[1]) ) {
+match($0, /^(func(tion)?)? ?[a-zA-Z_][a-zA-Z0-9_]* ?(\(\.*\))? ?{/) {
+  if ( match($1, /func(tion)?/) ) {
     functionName = $2
   }
   else {
     functionName = $1
   }
-  sanitizedName = tolower(/\S\(\)/ ? substr(functionName, 1, length(functionName)-2) : functionName)
+  sanitizedName = tolower(match(functionName, /\(/) ? substr(functionName, 1, length(functionName)-2) : functionName)
   inFunction = 1
 }
 
@@ -29,7 +34,8 @@ inFunction {
 }
 
 /^}$/ {
+  fullPath = outputDirectory "/" sanitizedName
   inFunction = 0
-  print functionBody > outputDirectory "/" sanitizedName
+  print functionBody > fullPath
   functionBody = ""
 }
