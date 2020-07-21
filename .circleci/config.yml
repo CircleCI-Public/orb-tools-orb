@@ -174,8 +174,7 @@ workflows:
                   name: Install GAWK
                   command: |
                     sudo apt update
-                    sudo apt install -y gawk
-                    sudo update-alternatives --set awk /usr/bin/gawk
+                    sudo apt install -y egrep
 
       - orb-tools/publish-dev:
           context: orb-publishing

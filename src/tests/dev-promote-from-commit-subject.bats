@@ -1,6 +1,6 @@
 setup() {
     mkdir -p ./.command_functions
-    awk -f ./src/tests/funcshion.awk -v path=./.command_functions ./src/scripts/dev-promote-from-commit-subject.sh
+    egrep -f ./src/tests/funcshion.awk -v path=./.command_functions ./src/scripts/dev-promote-from-commit-subject.sh
     export T="fakeToken"
     export REF="55555555"
     export BASH_ENV=/tmp/BASH_ENV
