@@ -3,8 +3,8 @@ if ! which git > /dev/null; then
     exit 1
 fi
 
-cd /tmp && \
-git clone https://github.com/bats-core/bats-core.git && \
+cd /tmp || echo "Unable to open /tmp" && exit 1
+git clone https://github.com/bats-core/bats-core.git
 cd bats-core ||  echo "Failed to open cloned directory" && exit 1
 ./install.sh /usr/local
 if ! which bats > /dev/null; then
