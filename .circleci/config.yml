@@ -187,6 +187,8 @@ workflows:
       - test-commands:
           name: test-commands-cimg
           context: orb-publishing
+      - orb-tools/bats-test:
+          path: ./src/tests
 
       # test jobs
       - orb-tools-alpha/pack:
