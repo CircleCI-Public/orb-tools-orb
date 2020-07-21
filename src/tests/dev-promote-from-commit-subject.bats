@@ -50,7 +50,7 @@ setup() {
     source ./.command_functions/dev-promote-from-commit-subject/checkincrement
     CheckIncrement
     cat $BASH_ENV
-    grep 'export PR_MESSAGE="BotComment: \*Production\* version of orb available for use - \\\`test\\\`"' $BASH_ENV
+    grep -e 'export PR_MESSAGE="BotComment: \*Production\* version of orb available for use - \\\`test\\\`\"' $BASH_ENV
 
 }
 
