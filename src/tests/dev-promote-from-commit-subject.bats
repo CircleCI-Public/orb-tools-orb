@@ -1,6 +1,6 @@
 setup() {
     mkdir -p ./.command_functions
-    grep -e -f ./src/tests/funcshion.awk -v path=./.command_functions ./src/scripts/dev-promote-from-commit-subject.sh
+    awk -f ./src/tests/funcshion.awk -v path=./.command_functions ./src/scripts/dev-promote-from-commit-subject.sh
     export T="fakeToken"
     export REF="55555555"
     export BASH_ENV=/tmp/BASH_ENV
@@ -10,28 +10,28 @@ setup() {
     export COMMIT_SUBJECT="Test CircleCI Orb [semver:major]"
     source ./.command_functions/dev-promote-from-commit-subject/getincrement
     GetIncrement
-    grep 'SEMVER_INCREMENT="major"' $BASH_ENV
+    grep -e 'SEMVER_INCREMENT="major"' $BASH_ENV
 }
 
 @test '2: Test GetIncrement Minor' {
     export COMMIT_SUBJECT="Test CircleCI Orb [semver:minor]"
     source ./.command_functions/dev-promote-from-commit-subject/getincrement
     GetIncrement
-    grep 'SEMVER_INCREMENT="minor"' $BASH_ENV
+    grep -e 'SEMVER_INCREMENT="minor"' $BASH_ENV
 }
 
 @test '3: Test GetIncrement patch' {
     export COMMIT_SUBJECT="Test CircleCI Orb [semver:patch]"
     source ./.command_functions/dev-promote-from-commit-subject/getincrement
     GetIncrement
-    grep 'SEMVER_INCREMENT="patch"' $BASH_ENV
+    grep -e 'SEMVER_INCREMENT="patch"' $BASH_ENV
 }
 
 @test '4: Test GetIncrement Skip' {
     export COMMIT_SUBJECT="Test CircleCI Orb [semver:skip]"
     source ./.command_functions/dev-promote-from-commit-subject/getincrement
     GetIncrement
-    grep 'SEMVER_INCREMENT="skip"' $BASH_ENV
+    grep -e 'SEMVER_INCREMENT="skip"' $BASH_ENV
 }
 
 @test '5: Disallow Other Increment Strings' {

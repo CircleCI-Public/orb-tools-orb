@@ -169,6 +169,13 @@ workflows:
 
       - orb-tools/bats-test:
           path: ./src/tests
+          setup-steps:
+              - run:
+                  name: Install GAWK
+                  command: |
+                    sudo apt update
+                    sudo apt install -y gawk
+                    sudo update-alternatives --set awk /usr/bin/gawk
 
       - orb-tools/publish-dev:
           context: orb-publishing
