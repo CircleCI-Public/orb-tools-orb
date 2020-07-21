@@ -167,10 +167,13 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
 
+      - orb-tools/bats-test:
+          path: ./src/tests
+
       - orb-tools/publish-dev:
           context: orb-publishing
           orb-name: circleci/orb-tools
-          requires: [orb-tools/pack, orb-tools/lint]
+          requires: [orb-tools/pack, orb-tools/lint, orb-tools/bats-test]
 
       - queue/block_workflow:
           requires: [orb-tools/publish-dev]
@@ -187,8 +190,6 @@ workflows:
       - test-commands:
           name: test-commands-cimg
           context: orb-publishing
-      - orb-tools/bats-test:
-          path: ./src/tests
 
       # test jobs
       - orb-tools-alpha/pack:
