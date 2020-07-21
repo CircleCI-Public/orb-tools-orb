@@ -1,0 +1,21 @@
+description: >
+  Automate your BATS testing with minimal setup.
+
+parameters:
+  path:
+    description: "REQUIRED: Path containg BATS test script(s)"
+    type: string
+  setup-steps:
+    description: Add additional steps prior to executing tests. Additional BATS plugins can be loaded here, or other setup scripts.
+    type: steps
+    default: []
+docker:
+  - image: cimg/base:stable
+
+steps:
+  - checkout
+  - install-bats
+  - steps: <<parameters.setup-steps>>
+  - run:
+      name: Execute BATS tests
+      command: bats <<parameters.path>>

@@ -1,7 +1,7 @@
 description: >
-  Install BATS CLI for running shell-based orb integration tests
+  Install BATS-Core for automated BASH script testing. Includes funcshion, a utility for parsing functions from bash files.
 
 steps:
   - run:
-      name: install BATS
+      name: Install BATS
       command: <<include(scripts/install-bats.sh)>>
