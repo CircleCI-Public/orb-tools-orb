@@ -167,13 +167,13 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
 
-      - bats/test:
+      - bats/run:
           path: ./src/tests
 
       - orb-tools/publish-dev:
           context: orb-publishing
           orb-name: circleci/orb-tools
-          requires: [orb-tools/pack, orb-tools/lint, bats/test]
+          requires: [orb-tools/pack, orb-tools/lint, bats/run]
 
       - queue/block_workflow:
           requires: [orb-tools/publish-dev]
