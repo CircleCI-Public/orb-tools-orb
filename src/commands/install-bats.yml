@@ -1,7 +1,0 @@
-description: >
-  Install BATS-Core for automated BASH script testing. Includes funcshion, a utility for parsing functions from bash files.
-
-steps:
-  - run:
-      name: Install BATS
-      command: <<include(scripts/install-bats.sh)>>

@@ -6,6 +6,7 @@ orbs:
   orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
   queue: eddiewebb/queue@1.1.2
   jq: circleci/jq@2.2
+  bats: circleci/bats@1.0
 
 parameters:
   run-integration-tests:
@@ -69,7 +70,6 @@ jobs:
     steps:
       - checkout
       - cli/install
-      - orb-tools-alpha/install-bats
       - orb-tools-alpha/pack
       - orb-tools-alpha/validate
 
@@ -167,13 +167,13 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
 
-      - orb-tools/bats-test:
+      - bats/test:
           path: ./src/tests
 
       - orb-tools/publish-dev:
           context: orb-publishing
           orb-name: circleci/orb-tools
-          requires: [orb-tools/pack, orb-tools/lint, orb-tools/bats-test]
+          requires: [orb-tools/pack, orb-tools/lint, bats/test]
 
       - queue/block_workflow:
           requires: [orb-tools/publish-dev]
@@ -207,7 +207,6 @@ workflows:
           test-steps:
             - checkout
 
-            - orb-tools-alpha/install-bats
             - orb-tools-alpha/pack
             - orb-tools-alpha/validate
 
