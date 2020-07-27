@@ -198,24 +198,6 @@ workflows:
           artifact-path: orb.yml
           requires: *requires_commands
 
-      - orb-tools-alpha/test-in-builds:
-          name: test-in-builds-job
-          context: orb-publishing
-          attach-workspace: true
-          orb-name: orb-tools-alpha
-          requires: [test-pack-job]
-          test-steps:
-            - checkout
-
-            - orb-tools-alpha/pack
-            - orb-tools-alpha/validate
-
-            - orb-tools-alpha/publish:
-                orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
-
-            - orb-tools-alpha/increment:
-                orb-ref: sandbox/orb-tools
-
       - orb-tools-alpha/publish:
           name: test-publish-job
           attach-workspace: true
@@ -229,7 +211,6 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools
           requires:
-            - test-in-builds-job
             - test-publish-job
 
       - test-promote-from-commit-subject:
