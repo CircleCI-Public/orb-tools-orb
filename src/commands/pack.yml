@@ -12,6 +12,11 @@ parameters:
     description: "Path including the filename to output the packed orb."
     type: string
     default: orb.yml
+    
+  use-orb-pack:
+    description: Setting this will use the new "orb pack" instead of "config pack"
+    type: boolean
+    default: false
 
 steps:
   - run:
@@ -22,4 +27,9 @@ steps:
   - run:
       name: "Pack << parameters.source>> to << parameters.destination >>"
       command: |
-        circleci config pack --skip-update-check << parameters.source >> > << parameters.destination >>
+        if [[ "<< parameters.use-orb-pack >>" == "true" ]]; then
+          circleci orb pack --skip-update-check << parameters.source >> > << parameters.destination >>
+        else
+          circleci config pack --skip-update-check << parameters.source >> > << parameters.destination >>
+        fi 
+        
