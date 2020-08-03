@@ -155,7 +155,7 @@ orb_promotion_filters: &orb_promotion_filters
     only: /^(major|minor|patch)-release-v\d+\.\d+\.\d+$/
 
 workflows:
-  lint_pack-validate_publish-dev:
+  test-pack:
     unless: << pipeline.parameters.run-integration-tests >>
     jobs:
       - orb-tools/lint:
@@ -183,7 +183,7 @@ workflows:
           context: orb-publishing
           requires: [queue/block_workflow]
 
-  integration_tests-prod_deploy:
+  integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
       # test commands with executors
