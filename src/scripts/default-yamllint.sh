@@ -1,5 +1,5 @@
 touch .yamllint || true
-cat \<< EOF > .yamllint
+cat << EOF > .yamllint
 extends: relaxed
 
 rules:
