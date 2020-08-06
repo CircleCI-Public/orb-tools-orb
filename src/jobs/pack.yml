@@ -71,6 +71,11 @@ parameters:
     type: string
     default: orb.yml
 
+  use-orb-pack:
+    description: Setting this will use the new "orb pack" instead of "config pack"
+    type: boolean
+    default: false
+
 executor: cli/default
 
 steps:
@@ -90,6 +95,7 @@ steps:
   - pack:
       source: << parameters.source-dir >>
       destination: << parameters.destination-orb-path >>
+      use-orb-pack: << parameters.use-orb-pack >>
 
   # Validate
   - when:
