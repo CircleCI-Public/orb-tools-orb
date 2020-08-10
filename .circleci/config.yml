@@ -7,6 +7,7 @@ orbs:
   queue: eddiewebb/queue@1.1.2
   jq: circleci/jq@2.2
   bats: circleci/bats@1.0
+  shellcheck: circleci/shellcheck@dev:2alpha
 
 parameters:
   run-integration-tests:
@@ -166,6 +167,8 @@ workflows:
           destination-orb-path: orb.yml
           workspace-path: orb.yml
           artifact-path: orb.yml
+
+      - shellcheck/check
 
       - bats/run:
           path: ./src/tests
