@@ -4,7 +4,6 @@ orbs:
   cli: circleci/circleci-cli@0.1
   orb-tools: circleci/orb-tools@dev:orb-pack
   orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
-  queue: eddiewebb/queue@1.1.2
   jq: circleci/jq@2.2
   bats: circleci/bats@1.0
   shellcheck: circleci/shellcheck@dev:2alpha
@@ -177,15 +176,12 @@ workflows:
       - orb-tools/publish-dev:
           context: orb-publishing
           orb-name: circleci/orb-tools
-          requires: [orb-tools/pack, orb-tools/lint, bats/run]
-
-      - queue/block_workflow:
-          requires: [orb-tools/publish-dev]
+          requires: [orb-tools/pack, orb-tools/lint, bats/run, shellcheck/check]
 
       - orb-tools/trigger-integration-tests-workflow:
           name: trigger-integration
           context: orb-publishing
-          requires: [queue/block_workflow]
+          requires: [orb-tools/publish-dev]
 
   integration_tests-prod_deploy:
     when: << pipeline.parameters.run-integration-tests >>
