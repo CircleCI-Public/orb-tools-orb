@@ -168,7 +168,8 @@ workflows:
           workspace-path: orb.yml
           artifact-path: orb.yml
 
-      - shellcheck/check
+      - shellcheck/check:
+          exclude: SC2148,SC2038,SC2086
 
       - bats/run:
           path: ./src/tests
