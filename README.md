@@ -4,6 +4,8 @@ An orb for orb authors - provides a full suite of commands and jobs for validati
 
 ## Usage
 
+Explore the `src/examples` or `Orb-Project-Template` (git submodule) directories to get an idea of how this works. If you feel there is something we could clarify, please let us know!
+
 _For full usage guidelines, see the [orb registry listing](http://circleci.com/orbs/registry/orb/circleci/orb-tools)._
 
 ## Contributing
