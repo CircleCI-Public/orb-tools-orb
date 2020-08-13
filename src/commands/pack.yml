@@ -1,5 +1,4 @@
 description: >
-  *Experimental*
   Uses the CLI to pack an orb file structure into a single orb yml.
 
 parameters:

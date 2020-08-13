@@ -26,7 +26,7 @@ usage:
       only: /^(major|minor|patch)-release-v\d+\.\d+\.\d+$/
 
   orbs:
-    orb-tools: circleci/orb-tools@x.y.z
+    orb-tools: circleci/orb-tools@10
     # add your orb below, to be used in integration tests (note: a
     # @dev:alpha release must exist; if none exists, you'll need to
     # publish manually once before this worklow can succeed)
