@@ -6,7 +6,7 @@ orbs:
   orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
   jq: circleci/jq@2.2
   bats: circleci/bats@1.0
-  shellcheck: circleci/shellcheck@dev:2alpha
+  shellcheck: circleci/shellcheck@2.0
 
 parameters:
   run-integration-tests:
