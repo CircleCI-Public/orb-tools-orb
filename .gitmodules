@@ -1,3 +1,4 @@
 [submodule "Orb-Project-Template"]
 	path = Orb-Project-Template
 	url = https://github.com/CircleCI-Public/Orb-Project-Template.git
+	branch = master
