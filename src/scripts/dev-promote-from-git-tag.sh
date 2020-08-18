@@ -12,10 +12,10 @@ DiscoverTag() {
     elif [[ "${CIRCLE_TAG}" =~ ${PATCH_RELEASE_TAG_REGEX} ]]; then
         RELEASE_TYPE='patch'
     fi
+    echo "export RELEASE_TYPE=\"$RELEASE_TYPE\"" >> $BASH_ENV
 }
 
 PublishTag() {
-    echo $RELEASE_TYPE
     if [ -n "${RELEASE_TYPE}" ]; then
         PUBLISH_MESSAGE=$(circleci orb publish promote \
         "${ORB_NAME}@${REF}" \
