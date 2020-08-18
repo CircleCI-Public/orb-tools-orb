@@ -1,7 +1,11 @@
 Setup() {
     VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
     T=$(eval echo "$TOKEN")
-    eval echo $PARAM_MAP > pipelineparams.json
+}
+
+BuildParams() {
+    REQUEST_PARAMS='{\"branch\": \"$CIRCLE_BRANCH\", \"parameters\": $PARAM_MAP}'
+    eval echo $REQUEST_PARAMS > pipelineparams.json
 }
 
 DoCurl() {
@@ -22,6 +26,7 @@ Result() {
 
 Main() {
     Setup
+    BuildParams
     DoCurl
     Result
 }
