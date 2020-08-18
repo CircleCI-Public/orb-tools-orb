@@ -42,8 +42,9 @@ Main() {
     CheckIncrement
 }
 
-# Will not run if sourced from another script. This is done so this script may be tested.
+# Will not run if sourced for bats.
 # View src/tests for more information.
-if [[ "$_" == "$0" ]]; then
+TEST_ENV="bats-core"
+if [ "${0#*$TEST_ENV}" == "$0" ]; then
     Main
 fi

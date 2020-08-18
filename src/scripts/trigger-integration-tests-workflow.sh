@@ -26,6 +26,9 @@ Main() {
     Result
 }
 
-if [[ "$_" == "$0" ]]; then
+# Will not run if sourced for bats.
+# View src/tests for more information.
+TEST_ENV="bats-core"
+if [ "${0#*$TEST_ENV}" == "$0" ]; then
     Main
 fi
