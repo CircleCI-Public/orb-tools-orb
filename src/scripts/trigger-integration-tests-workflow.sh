@@ -11,6 +11,7 @@ DoCurl() {
 
 Result() {
     CURL_RESULT=$(cat /tmp/curl-result.txt)
+    echo $CURL_RESULT
     if [[ $(echo "$CURL_RESULT" | jq -r .message) == "Not Found" || $(echo "$CURL_RESULT" | jq -r .message) == "Permission denied" || $(echo "$CURL_RESULT" | jq -r .message) == "Project not found" ]]; then
         echo "Was unable to trigger integration test workflow. API response: $(cat /tmp/curl-result.txt | jq -r .message)"
         exit 1
