@@ -1,9 +1,7 @@
 Setup() {
     VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
     T=$(eval echo "$TOKEN")
-    echo $PARAM_MAP
-    eval echo ${PARAM_MAP//\"/\\\"}
-    eval echo ${PARAM_MAP//\"/\\\"} > pipelineparams.json
+    eval echo $PARAM_MAP > pipelineparams.json
 }
 
 DoCurl() {
