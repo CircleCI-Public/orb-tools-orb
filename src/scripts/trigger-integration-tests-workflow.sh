@@ -1,7 +1,6 @@
 Setup() {
     VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
     T=$(eval echo "$TOKEN")
-    PARAMS=$(eval echo "$PARAM_MAP")
 }
 
 
