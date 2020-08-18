@@ -4,6 +4,7 @@ Setup() {
 }
 
 BuildParams() {
+    PARAM_MAP=$(eval echo $PARAM_MAP)
     REQUEST_PARAMS='{\"branch\": \"$CIRCLE_BRANCH\", \"parameters\": $PARAM_MAP}'
     eval echo $REQUEST_PARAMS > pipelineparams.json
 }
