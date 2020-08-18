@@ -15,6 +15,7 @@ DiscoverTag() {
 }
 
 PublishTag() {
+    echo $RELEASE_TYPE
     if [ -n "${RELEASE_TYPE}" ]; then
         PUBLISH_MESSAGE=$(circleci orb publish promote \
         "${ORB_NAME}@${REF}" \
