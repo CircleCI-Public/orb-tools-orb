@@ -31,7 +31,6 @@ steps:
   - run:
       name: >
         Increment << parameters.segment >> segment of orb at << parameters.orb-path >>
-        NOTE: this currently assumes you are publishing to the registry at circleci.com
       command: >
         circleci orb publish increment
         << parameters.orb-path >>

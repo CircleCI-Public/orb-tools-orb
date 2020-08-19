@@ -1,14 +1,12 @@
 description: >
   Lint an orb with yamllint
 
-executor: lint
+resource_class: small
+
+docker:
+  - image: singapore/lint-condo
 
 parameters:
-  executor:
-    type: executor
-    default: lint
-    description: Executor to use for this job
-
   checkout:
     type: boolean
     default: true
@@ -72,17 +70,7 @@ steps:
       steps:
         - run:
             name: output default .yamllint file in the working directory
-            command: |
-              touch .yamllint || true
-              cat \<< EOF > .yamllint
-              extends: relaxed
-
-              rules:
-                line-length:
-                  max: 200
-                  allow-non-breakable-inline-mappings: true
-
-              EOF
+            command: <<include(scripts/default-yamllint.sh)>>
 
         - run:
             name: yamllint

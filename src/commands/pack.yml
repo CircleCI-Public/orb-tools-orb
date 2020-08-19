@@ -1,5 +1,4 @@
 description: >
-  *Experimental*
   Uses the CLI to pack an orb file structure into a single orb yml.
 
 parameters:
@@ -27,8 +26,4 @@ steps:
   - run:
       name: "Pack << parameters.source>> to << parameters.destination >>"
       command: |
-        if [[ "<< parameters.use-orb-pack >>" == "true" ]]; then
-          circleci orb pack --skip-update-check << parameters.source >> > << parameters.destination >>
-        else
-          circleci config pack --skip-update-check << parameters.source >> > << parameters.destination >>
-        fi
+        circleci orb pack --skip-update-check << parameters.source >> > << parameters.destination >>

@@ -12,7 +12,7 @@ parameters:
 
   pipeline-param-map:
     type: string
-    default: "{\\\"run-integration-tests\\\": true, \\\"dev-orb-version\\\": \\\"dev:${CIRCLE_SHA1:0:7}\\\"}"
+    default: '{"run-integration-tests": true, "dev-orb-version": "dev:${CIRCLE_SHA1:0:7}"}'
     description: >
       Map of pipeline parameters that the new pipeline will be invoked with.
       Make use of this to target the integration workflow that should be triggered
@@ -34,18 +34,7 @@ steps:
 
   - run:
       name: Trigger integration test workflow
-      command: |
-        VCS_TYPE=$(echo "${CIRCLE_BUILD_URL}" | cut -d '/' -f 4)
-        curl -u "${<<parameters.token-variable>>}": -X POST --header "Content-Type: application/json" -d "{
-            \"branch\": \"${CIRCLE_BRANCH}\",
-            \"parameters\": <<parameters.pipeline-param-map>>
-        }" "https://circleci.com/api/v2/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline" -o /tmp/curl-result.txt
-        CURL_RESULT=$(cat /tmp/curl-result.txt)
-
-        if [[ $(echo "$CURL_RESULT" | jq -r .message) == "Not Found" || $(echo "$CURL_RESULT" | jq -r .message) == "Permission denied" || $(echo "$CURL_RESULT" | jq -r .message) == "Project not found" ]]; then
-            echo "Was unable to trigger integration test workflow. API response: $(cat /tmp/curl-result.txt | jq -r .message)"
-            exit 1
-        else
-            echo "Pipeline triggered!"
-            echo "https://app.circleci.com/jobs/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/$(cat /tmp/curl-result.txt | jq -r .number)"
-        fi
+      environment:
+        PARAM_MAP: '<<parameters.pipeline-param-map>>'
+        TOKEN: "$<<parameters.token-variable>>"
+      command: <<include(scripts/trigger-integration-tests-workflow.sh)>>

@@ -2,10 +2,11 @@ version: 2.1
 
 orbs:
   cli: circleci/circleci-cli@0.1
-  orb-tools: circleci/orb-tools@9.0
+  orb-tools: circleci/orb-tools@dev:orb-pack
   orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
-  queue: eddiewebb/queue@1.1.2
-  jq: circleci/jq@1.9.1
+  jq: circleci/jq@2.2
+  bats: circleci/bats@1.0
+  shellcheck: circleci/shellcheck@2.0
 
 parameters:
   run-integration-tests:
@@ -56,9 +57,6 @@ commands:
 jobs:
   test-commands:
     parameters:
-      executor:
-        type: executor
-
       segment:
         description: >
           The semver segment to increment 'major' or 'minor' or 'patch'
@@ -66,18 +64,14 @@ jobs:
         enum: [major, minor, patch]
         default: patch
 
-    executor: <<parameters.executor>>
+    docker:
+      - image: cimg/base:edge
 
     steps:
       - checkout
       - cli/install
-      - orb-tools-alpha/install-bats
       - orb-tools-alpha/pack
       - orb-tools-alpha/validate
-
-      - orb-tools-alpha/check-env-var-param:
-          command-name: Test `check-env-var-param` command with built-in env vars
-          param: CIRCLE_BUILD_NUM,CIRCLE_BRANCH,CIRCLE_BUILD_URL,CIRCLE_JOB
 
       - orb-tools-alpha/publish:
           orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
@@ -88,9 +82,6 @@ jobs:
 
   test-promote-from-commit-subject:
     parameters:
-      executor:
-        type: executor
-
       segment:
         description: >
           The semver segment to increment 'major' or 'minor' or 'patch'
@@ -101,7 +92,8 @@ jobs:
       expect-orb-to-be-published:
         type: boolean
 
-    executor: <<parameters.executor>>
+    docker:
+      - image: cimg/base:edge
 
     steps:
       - checkout
@@ -122,9 +114,6 @@ jobs:
 
   test-promote-from-git-tag:
     parameters:
-      executor:
-        type: executor
-
       segment:
         description: >
           The semver segment to increment 'major' or 'minor' or 'patch'
@@ -132,7 +121,8 @@ jobs:
         enum: [major, minor, patch]
         default: patch
 
-    executor: <<parameters.executor>>
+    docker:
+      - image: cimg/base:edge
 
     steps:
       - cli/install
@@ -153,16 +143,10 @@ jobs:
       - check-pr-message:
           orb-name: sandbox/orb-tools
           expect-orb-to-be-published: true
+
 # yaml anchor filters
 requires_commands: &requires_commands
-  [
-    test-commands-alpine,
-    test-commands-machine,
-    test-commands-macos,
-    test-commands-node-cci,
-    test-commands-node,
-    test-commands-ubuntu
-  ]
+  - test-commands-cimg
 
 orb_promotion_filters: &orb_promotion_filters
   branches:
@@ -171,7 +155,7 @@ orb_promotion_filters: &orb_promotion_filters
     only: /^(major|minor|patch)-release-v\d+\.\d+\.\d+$/
 
 workflows:
-  lint_pack-validate_publish-dev:
+  test-pack:
     unless: << pipeline.parameters.run-integration-tests >>
     jobs:
       - orb-tools/lint:
@@ -182,63 +166,30 @@ workflows:
           destination-orb-path: orb.yml
           workspace-path: orb.yml
           artifact-path: orb.yml
-          requires: [orb-tools/lint]
+
+      - shellcheck/check:
+          exclude: SC2148,SC2038,SC2086,SC2002,SC2016
+
+      - bats/run:
+          path: ./src/tests
 
       - orb-tools/publish-dev:
           context: orb-publishing
           orb-name: circleci/orb-tools
-          requires: [orb-tools/pack]
-
-      - queue/block_workflow:
-          requires: [orb-tools/publish-dev]
+          requires: [orb-tools/pack, orb-tools/lint, bats/run, shellcheck/check]
 
       - orb-tools/trigger-integration-tests-workflow:
           name: trigger-integration
           context: orb-publishing
-          requires: [queue/block_workflow]
+          requires: [orb-tools/publish-dev]
 
-  integration_tests-prod_deploy:
+  integration-test_deploy:
     when: << pipeline.parameters.run-integration-tests >>
     jobs:
       # test commands with executors
       - test-commands:
-          name: test-commands-alpine
-          executor: orb-tools-alpha/alpine
+          name: test-commands-cimg
           context: orb-publishing
-
-      - test-commands:
-          name: test-commands-machine
-          executor: orb-tools-alpha/machine
-          context: orb-publishing
-          segment: minor
-
-      - test-commands:
-          name: test-commands-macos
-          executor: orb-tools-alpha/macos
-          context: orb-publishing
-          segment: major
-
-      - test-commands:
-          name: test-commands-node-cci
-          executor: orb-tools-alpha/node-cci
-          context: orb-publishing
-          pre-steps: [run: sleep 2]
-
-      - test-commands:
-          name: test-commands-node
-          executor: orb-tools-alpha/node
-          context: orb-publishing
-          pre-steps:
-            - run: sleep 2
-            - jq/install
-          segment: minor
-
-      - test-commands:
-          name: test-commands-ubuntu
-          executor: orb-tools-alpha/ubuntu
-          context: orb-publishing
-          pre-steps: [run: sleep 2]
-          segment: major
 
       # test jobs
       - orb-tools-alpha/pack:
@@ -247,36 +198,12 @@ workflows:
           artifact-path: orb.yml
           requires: *requires_commands
 
-      - orb-tools-alpha/shellcheck:
-          name: test-shellcheck-job
-          source-dir: ./tests/shellcheck
-          requires: *requires_commands
-
-      - orb-tools-alpha/test-in-builds:
-          name: test-in-builds-job
-          context: orb-publishing
-          attach-workspace: true
-          orb-name: orb-tools-alpha
-          requires: [test-pack-job, test-shellcheck-job]
-          test-steps:
-            - checkout
-
-            - orb-tools-alpha/install-bats
-            - orb-tools-alpha/pack
-            - orb-tools-alpha/validate
-
-            - orb-tools-alpha/publish:
-                orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
-
-            - orb-tools-alpha/increment:
-                orb-ref: sandbox/orb-tools
-
       - orb-tools-alpha/publish:
           name: test-publish-job
           attach-workspace: true
           context: orb-publishing
           orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
-          requires: [test-pack-job, test-shellcheck-job]
+          requires: [test-pack-job]
 
       - orb-tools-alpha/increment:
           name: test-increment-job
@@ -284,12 +211,10 @@ workflows:
           context: orb-publishing
           orb-ref: sandbox/orb-tools
           requires:
-            - test-in-builds-job
             - test-publish-job
 
       - test-promote-from-commit-subject:
           name: test-promote-from-commit-subject-semver-patch
-          executor: orb-tools-alpha/ubuntu
           segment: patch
           expect-orb-to-be-published: true
           context: orb-publishing
@@ -298,7 +223,6 @@ workflows:
 
       - test-promote-from-commit-subject:
           name: test-promote-from-commit-subject-semver-skip
-          executor: orb-tools-alpha/ubuntu
           segment: skip
           expect-orb-to-be-published: false
           context: orb-publishing
@@ -307,7 +231,6 @@ workflows:
 
       - test-promote-from-commit-subject:
           name: test-promote-from-commit-subject-semver-none
-          executor: orb-tools-alpha/ubuntu
           segment: none
           expect-orb-to-be-published: false
           context: orb-publishing
@@ -315,7 +238,6 @@ workflows:
             - test-increment-job
 
       - test-promote-from-git-tag:
-          executor: orb-tools-alpha/ubuntu
           segment: minor
           context: orb-publishing
           requires:

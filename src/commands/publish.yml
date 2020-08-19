@@ -26,7 +26,6 @@ steps:
   - run:
       name: >
         Publish orb at << parameters.orb-path >> to << parameters.orb-ref >>
-        NOTE: this currently assumes you are publishing to the registry at circleci.com
       command: >
         circleci orb publish --skip-update-check << parameters.orb-path >> << parameters.orb-ref >>
         <<# parameters.token-variable >>--token $<< parameters.token-variable >> <</ parameters.token-variable >>
