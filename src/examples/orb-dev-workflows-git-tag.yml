@@ -52,7 +52,7 @@ usage:
       # - your-orb/your-orb-command
 
   workflows:
-    lint_pack-validate_publish-dev:
+    test-pack:
       unless: << pipeline.parameters.run-integration-tests >>
       jobs:
         # This `lint-pack_validate_publish-dev` workflow will run on any commit
@@ -79,7 +79,7 @@ usage:
             requires:
               - orb-tools/publish-dev
 
-    # This `integration-tests_prod-release` workflow will only run
+    # This `integration-tests` workflow will only run
     # when the run-integration-tests pipeline parameter is set to true.
     # It is meant to be triggered by the "trigger-integration-tests-workflow"
     # job, and run tests on <your orb>@dev:${CIRCLE_SHA1:0:7}.
