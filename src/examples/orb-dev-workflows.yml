@@ -1,5 +1,5 @@
 description: >
-  Use the lint, pack, publish-dev, and trigger-integration-workflow jobs
+  Use the lint, pack, publish-dev, and trigger-integration-tests-workflow jobs
   to lint a destructured orb's YAML source code, pack it into a single
   orb.yml file, release a @dev:${CIRCLE_SHA1:0:7} version of the orb, and trigger
   an integration testing workflow that will run against the new dev
