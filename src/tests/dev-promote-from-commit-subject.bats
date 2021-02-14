@@ -47,6 +47,28 @@ setup() {
 
 }
 
+@test 'Promote From Commit Subject 7: Test GetIncrement default to major' {
+    export COMMIT_SUBJECT="Test CircleCI Orb"
+    export DEFAULT_SEMVER_INCREMENT="major"
+    GetIncrement
+    grep -e 'SEMVER_INCREMENT="major"' $BASH_ENV
+}
+
+@test 'Promote From Commit Subject 7: Test GetIncrement default to minor' {
+    export COMMIT_SUBJECT="Test CircleCI Orb"
+    export DEFAULT_SEMVER_INCREMENT="minor"
+    GetIncrement
+    grep -e 'SEMVER_INCREMENT="minor"' $BASH_ENV
+}
+
+@test 'Promote From Commit Subject 7: Test GetIncrement default to patch' {
+    export COMMIT_SUBJECT="Test CircleCI Orb"
+    export DEFAULT_SEMVER_INCREMENT="patch"
+    GetIncrement
+    grep -e 'SEMVER_INCREMENT="patch"' $BASH_ENV
+}
+
+
 function teardown() {
     rm -rf .command_functions /tmp/BASH_ENV
 }

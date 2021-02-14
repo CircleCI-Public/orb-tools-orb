@@ -78,6 +78,15 @@ parameters:
       Whether to fail if the commit subject did not include [semver:patch|minor|major|skip]
     type: boolean
 
+  default-semver-increment:
+    description: >
+      Default increment to assume if the commit subject 
+      did not include [semver:patch|minor|major|skip].
+      The default values can only be patch, minor or major, 
+      otherwise being ignored.
+    type: string
+    default: ""
+
 steps:
   - when:
       condition: <<parameters.checkout>>
@@ -90,6 +99,7 @@ steps:
         ORB_REF: <<parameters.orb-ref>>
         TOKEN: "$<<parameters.token-variable>>"
         SHOULD_FAIL: <<parameters.fail-if-semver-not-indicated>>
+        DEFAULT_SEMVER_INCREMENT: "<<parameters.default-semver-increment>>"
       command: <<include(scripts/dev-promote-from-commit-subject.sh)>>
   - when:
       condition: <<parameters.add-pr-comment>>

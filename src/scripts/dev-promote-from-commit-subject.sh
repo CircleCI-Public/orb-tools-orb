@@ -7,6 +7,10 @@ Setup() {
 GetIncrement() {
     SEMVER_INCREMENT=$(echo "${COMMIT_SUBJECT}" | sed -En 's/.*\[semver:(major|minor|patch|skip)\].*/\1/p')
     echo "Commit subject: ${COMMIT_SUBJECT}"
+    if [ -z "${SEMVER_INCREMENT}"  ]; then
+        echo "Commit subject did not indicate which SemVer increment to make. Will now assume the default one."
+        SEMVER_INCREMENT=$(echo "${DEFAULT_SEMVER_INCREMENT}" | sed -En 's/^(major|minor|patch)$/\1/p')
+    fi
     echo "export SEMVER_INCREMENT=\"$SEMVER_INCREMENT\""  >> "$BASH_ENV"
 }
 
@@ -19,7 +23,7 @@ PublishOrb() {
 
 CheckIncrement() {
     if [ -z "${SEMVER_INCREMENT}" ];then
-        echo "Commit subject did not indicate which SemVer increment to make."
+        echo "Commit subject did not indicate which SemVer increment to make and a default one was not set."
         echo "To publish orb, you can ammend the commit or push another commit with [semver:FOO] in the subject where FOO is major, minor, patch."
         echo "Note: To indicate intention to skip promotion, include [semver:skip] in the commit subject instead."
         if [ "$SHOULD_FAIL" == "true" ];then
