@@ -315,7 +315,7 @@ workflows:
           add-pr-comment: true
           bot-user: orb-publisher
           publish-version-tag: true
-          ssh-fingerprints: a3:57:82:bf:38:55:a7:9b:69:7b:d0:79:8f:fa:61:01
+          ssh-fingerprints: 90:b0:06:e8:a6:bb:62:e6:92:c2:9c:34:d4:35:56:6d
           bot-token-variable: GHI_TOKEN
           requires:
             - hold-for-approval
