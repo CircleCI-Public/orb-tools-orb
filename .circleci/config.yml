@@ -105,7 +105,7 @@ jobs:
           orb-name: sandbox/orb-tools
           fail-if-semver-not-indicated: false
           add-pr-comment: true
-          bot-user: cpe-bot
+          bot-user: orb-publisher
           bot-token-variable: GHI_TOKEN
           pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
       - check-pr-message:
@@ -135,7 +135,7 @@ jobs:
           checkout: false
           orb-name: sandbox/orb-tools
           add-pr-comment: true
-          bot-user: cpe-bot
+          bot-user: orb-publisher
           bot-token-variable: GHI_TOKEN
           required-branch: $CIRCLE_BRANCH
           # Make it unmatchable to avoid an actual PR being commented on
@@ -251,7 +251,7 @@ workflows:
           orb-name: sandbox/orb-tools
           fail-if-semver-not-indicated: false
           add-pr-comment: true
-          bot-user: cpe-bot
+          bot-user: orb-publisher
           bot-token-variable: GHI_TOKEN
           pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
           publish-version-tag: true
@@ -270,7 +270,7 @@ workflows:
           orb-name: sandbox/orb-tools
           fail-if-semver-not-indicated: false
           add-pr-comment: true
-          bot-user: cpe-bot
+          bot-user: orb-publisher
           bot-token-variable: GHI_TOKEN
           pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
           publish-version-tag: true
@@ -288,12 +288,12 @@ workflows:
           name: dev-promote-semver
           add-pr-comment: true
           fail-if-semver-not-indicated: false
-          bot-user: cpe-bot
+          bot-user: orb-publisher
           bot-token-variable: GHI_TOKEN
           context: orb-publishing
           orb-name: circleci/orb-tools
           publish-version-tag: true
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
+          ssh-fingerprints: 90:b0:06:e8:a6:bb:62:e6:92:c2:9c:34:d4:35:56:6d
           requires:
             - test-publish-tags-skipped-on-semver-skip
             - test-publish-tags-skipped-on-missing-semver
@@ -313,7 +313,7 @@ workflows:
           orb-name: circleci/orb-tools
           context: orb-publishing
           add-pr-comment: true
-          bot-user: cpe-bot
+          bot-user: orb-publisher
           bot-token-variable: GHI_TOKEN
           requires:
             - hold-for-approval
