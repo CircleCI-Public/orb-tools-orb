@@ -293,7 +293,7 @@ workflows:
           context: orb-publishing
           orb-name: circleci/orb-tools
           publish-version-tag: true
-          ssh-fingerprints: 33:d9:6e:a7:b2:ba:eb:90:7b:7a:dc:90:36:e1:b6:e0
+          ssh-fingerprints: 90:b0:06:e8:a6:bb:62:e6:92:c2:9c:34:d4:35:56:6d
           requires:
             - test-publish-tags-skipped-on-semver-skip
             - test-publish-tags-skipped-on-missing-semver
@@ -314,8 +314,6 @@ workflows:
           context: orb-publishing
           add-pr-comment: true
           bot-user: orb-publisher
-          publish-version-tag: true
-          ssh-fingerprints: 90:b0:06:e8:a6:bb:62:e6:92:c2:9c:34:d4:35:56:6d
           bot-token-variable: GHI_TOKEN
           requires:
             - hold-for-approval
