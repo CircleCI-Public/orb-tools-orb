@@ -5,7 +5,7 @@ parameters:
   source-dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
-    default: ./src
+    default: ./src/
   output-dir:
     description: The orb output directory. The orb will be named "orb.yml" in this directory and persisted to the workspace. Path must be absolute or relative to the working directory.
     type: string
@@ -20,7 +20,7 @@ steps:
       command: mkdir <<parameters.output-dir>> && circleci orb pack --skip-update-check <<parameters.source-dir>> > <<parameters.output-dir>>/orb.yml
   - run:
       name: Validating orb
-      command: circleci orb validate --skip-update-check <<parameters.output-dir>>orb.yml
+      command: circleci orb validate --skip-update-check <<parameters.output-dir>>/orb.yml
   - persist_to_workspace:
       paths:
         - orb.yml
