@@ -1,84 +1,10 @@
-description: >
-  Lint an orb with yamllint
-
-resource_class: small
+description: |
+  Lint all YAML files in the project. A ".yamllint" file will be generated for you automatically by the Orb Development Kit.
 
 docker:
-  - image: singapore/lint-condo
-
-parameters:
-  checkout:
-    type: boolean
-    default: true
-    description: Checkout as a first step? Default is true
-
-  attach-workspace:
-    type: boolean
-    default: false
-    description: >
-      Boolean for whether or not to attach to an existing workspace,
-      default is false
-
-  workspace-root:
-    type: string
-    default: workspace
-    description: >
-      Workspace root path that is either an absolute path or a path relative
-      to the working directory
-
-  lint-dir:
-    type: string
-    default: .
-    description: >
-      Directory within which to lint all YAML files,
-      defaults to the working directory (.)
-
-  use-default-rules:
-    type: boolean
-    default: true
-    description: >
-      Use default orb YAML linting rules (extends: relaxed,
-      max line-length: 200, allow-non-breakable-inline-mappings: true).
-      If set to false, you must set use-custom-rules to true and supply
-      a filepath to the custom-rules-filepath parameter.
-
-  custom-rules-filepath:
-    type: string
-    default: .yamllint
-    description: >
-      Location of your custom yamllint configuration file,
-      defaults to .yamllint in the working directory
+  - image: singapore/lint-condo@sha256:b5edd1f14371b18d4446adc032348663acae8e6c65d0052a74d6ee1feb246107
 
 steps:
-  - when:
-      condition: <<parameters.checkout>>
-      steps:
-        - run:
-            name: "Install Git and Openssh"
-            command: |
-              apk --update add git openssh
-        - checkout
-
-  - when:
-      condition: <<parameters.attach-workspace>>
-      steps:
-        - attach_workspace:
-            at: <<parameters.workspace-root>>
-
-  - when:
-      condition: <<parameters.use-default-rules>>
-      steps:
-        - run:
-            name: output default .yamllint file in the working directory
-            command: <<include(scripts/default-yamllint.sh)>>
-
-        - run:
-            name: yamllint
-            command: |
-              yamllint <<parameters.lint-dir>>
-
-  - unless:
-      condition: <<parameters.use-default-rules>>
-      steps:
-        - run: |
-            yamllint -c <<parameters.custom-rules-filepath>> <<parameters.lint-dir>>
+  - run:
+      name: Linting all YAML files
+      command: yamllint

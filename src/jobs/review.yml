@@ -1,0 +1,12 @@
+description: |
+  Check for various orb authoring best practices to ensure high quality releases with minimal friction.
+
+executor: default
+
+steps:
+  - run:
+      name: Validating Desired Tag
+      command: echo "Make sure the tag both does not exist, and does not match the current default branch."
+  - run:
+      name: Validating Usage Example Versions
+      command: echo "Ensure each usage example it showcasing the orb version spcified by the desired tag in the config."
