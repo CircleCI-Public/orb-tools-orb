@@ -9,7 +9,7 @@ parameters:
   output-dir:
     description: The orb output directory. The orb will be named "orb.yml" in this directory and persisted to the workspace. Path must be absolute or relative to the working directory.
     type: string
-    default: ./dist
+    default: ./dist/
 
 executor: cli/default
 

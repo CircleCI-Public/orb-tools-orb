@@ -17,4 +17,5 @@ workflows:
       - orb-tools-alpha/publish-release:
           orb-name: circleci/orb-tools
           tag: "1.0.0"
+          title: "v11 - Tag based deploys"
           requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]

@@ -8,7 +8,7 @@ parameters:
   orb-dir:
     description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output-dir" of the "pack" job.
     type: string
-    default: ./dist
+    default: ./dist/
 
   orb-name:
     type: string
