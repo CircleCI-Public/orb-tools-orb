@@ -7,4 +7,4 @@ docker:
 steps:
   - run:
       name: Linting all YAML files
-      command: yamllint
+      command: <<include(scripts/lint.sh)>>
