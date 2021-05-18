@@ -4,7 +4,7 @@ if ! command -v bats; then
 	exit 1
 fi
 if ! command -v COMMAND &> /dev/null; then
-	pip3 install yq
+	pip3 install yq -q
 fi
 mkdir -p /tmp/orb_review
 echo "$ORB_REVIEW_BATS_FILE "> review.bats
