@@ -19,6 +19,7 @@ workflows:
       - shellcheck/check:
           exclude: SC2148,SC2038,SC2086,SC2002,SC2016
       - orb-tools-alpha/publish-dev:
+          orb-name: circleci/orb-tools
           requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack, shellcheck/check]
       - orb-tools-alpha/continue:
           requires: [orb-tools-alpha/publish-dev]

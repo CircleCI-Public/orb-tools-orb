@@ -15,5 +15,6 @@ workflows:
       - orb-tools-alpha/pack
       - orb-tools-alpha/review
       - orb-tools-alpha/publish-release:
+          orb-name: circleci/orb-tools
           tag: "1.0.0"
           requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
