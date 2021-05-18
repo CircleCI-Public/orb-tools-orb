@@ -1,0 +1,19 @@
+version: 2.1
+orbs:
+  cli: circleci/circleci-cli@0.1
+  orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
+
+parameters:
+  dev-orb-version:
+    description: Set by the "continue" job in the setup workflow.
+    type: string
+
+workflows:
+  test_and_deploy:
+    jobs:
+      - orb-tools-alpha/lint
+      - orb-tools-alpha/pack
+      - orb-tools-alpha/review
+      - orb-tools-alpha/publish-release:
+          tag: "1.0.0"
+          requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]

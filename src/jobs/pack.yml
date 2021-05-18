@@ -2,21 +2,25 @@ description: |
   Packs the orb source into a single "orb.yml" file and validates for orb config errors.
 
 parameters:
-  source-path:
+  source-dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
     default:
+  output-dir:
+    description: The orb output directory. The orb will be named "orb.yml" in this directory and persisted to the workspace. Path must be absolute or relative to the working directory.
+    type: string
+    default: ./dist
 
-executor: default
+executor: cli/default
 
 steps:
   - run:
       name: Packing orb
-      command: mkdir ./dist && circleci orb pack --skip-update-check <<parameters.source-path>> ./dist/orb.yml
+      command: mkdir <<parameters.output-dir>> && circleci orb pack --skip-update-check <<parameters.source-dir>> <<parameters.output-dir>>/orb.yml
   - run:
       name: Validating orb
-      command: circleci orb validate --skip-update-check ./dist/orb.yml
+      command: circleci orb validate --skip-update-check <<parameters.output-dir>>orb.yml
   - persist_to_workspace:
       paths:
         - orb.yml
-      root: ./dist
+      root: <<parameters.output-dir>>
