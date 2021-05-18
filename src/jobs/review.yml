@@ -8,4 +8,6 @@ steps:
   - bats/install
   - run:
       name: Review Best Practices
+      environment:
+        ORB_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
       command: <<include(scripts/review.sh)>>
