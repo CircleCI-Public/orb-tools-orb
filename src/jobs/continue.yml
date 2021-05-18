@@ -7,7 +7,7 @@ parameters:
   config-path:
     description: Path to the next config file to execute. By default, this will execute the "test_and_deploy" workflow.
     type: string
-    default: "./circleci/test_and_deploy.yml"
+    default: .circleci/test_and_deploy.yml
 
 
 steps:
