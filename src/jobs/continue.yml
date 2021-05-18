@@ -11,6 +11,7 @@ parameters:
 
 
 steps:
+  - checkout
   - run:
       name: Continuing To Orb Testing And Deployment
       environment:
