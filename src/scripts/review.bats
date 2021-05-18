@@ -1,8 +1,4 @@
 setup() {
-	if ! command -v COMMAND &> /dev/null
-	then
-		pip3 install yq
-	fi
 	REVIEW_TEST_DIR="."
 	CONFIG_TAG_SELECTION=$(cat ${REVIEW_TEST_DIR}/.circleci/test_and_deploy.yml | yq -r '.workflows.test_and_deploy.jobs | map(select(type == "object"))[]."orb-tools-alpha/publish-release".tag' )
 	echo "${CONFIG_TAG_SELECTION}"
