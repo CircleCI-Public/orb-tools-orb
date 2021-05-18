@@ -14,6 +14,7 @@ parameters:
 executor: cli/default
 
 steps:
+  - checkout
   - run:
       name: Packing orb
       command: mkdir <<parameters.output-dir>> && circleci orb pack --skip-update-check <<parameters.source-dir>> > <<parameters.output-dir>>/orb.yml

@@ -5,6 +5,7 @@ docker:
   - image: singapore/lint-condo@sha256:b5edd1f14371b18d4446adc032348663acae8e6c65d0052a74d6ee1feb246107
 
 steps:
+  - checkout
   - run:
       name: Linting all YAML files
       command: <<include(scripts/lint.sh)>>
