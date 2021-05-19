@@ -18,11 +18,8 @@ mkdir -p /tmp/circleci
 rm -rf /tmp/circleci/continue_post.json
 
 # Escape the config as a JSON string.
-echo pwd
-cd .circleci || exit
-ls
-cat test_and_deploy.yml
-jq -Rs '.' "$ORB_PARAM_CONTINUE_CONFIG_PATH" > /tmp/circleci/config-string.json
+
+echo "$ORB_PARAM_CONTINUE_CONFIG_PATH" | jq -Rs '.' > /tmp/circleci/config-string.json
 
 jq -n \
 	--arg continuation "$CIRCLE_CONTINUATION_KEY" \
