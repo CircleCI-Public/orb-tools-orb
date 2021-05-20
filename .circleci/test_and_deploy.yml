@@ -14,3 +14,8 @@ workflows:
           tag: "1.0.0"
           title: "v11 - Tag based deploys"
           requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
+          context: orb-publisher
+          filters:
+            branches:
+              only:
+                - master
