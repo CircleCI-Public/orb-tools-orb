@@ -1,0 +1,21 @@
+version: 2.1
+orbs:
+  cli: circleci/circleci-cli@0.1
+  orb-tools-alpha: circleci/orb-tools@dev:<<pipeline.git.revision>>
+
+workflows:
+  test_and_deploy:
+    jobs:
+      - orb-tools-alpha/lint
+      - orb-tools-alpha/pack
+      - orb-tools-alpha/review
+      - orb-tools-alpha/publish-release:
+          orb-name: circleci/orb-tools
+          tag: "1.0.0"
+          title: "v11 - Tag based deploys"
+          requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
+          context: orb-publisher
+          filters:
+            branches:
+              only:
+                - master
