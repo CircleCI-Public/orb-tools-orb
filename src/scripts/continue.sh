@@ -24,7 +24,7 @@ jq -Rs '.' ".circleci/test_and_deploy.yml" > /tmp/circleci/config-string.json
 jq -n \
 	--arg continuation "$CIRCLE_CONTINUATION_KEY" \
 	--slurpfile config /tmp/circleci/config-string.json \
-	'{"continuation-key": $continuation, "configuration": $config|join("\n")' > /tmp/circleci/continue_post.json
+	'{"continuation-key": $continuation, "configuration": $config|join("\n")}' > /tmp/circleci/continue_post.json
 
 [[ $(curl \
 		-o /dev/stderr \

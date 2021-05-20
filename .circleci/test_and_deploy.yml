@@ -1,12 +1,7 @@
 version: 2.1
 orbs:
   cli: circleci/circleci-cli@0.1
-  orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
-
-parameters:
-  dev-orb-version:
-    description: Set by the "continue" job in the setup workflow.
-    type: string
+  orb-tools-alpha: circleci/orb-tools@<<pipeline.pipeline.git.revision>>
 
 workflows:
   test_and_deploy:

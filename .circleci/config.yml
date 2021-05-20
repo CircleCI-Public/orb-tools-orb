@@ -5,10 +5,6 @@ orbs:
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   shellcheck: circleci/shellcheck@2.2
 
-parameters:
-  dev-orb-version:
-    type: string
-    default: "dev:alpha"
 
 workflows:
   test-pack:
