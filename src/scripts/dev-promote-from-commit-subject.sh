@@ -22,7 +22,7 @@ CheckIncrement() {
         echo "Commit subject did not indicate which SemVer increment to make."
         echo "To publish orb, you can ammend the commit or push another commit with [semver:FOO] in the subject where FOO is major, minor, patch."
         echo "Note: To indicate intention to skip promotion, include [semver:skip] in the commit subject instead."
-        if [ "$SHOULD_FAIL" == "true" ];then
+        if [ "$SHOULD_FAIL" == "1" ];then
             exit 1
         else
         echo "export PR_MESSAGE=\"BotComment: Orb publish was skipped due to [semver:patch|minor|major] not being included in commit message.\""  >> "$BASH_ENV"
