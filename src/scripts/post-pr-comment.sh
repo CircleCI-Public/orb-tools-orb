@@ -4,4 +4,4 @@ if [ "$PR_NUMBER" == "" ];then
     echo "No pr found; do nothing. If this is a mistake, check if your PR commit message matches the $SED_EXP sed expression."
     exit 0
 fi
-curl -X POST -u "${BOT_USER}:${BOT_TOKEN}" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"${COMMENT}\"}"
+curl -X POST -u "${BOT_USER}:${!BOT_TOKEN}" "https://api.github.com/repos/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/issues/${PR_NUMBER}/comments" -d "{\"body\":\"${COMMENT}\"}"
