@@ -24,6 +24,18 @@ parameters:
     description: >
       Name of environment variable containing your personal CircleCI API token
 
+  circleci-api-host:
+    type: string
+    default: https://circleci.com
+    description: >
+      Host URL of CircleCI API
+
+  circleci-app-host:
+    type: string
+    default: https://app.circleci.com
+    description: >
+      Host URL of CircleCI Web UI
+
 steps:
   - when:
       condition: <<parameters.checkout>>
@@ -37,4 +49,6 @@ steps:
       environment:
         PARAM_MAP: '<<parameters.pipeline-param-map>>'
         TOKEN: "$<<parameters.token-variable>>"
+        CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
+        CIRCLECI_APP_HOST: <<parameters.circleci-app-host>>
       command: <<include(scripts/trigger-integration-tests-workflow.sh)>>
