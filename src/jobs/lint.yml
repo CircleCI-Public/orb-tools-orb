@@ -2,7 +2,7 @@ description: |
   Lint all YAML files in the project. A ".yamllint" file will be generated for you automatically by the Orb Development Kit.
 
 docker:
-  - image: singapore/lint-condo@sha256:b5edd1f14371b18d4446adc032348663acae8e6c65d0052a74d6ee1feb246107
+  - image: cimg/python:3.10.2
 
 steps:
   - checkout

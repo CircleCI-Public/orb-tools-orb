@@ -6,16 +6,24 @@ orbs:
 workflows:
   test_and_deploy:
     jobs:
-      - orb-tools-alpha/lint
-      - orb-tools-alpha/pack
-      - orb-tools-alpha/review
+      - orb-tools-alpha/lint:
+          filters:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/pack:
+          filters:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/review:
+          filters:
+            tags:
+              only: /.*/
       - orb-tools-alpha/publish-release:
           orb-name: circleci/orb-tools
-          tag: "1.0.0"
-          title: "v11 - Tag based deploys"
           requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
           context: orb-publisher
           filters:
+            tags:
+              only: /^v.*/
             branches:
-              only:
-                - master
+              ignore: /.*/

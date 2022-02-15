@@ -9,38 +9,18 @@ parameters:
   orb-name:
     type: string
     description: >
-      The versionless orb slug, e.g. "circleci/orb-tools"
-  disable-github-features:
-    description: Disable GitHub tagging and release. If enabled, the orb will be published without a release or tag being generated on GitHub.
-    type: boolean
-    default: false
-  tag:
-    type: string
-    description: "Set the tag to be created by this release. The job will fail if the tag has already been created."
-  title:
-    description: "Set the title of this release"
-    type: string
-    default: ""
-  github-token:
-    description: Enter the name of the environment variable containing your GitHub Personal Access Token.
-    type: env_var_name
-    default: GITHUB_TOKEN
+      The version-less orb slug, e.g. "circleci/orb-tools"
   circleci-token:
-    description: Enter the name of the environment variable containing your CircleCI API Token.
+    description: |
+      Enter the name of the environment variable containing your CircleCI API Token.
+      This token must have production publishing scope (organization owner).
+      Never directly enter the value of any secret tokens in your config.
     type: env_var_name
     default: CIRCLE_TOKEN
 steps:
-  - unless:
-      condition: <<parameters.disable-github-features>>
-      steps:
-        - gh/setup
   - run:
       name: Publishing Orb Release
       environment:
-        ORB_PARAM_FEATURES_GITHUB: <<parameters.disable-github-features>>
-        ORB_PARAM_GH_TOKEN: <<parameters.github-token>>
-        ORB_PARAM_CIRCLE_TOKEN: <<parameters.circleci-token>>
+        ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
         ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
-        ORB_PARAM_ORB_TAG: <<parameters.tag>>
-        ORB_PARAM_ORB_TITLE: <<parameters.title>>
       command: <<include(scripts/publish-release.sh)>>

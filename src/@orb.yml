@@ -11,4 +11,3 @@ display:
 orbs:
   cli: circleci/circleci-cli@0.1.9
   bats: circleci/bats@1.0.0
-  gh: circleci/github-cli@1.0
