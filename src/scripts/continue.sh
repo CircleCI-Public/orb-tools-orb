@@ -4,12 +4,12 @@ if [ -z "${CIRCLE_CONTINUATION_KEY}" ]; then
 	echo "This Job is designed to be used with the Orb Development Kit."
 	exit 1
 fi
-if ! which curl > /dev/null; then
+if ! command -v curl; then
 	echo "curl is required to use this command"
 	exit 1
 fi
 
-if ! which jq > /dev/null; then
+if ! command -v jq; then
 	echo "jq is required to use this command"
 	exit 1
 fi
