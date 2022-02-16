@@ -2,7 +2,9 @@ description: |
   Check for various orb authoring best practices to ensure high quality releases with minimal friction.
 
 docker:
-  - image: cimg/base:current
+  # https://github.com/CircleCI-Public/cimg-base/pull/152#issuecomment-1041849766
+  # Change to current after the first week of March 2022.
+  - image: cimg/base:edge
 
 steps:
   - checkout

@@ -55,14 +55,14 @@ setup() {
 	done
 }
 
-@test "RC005: Orb description appears short." {
+@test "RC005: Write a detailed orb description." {
 if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC005" ]]; then
     	skip
 	fi
 	ORB_ELEMENT_DESCRIPTION=$(cat ${REVIEW_TEST_DIR}src/@orb.yml | yq '.description')
 	if [[ ${#ORB_ELEMENT_DESCRIPTION} -lt 64 ]]; then
 		echo
-		echo "Orb description appears short."
+		echo "Orb description appears short (under 64 characters)."
 		echo "Use the orb description to help users find your orb via search. Try describing what use-case this orb solves for."
 		exit 1
 	fi
