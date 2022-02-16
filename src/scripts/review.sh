@@ -1,12 +1,18 @@
 #!/bin/bash
-if ! command -v bats; then
+if ! command -v bats > /dev/null; then
 	echo 'The "bats-core" automation framework must be installed to execute review testing.'
+	echo 'Install bats with the bats orb'
 	exit 1
 fi
-if ! command -v yq ; then
+if ! command -v yq > /dev/null; then
 	echo 'The "yq" package must be installed to execute review testing.'
-	exit 1
+	echo 'Installing "yq" automatically...'
+	YQ_VERSION=v4.20.1
+	YQ_BIN=yq_linux_amd64
+	wget https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/${YQ_BIN}.tar.gz -O - |\
+  tar xz && mv ${YQ_BIN} /usr/bin/yq
 fi
+
 mkdir -p /tmp/orb_review
 echo "$ORB_REVIEW_BATS_FILE "> review.bats
 echo "Reviewing orb best practices"
