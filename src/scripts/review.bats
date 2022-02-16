@@ -33,11 +33,11 @@ setup() {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC003" ]]; then
     	skip
 	fi
-	ORB_ELEMENT_EXAMPLE_COUNT=$(find ./src/examples/*.yml -type f | wc -l | xargs)
+	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${REVIEW_TEST_DIR}/src/examples/*.yml -type f | wc -l | xargs)
 	if [ "$ORB_ELEMENT_EXAMPLE_COUNT" -gt 0 ]; then
 		echo
 		echo "This orb appears to be missing a usage example."
-		echo "Add examples under `./src/examples` to document how to use the orb for any available use cases."
+		echo "Add examples under `${REVIEW_TEST_DIR}src/examples` to document how to use the orb for any available use cases."
 	fi
 }
 
@@ -45,7 +45,7 @@ setup() {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC004" ]]; then
     	skip
 	fi
-	for i in $(find ./src/examples/*.yml -type f); do
+	for i in $(find ${REVIEW_TEST_DIR}/src/examples/*.yml -type f); do
 		if [[ $i =~ "example" ]]; then
 			echo
 			echo "Usage example file name ${i} contains the word 'example'."
@@ -53,4 +53,17 @@ setup() {
 			exit 1
 		fi
 	done
+}
+
+@test "RC005: Orb description appears short." {
+if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC005" ]]; then
+    	skip
+	fi
+	ORB_ELEMENT_DESCRIPTION=$(cat ${REVIEW_TEST_DIR}src/@orb.yml | yq '.description')
+	if [[ ${#ORB_ELEMENT_DESCRIPTION} -lt 64 ]]; then
+		echo
+		echo "Orb description appears short."
+		echo "Use the orb description to help users find your orb via search. Try describing what use-case this orb solves for."
+		exit 1
+	fi
 }
