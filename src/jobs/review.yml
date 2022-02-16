@@ -2,7 +2,7 @@ description: |
   Check for various orb authoring best practices to ensure high quality releases with minimal friction.
 
 docker:
-  - image: cimg/python:3.9.5
+  - image: cimg/base:current
 
 steps:
   - checkout
