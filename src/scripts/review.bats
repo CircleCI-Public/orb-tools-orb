@@ -40,3 +40,17 @@ setup() {
 		echo "Add examples under `./src/examples` to document how to use the orb for any available use cases."
 	fi
 }
+
+@test "RC004: Usage example names shoud be descriptive." {
+	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC004" ]]; then
+    	skip
+	fi
+	for i in $(find ./src/examples/*.yml -type f); do
+		if [[ $i =~ "example" ]]; then
+			echo
+			echo "Usage example file name ${i} contains the word 'example'."
+			echo "Usage example file names should be descriptive and not contain the word 'example'."
+			exit 1
+		fi
+	done
+}
