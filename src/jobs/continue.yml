@@ -17,4 +17,6 @@ steps:
       name: Continuing To Orb Testing And Deployment
       environment:
         ORB_PARAM_CONTINUE_CONFIG_PATH: <<parameters.config-path>>
+        PIPELINE_NUMBER: << pipeline.number >>
+        PIPELINE_VCS_TYPE: << pipeline.project.type >>
       command: <<include(scripts/continue.sh)>>

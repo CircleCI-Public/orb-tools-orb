@@ -35,3 +35,7 @@ jq -n \
 		--data @/tmp/circleci/continue_post.json \
 		"https://circleci.com/api/v2/pipeline/continue") \
    -eq 200 ]]
+
+	 echo "Continuation successful!"
+	 echo "Your newly published development orb will now be tested in the next workflow."
+	 echo "View the full pipeline progress: https://app.circleci.com/pipelines/${PIPELINE_VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${PIPELINE_VCS_TYPE}/${PIPELINE_NUMBER}"
