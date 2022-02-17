@@ -9,6 +9,15 @@ parameters:
     description: The CircleCI pipeline number. Required to be passed in as a parameter for compatibility.
     type: integer
     default: 0
+  vcs-type:
+    description: The VCS type. Required to be passed in as a parameter for compatibility. Should be
+    type: enum
+    enum:
+      - gh
+      - github
+      - bb
+      - bitbucket
+    default: gh
   config-path:
     description: Path to the next config file to execute. By default, this will execute the "test-deploy" workflow.
     type: string
@@ -22,4 +31,5 @@ steps:
       environment:
         ORB_PARAM_CONTINUE_CONFIG_PATH: <<parameters.config-path>>
         PIPELINE_NUMBER: <<parameters.pipeline-number>>
+        PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
       command: <<include(scripts/continue.sh)>>

@@ -26,4 +26,6 @@ usage:
             context: publishing-context
         # Triggers the next workflow in the Orb Development Kit.
         - orb-tools-/continue:
+            pipeline-number: << pipeline.number >>
+            vcs-type: << pipeline.project.type >>
             requires: [orb-tools-/publish-dev]

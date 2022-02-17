@@ -21,4 +21,5 @@ workflows:
           context: orb-publisher
       - orb-tools-alpha/continue:
           pipeline-number: << pipeline.number >>
+          vcs-type: << pipeline.project.type >>
           requires: [orb-tools-alpha/publish-dev]
