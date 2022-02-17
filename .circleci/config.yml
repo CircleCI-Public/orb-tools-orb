@@ -20,4 +20,5 @@ workflows:
           requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack, shellcheck/check]
           context: orb-publisher
       - orb-tools-alpha/continue:
+          pipeline-number: << pipeline.number >>
           requires: [orb-tools-alpha/publish-dev]

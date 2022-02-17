@@ -4,7 +4,6 @@ if [[ ! "$CIRCLE_TAG" =~ ^v[0-9]*\.[0-9]*\.[0-9]*$ ]]; then
   echo "Tag: $CIRCLE_TAG"
   echo
   echo "Ensure your tag fits the standard semantic version form. Example: v1.0.0"
-  echo
   echo "Aborting deployment. Push a new tag with the compatible form."
   exit 1
 fi

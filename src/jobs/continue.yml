@@ -5,6 +5,10 @@ docker:
   - image: cimg/base:current
 
 parameters:
+  pipeline-number:
+    description: The CircleCI pipeline number. Required to be passed in as a parameter for compatibility.
+    type: integer
+    default: 0
   config-path:
     description: Path to the next config file to execute. By default, this will execute the "test-deploy" workflow.
     type: string
@@ -17,6 +21,5 @@ steps:
       name: Continuing To Orb Testing And Deployment
       environment:
         ORB_PARAM_CONTINUE_CONFIG_PATH: <<parameters.config-path>>
-        PIPELINE_NUMBER: << pipeline.number >>
-        PIPELINE_VCS_TYPE: << pipeline.project.type >>
+        PIPELINE_NUMBER: <<parameters.pipeline-number>>
       command: <<include(scripts/continue.sh)>>
