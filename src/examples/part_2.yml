@@ -1,0 +1,40 @@
+description: |
+  After your orb has been packed and published to a dev version, we can load that specific development version in this workflow.
+  With the orb loaded, we can run "integration tests" by executing our orbs commands and jobs and validating their output.
+  Finally, if the commit has been tagged (ex v1.0.0), we can publish the orb to a production version.
+usage:
+  version: 2.1
+  orbs:
+    orb-tools: circleci/orb-tools@11.0
+    my-orb: namespace/my-orb@dev:<<pipeline.git.revision>>
+  jobs:
+    # Create a job to test the commands of your orbs.
+    # You may want to add additional validation steps to ensure the commands are working as expected.
+    command-tests:
+      docker:
+        - image: cimg/base:current
+      steps:
+        - checkout
+        - my-orb/my-command
+        - my-orb/my-command-2
+  workflows:
+    test-deploy:
+      jobs:
+        - command-tests:
+            filters:
+              tags:
+                only: /.*/
+        # If your orb has jobs, they can also be tested prior to publishing.
+        - my-orb/my-job:
+            filters:
+              tags:
+                only: /.*/
+        - orb-tools/publish-release:
+            orb-name: namespace/my-orb
+            requires: [command-tests, my-orb/my-job]
+            context: orb-publisher
+            filters:
+              tags:
+                only: /^v.*/
+              branches:
+                ignore: /.*/

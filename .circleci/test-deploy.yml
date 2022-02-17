@@ -1,10 +1,9 @@
 version: 2.1
 orbs:
-  cli: circleci/circleci-cli@0.1
   orb-tools-alpha: circleci/orb-tools@dev:<<pipeline.git.revision>>
 
 workflows:
-  test_and_deploy:
+  test-deploy:
     jobs:
       - orb-tools-alpha/lint:
           filters:

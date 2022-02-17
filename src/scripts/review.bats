@@ -33,11 +33,12 @@ setup() {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC003" ]]; then
     	skip
 	fi
-	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${REVIEW_TEST_DIR}/src/examples/*.yml -type f | wc -l | xargs)
-	if [ "$ORB_ELEMENT_EXAMPLE_COUNT" -gt 0 ]; then
+	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${REVIEW_TEST_DIR}src/examples/*.yml -type f | wc -l | xargs)
+	if [ "$ORB_ELEMENT_EXAMPLE_COUNT" -lt 1 ]; then
 		echo
 		echo "This orb appears to be missing a usage example."
 		echo "Add examples under `${REVIEW_TEST_DIR}src/examples` to document how to use the orb for any available use cases."
+		exit 1
 	fi
 }
 
@@ -45,7 +46,7 @@ setup() {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC004" ]]; then
     	skip
 	fi
-	for i in $(find ${REVIEW_TEST_DIR}/src/examples/*.yml -type f); do
+	for i in $(find ${REVIEW_TEST_DIR}/src/examples/*.yml -type f > /dev/null 2>&1); do
 		if [[ $i =~ "example" ]]; then
 			echo
 			echo "Usage example file name ${i} contains the word 'example'."

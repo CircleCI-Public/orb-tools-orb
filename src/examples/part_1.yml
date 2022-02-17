@@ -1,0 +1,29 @@
+description: |
+  The Orb-Tools orb is typically configured automatically by the Orb Development Kit. After initializing a new orb, this is the configuration file that will be automatically loaded.
+  This configuration uses "Dynamic Config" with two different configuration files, so here we will see only the first `config.yml` file.
+  This config breaks our orb's CI pipeline into two workflows, "test-pack", and "test-deploy".
+  "test-pack" will lint, shellcheck, and review our orb, before publishing a new development version of the orb and triggering the "test-deploy" workflow.
+  "test-deploy" deploy is found in the `./circleci/test-deploy.yml` file. See the next usage example for more information.
+usage:
+  version: 2.1
+  setup: true
+  orbs:
+    orb-tools: circleci/orb-tools@11.0
+    shellcheck: circleci/shellcheck@3.0
+
+  workflows:
+    lint-pack:
+      jobs:
+        - orb-tools/lint
+        - orb-tools/pack
+        - orb-tools/review
+        - shellcheck/check:
+            exclude: SC2148,SC2038,SC2086,SC2002,SC2016
+        - orb-tools-/publish-dev:
+            orb-name: circleci/orb-tools
+            requires: [orb-tools/lint, orb-tools/review, orb-tools/pack, shellcheck/check]
+            # Use a context to hold your publishing token.
+            context: publishing-context
+        # Triggers the next workflow in the Orb Development Kit.
+        - orb-tools-/continue:
+            requires: [orb-tools-/publish-dev]
