@@ -15,11 +15,13 @@ usage:
         - image: cimg/base:current
       steps:
         - checkout
+        # Run your orb's commands to validate them.
         - my-orb/my-command
         - my-orb/my-command-2
   workflows:
     test-deploy:
       jobs:
+        # Test your orb's commands
         - command-tests:
             filters:
               tags:
@@ -29,6 +31,7 @@ usage:
             filters:
               tags:
                 only: /.*/
+        # Because our publishing job has a tag filter, we must also apply a filter to each job it depends on.
         - orb-tools/publish-release:
             orb-name: namespace/my-orb
             requires: [command-tests, my-orb/my-job]

@@ -3,7 +3,8 @@ description: |
   This configuration uses "Dynamic Config" with two different configuration files, so here we will see only the first `config.yml` file.
   This config breaks our orb's CI pipeline into two workflows, "test-pack", and "test-deploy".
   "test-pack" will lint, shellcheck, and review our orb, before publishing a new development version of the orb and triggering the "test-deploy" workflow.
-  "test-deploy" deploy is found in the `./circleci/test-deploy.yml` file. See the next usage example for more information.
+  See the list of jobs for a detailed description of each job.
+  "test-deploy" deploy is found in the `./circleci/test-deploy.yml` file. See step 2 for more information.
 usage:
   version: 2.1
   setup: true
