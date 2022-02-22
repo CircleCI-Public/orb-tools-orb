@@ -38,7 +38,7 @@ function isAuthenticatedGitHub() {
 
 function mainGitHub() {
   echo "Checking if authenticated to GitHub..."
-  if [ "$(isAuthenticatedGitHub | jq -e '.data.viewer.login')" != "null" ]; then
+  if [[ "$(isAuthenticatedGitHub | jq -e '.data.viewer.login')" != "null" ]]; then
     echo "Authenticated!"
     echo "Authenticated as: $(isAuthenticatedGitHub | jq -r '.data.viewer.login')"
     FetchedPRData="$(getGithubPRFromCommit)"
@@ -74,6 +74,7 @@ if [[ "$PIPELINE_VCS_TYPE" == "gh" || "$PIPELINE_VCS_TYPE" == "github" ]]; then
   echo "Fetching token value from PARAM_GITHUB_TOKEN..."
   echo "DEBUG: PARAM_GITHUB_TOKEN: $PARAM_GITHUB_TOKEN"
   PARAM_GH_TOKEN_VALUE=${!PARAM_GH_TOKEN}
+  echo "$PARAM_GH_TOKEN_VALUE" >> /tmp/orb_dev_kit/github_token.txt
   GH_HEADER_DATA="Authorization: Bearer $PARAM_GH_TOKEN_VALUE"
   mainGitHub
 elif [[ "$PIPELINE_VCS_TYPE" == "bb" || "$PIPELINE_VCS_TYPE" == "bitbucket" ]]; then
