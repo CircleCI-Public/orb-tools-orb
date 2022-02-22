@@ -62,14 +62,15 @@ function mainGitHub() {
 
   else
     echo "Not authenticated."
-    echo "Please set the GITHUB_TOKEN environment variable to your personal access token."
+    echo "Please set the GITHUB_TOKEN environment variable to your GitHub personal access token."
     exit 1
   fi
 }
 
 if [[ "$PIPELINE_VCS_TYPE" == "gh" || "$PIPELINE_VCS_TYPE" == "github" ]]; then
   # GitHub PR Comment Process
-  GH_HEADER_DATA="Authorization: Bearer ${GITHUB_TOKEN}"
+  PARAM_GH_TOKEN=${!PARAM_GH_TOKEN}
+  GH_HEADER_DATA="Authorization: Bearer ${PARAM_GH_TOKEN}"
   mainGitHub
 elif [[ "$PIPELINE_VCS_TYPE" == "bb" || "$PIPELINE_VCS_TYPE" == "bitbucket" ]]; then
   echo "BitBucket PR Comments are not yet supported. Skipping."

@@ -9,12 +9,10 @@ parameters:
     description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output-dir" of the "pack" job.
     type: string
     default: ./dist/
-
   orb-name:
     type: string
     description: >
       The version-less orb slug, e.g. "circleci/orb-tools"
-
   vcs-type:
     description: The VCS type. Required to be passed in as a parameter for compatibility. Should be configured automatically by the Orb Development Kit.
     type: enum
@@ -23,7 +21,6 @@ parameters:
       - github
       - bb
       - bitbucket
-
   circleci-token:
     description: |
       Enter the name of the environment variable containing your CircleCI API Token.
@@ -31,13 +28,18 @@ parameters:
       Never directly enter the value of any secret tokens in your config.
     type: env_var_name
     default: CIRCLE_TOKEN
-
   enable-pr-comment:
     description: |
       If true, a comment will be added to the PR when the orb is published for both development and production orbs.
       For GitHub users, a $GITHUB_TOKEN environment variable must be set.
     type: boolean
     default: true
+  github-token:
+    description: |
+      For GitHub users with "enable-pr-comment" enabled, the GitHub API token must be set.
+      Use this parameter in the event you need to set a custom environment variable name other than the default.
+    type: env_var_name
+    default: GITHUB_TOKEN
 
 steps:
   - attach_workspace:

@@ -15,10 +15,17 @@ parameters:
       Never directly enter the value of any secret tokens in your config.
     type: env_var_name
     default: CIRCLE_TOKEN
+  github-token:
+    description: |
+      For GitHub users with "enable-pr-comment" enabled, the GitHub API token must be set.
+      Use this parameter in the event you need to set a custom environment variable name other than the default.
+    type: env_var_name
+    default: GITHUB_TOKEN
 steps:
   - run:
       name: Publishing Orb Release
       environment:
         ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
         ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
+        PARAM_GH_TOKEN: <<parameters.github-token>>
       command: <<include(scripts/publish-release.sh)>>
