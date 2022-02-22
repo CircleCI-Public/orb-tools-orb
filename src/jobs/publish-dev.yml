@@ -57,6 +57,7 @@ steps:
         - run:
             name: Adding Comment To PR
             environment:
+              ORB_PARAM_GITHUB_TOKEN: <<parameters.github-token>>
               ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
               ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
               PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
