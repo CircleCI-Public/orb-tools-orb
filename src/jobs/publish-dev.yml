@@ -15,6 +15,15 @@ parameters:
     description: >
       The version-less orb slug, e.g. "circleci/orb-tools"
 
+  vcs-type:
+    description: The VCS type. Required to be passed in as a parameter for compatibility. Should be configured automatically by the Orb Development Kit.
+    type: enum
+    enum:
+      - gh
+      - github
+      - bb
+      - bitbucket
+
   circleci-token:
     description: |
       Enter the name of the environment variable containing your CircleCI API Token.
@@ -22,6 +31,13 @@ parameters:
       Never directly enter the value of any secret tokens in your config.
     type: env_var_name
     default: CIRCLE_TOKEN
+
+  enable-pr-comment:
+    description: |
+      If true, a comment will be added to the PR when the orb is published for both development and production orbs.
+      For GitHub users, a $GITHUB_TOKEN environment variable must be set.
+    type: boolean
+    default: true
 
 steps:
   - attach_workspace:
@@ -33,3 +49,13 @@ steps:
         ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
         ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
       command: <<include(scripts/publish-dev.sh)>>
+  - when:
+      condition: <<parameters.enable-pr-comment>>
+      steps:
+        - run:
+            name: Adding Comment To PR
+            environment:
+              ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
+              ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
+              PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
+            command: <<include(scripts/comment-pr.sh)>>
