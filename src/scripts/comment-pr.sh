@@ -71,9 +71,7 @@ function mainGitHub() {
 
 if [[ "$PIPELINE_VCS_TYPE" == "gh" || "$PIPELINE_VCS_TYPE" == "github" ]]; then
   # GitHub PR Comment Process
-  echo "Fetching token value from ORB_PARAM_GITHUB_TOKEN..."
-  echo "DEBUG: ORB_PARAM_GITHUB_TOKEN: $ORB_PARAM_GITHUB_TOKEN"
-  PARAM_GH_TOKEN_VALUE=${!PARAM_GH_TOKEN}
+  PARAM_GH_TOKEN_VALUE=${!ORB_PARAM_GITHUB_TOKEN}
   echo "$PARAM_GH_TOKEN_VALUE" >> /tmp/orb_dev_kit/github_token.txt
   GH_HEADER_DATA="Authorization: Bearer $PARAM_GH_TOKEN_VALUE"
   mainGitHub
