@@ -40,7 +40,9 @@ function mainGitHub() {
   echo "Checking if authenticated to GitHub..."
   if [ "$(isAuthenticatedGitHub | jq -e '.data.viewer.login | length > 0')" ]; then
     echo "Authenticated!"
+    echo "Authenticated as: $(isAuthenticatedGitHub | jq -r '.data.viewer.login')"
     FetchedPRData="$(getGithubPRFromCommit)"
+    echo "DEBUG: FetchedPRData: $FetchedPRData"
     # Fetch the PR ID from the commit
     if [ "$(echo "$FetchedPRData" | jq -e '.data.search.issueCount | length > 0')" ]; then
       # PR Found
