@@ -57,7 +57,7 @@ setup() {
 }
 
 @test "RC005: Write a detailed orb description." {
-if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC005" ]]; then
+	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC005" ]]; then
     	skip
 	fi
 	ORB_ELEMENT_DESCRIPTION=$(cat ${REVIEW_TEST_DIR}src/@orb.yml | yq '.description')
@@ -68,3 +68,31 @@ if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC005" ]]; then
 		exit 1
 	fi
 }
+
+@test "RC006: Source URL should be valid." {
+	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC006" ]]; then
+    	skip
+	fi
+	SOURCE_URL=$(cat ${REVIEW_TEST_DIR}/src/@orb.yml | yq '.display.source_url')
+	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 $SOURCE_URL)
+	if [[ $HTTP_RESPONSE -ne 200 ]]; then
+		echo
+		echo "Source URL is not reachable."
+		echo "Check the Source URL for this orb."
+		exit 1
+	fi
+	}
+
+@test "RC007: Home URL should be valid." {
+	HOME_URL=$(cat ${REVIEW_TEST_DIR}/src/@orb.yml | yq '.display.home_url')
+	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC007" || "$HOME_URL" == "null" ]]; then
+    	skip
+	fi
+	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 $HOME_URL)
+	if [[ $HTTP_RESPONSE -ne 200 ]]; then
+		echo
+		echo "Home URL is not reachable."
+		echo "Check the Home URL for this orb."
+		exit 1
+	fi
+	}

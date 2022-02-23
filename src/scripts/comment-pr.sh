@@ -12,7 +12,6 @@ PR_COMMENT_BODY=$(awk '{printf "%s\\n", $0}' /tmp/orb_dev_kit/publishing_message
 
 function postGitHubPRComment() {
   # $1 - PR ID
-  echo "DEBUG: $PR_COMMENT_BODY"
   HTTP_RESPONSE_GH=$(curl --request POST \
   -s \
   -o /tmp/orb_dev_kit/github_comment_response.json \
