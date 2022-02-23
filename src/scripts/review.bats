@@ -77,7 +77,7 @@ setup() {
 	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 $SOURCE_URL)
 	if [[ $HTTP_RESPONSE -ne 200 ]]; then
 		echo
-		echo "Source URL is not reachable."
+		echo "Source URL: \"$SOURCE_URL\" is not reachable."
 		echo "Check the Source URL for this orb."
 		exit 1
 	fi
@@ -91,7 +91,7 @@ setup() {
 	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 $HOME_URL)
 	if [[ $HTTP_RESPONSE -ne 200 ]]; then
 		echo
-		echo "Home URL is not reachable."
+		echo "Home URL: \"$HOME_URL\" is not reachable."
 		echo "Check the Home URL for this orb."
 		exit 1
 	fi
