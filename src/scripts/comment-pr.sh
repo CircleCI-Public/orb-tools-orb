@@ -8,11 +8,10 @@ if [ ! -f /tmp/orb_dev_kit/publishing_message.txt ]; then
   echo "Please open an issue: https://github.com/CircleCI-Public/orb-tools-orb/issues"
   exit 1
 fi
-PR_COMMENT_BODY=$(cat /tmp/orb_dev_kit/publishing_message.txt)
+PR_COMMENT_BODY=$(awk '{printf "%s\\n", $0}' /tmp/orb_dev_kit/publishing_message.txt)
 
 function postGitHubPRComment() {
   # $1 - PR ID
-  echo "DEBUG: $1"
   echo "DEBUG: $PR_COMMENT_BODY"
   HTTP_RESPONSE_GH=$(curl --request POST \
   -s \
