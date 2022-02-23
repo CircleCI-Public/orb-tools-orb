@@ -14,7 +14,7 @@ function postGitHubPRComment() {
   # $1 - Body of the comment
   # $2 - PR ID
   curl --request POST \
-  -s \
+  --verbose \
   --url 'https://api.github.com/graphql?=' \
   --header "$GH_HEADER_DATA" \
   --data '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$1"'","sid":"'"$2"'"},"operationName":"AddCommentToPR"}'
@@ -42,7 +42,6 @@ function mainGitHub() {
     echo "Authenticated!"
     echo "Authenticated as: $(isAuthenticatedGitHub | jq -r '.data.viewer.login')"
     FetchedPRData="$(getGithubPRFromCommit)"
-    echo "DEBUG: FetchedPRData: $FetchedPRData"
     # Fetch the PR ID from the commit
     if [ "$(echo "$FetchedPRData" | jq -e '.data.search.issueCount | length > 0')" ]; then
       # PR Found
@@ -72,7 +71,6 @@ function mainGitHub() {
 if [[ "$PIPELINE_VCS_TYPE" == "gh" || "$PIPELINE_VCS_TYPE" == "github" ]]; then
   # GitHub PR Comment Process
   PARAM_GH_TOKEN_VALUE=${!ORB_PARAM_GITHUB_TOKEN}
-  echo "$PARAM_GH_TOKEN_VALUE" >> /tmp/orb_dev_kit/github_token.txt
   GH_HEADER_DATA="Authorization: Bearer $PARAM_GH_TOKEN_VALUE"
   mainGitHub
 elif [[ "$PIPELINE_VCS_TYPE" == "bb" || "$PIPELINE_VCS_TYPE" == "bitbucket" ]]; then
