@@ -11,15 +11,16 @@ fi
 PR_COMMENT_BODY=$(cat /tmp/orb_dev_kit/publishing_message.txt)
 
 function postGitHubPRComment() {
-  # $1 - Body of the comment
-  # $2 - PR ID
+  # $1 - PR ID
+  echo "DEBUG: $1"
+  echo "DEBUG: $PR_COMMENT_BODY"
   HTTP_RESPONSE_GH=$(curl --request POST \
   -s \
   -o /tmp/orb_dev_kit/github_comment_response.json \
   -w "%{http_code}" \
   --url 'https://api.github.com/graphql?=' \
   --header "$GH_HEADER_DATA" \
-  --data '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$1"'","sid":"'"$2"'"},"operationName":"AddCommentToPR"}')
+  --data '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$1"'"},"operationName":"AddCommentToPR"}')
   if [ "$HTTP_RESPONSE_GH" -ne 200 ]; then
     echo "Failed to post comment to GitHub PR"
     echo "Response: $HTTP_RESPONSE_GH"
@@ -62,7 +63,7 @@ function mainGitHub() {
       PR_ID=$(echo "$FetchedPRData "| jq -er '.data.search.edges[0].node.id')
       echo "Selecting PR: $PR_TITLE (#$PR_NUMBER)"
       echo "Posting comment to PR..."
-      postGitHubPRComment "$PR_COMMENT_BODY" "$PR_ID"
+      postGitHubPRComment "$PR_ID"
     else
       echo "No PR found!"
       echo "It may be that the PR has not yet been created from this commit at the time of this build."
