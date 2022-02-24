@@ -33,7 +33,7 @@ setup() {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC003" ]]; then
 		skip
 	fi
-	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${REVIEW_TEST_DIR}src/examples/*.yml -type f | wc -l | xargs)
+	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${REVIEW_TEST_DIR}src/examples/*.yml -type f 2> /dev/null | wc -l | xargs)
 	if [ "$ORB_ELEMENT_EXAMPLE_COUNT" -lt 1 ]; then
 		echo
 		echo "This orb appears to be missing a usage example."
