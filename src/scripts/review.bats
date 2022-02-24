@@ -5,9 +5,9 @@ setup() {
 
 @test "RC001: Include source_url in @orb.yml" {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC001" ]]; then
-    	skip
+		skip
 	fi
-	result=$(cat ${REVIEW_TEST_DIR}src/@orb.yml | yq '.display.source_url' )
+	result=$(cat ${REVIEW_TEST_DIR}src/@orb.yml | yq '.display.source_url')
 
 	echo 'Set a value for "source_url" under the "display" key in "@orb.yml"'
 	[[ ! $result = null ]]
@@ -15,7 +15,7 @@ setup() {
 
 @test "RC002: All components (jobs, commands, executors, examples) must have descriptions" {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC002" ]]; then
-    	skip
+		skip
 	fi
 	for i in $(find ${REVIEW_TEST_DIR}src/jobs ${REVIEW_TEST_DIR}src/examples ${REVIEW_TEST_DIR}src/commands ${REVIEW_TEST_DIR}src/executors -name "*.yml" 2>/dev/null); do
 		ORB_ELEMENT_DESCRIPTION=$(cat $i | yq '.description')
@@ -31,22 +31,22 @@ setup() {
 
 @test "RC003: All production-ready orbs should contain at least one usage example." {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC003" ]]; then
-    	skip
+		skip
 	fi
 	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${REVIEW_TEST_DIR}src/examples/*.yml -type f | wc -l | xargs)
 	if [ "$ORB_ELEMENT_EXAMPLE_COUNT" -lt 1 ]; then
 		echo
 		echo "This orb appears to be missing a usage example."
-		echo "Add examples under `${REVIEW_TEST_DIR}src/examples` to document how to use the orb for any available use cases."
+		echo "Add examples under $(${REVIEW_TEST_DIR}src/examples) to document how to use the orb for any available use cases."
 		exit 1
 	fi
 }
 
 @test "RC004: Usage example names shoud be descriptive." {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC004" ]]; then
-    	skip
+		skip
 	fi
-	for i in $(find ${REVIEW_TEST_DIR}/src/examples/*.yml -type f > /dev/null 2>&1); do
+	for i in $(find ${REVIEW_TEST_DIR}/src/examples/*.yml -type f >/dev/null 2>&1); do
 		if [[ $i =~ "example" ]]; then
 			echo
 			echo "Usage example file name ${i} contains the word 'example'."
@@ -58,12 +58,13 @@ setup() {
 
 @test "RC005: Write a detailed orb description." {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC005" ]]; then
-    	skip
+		skip
 	fi
 	ORB_ELEMENT_DESCRIPTION=$(cat ${REVIEW_TEST_DIR}src/@orb.yml | yq '.description')
 	if [[ ${#ORB_ELEMENT_DESCRIPTION} -lt 64 ]]; then
 		echo
 		echo "Orb description appears short (under 64 characters)."
+		echo "Update the description in ${REVIEW_TEST_DIR}src/@orb.yml to provide a detailed description of the orb."
 		echo "Use the orb description to help users find your orb via search. Try describing what use-case this orb solves for."
 		exit 1
 	fi
@@ -71,7 +72,7 @@ setup() {
 
 @test "RC006: Source URL should be valid." {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC006" ]]; then
-    	skip
+		skip
 	fi
 	SOURCE_URL=$(cat ${REVIEW_TEST_DIR}/src/@orb.yml | yq '.display.source_url')
 	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 $SOURCE_URL)
@@ -81,12 +82,12 @@ setup() {
 		echo "Check the Source URL for this orb."
 		exit 1
 	fi
-	}
+}
 
 @test "RC007: Home URL should be valid." {
 	HOME_URL=$(cat ${REVIEW_TEST_DIR}/src/@orb.yml | yq '.display.home_url')
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC007" || "$HOME_URL" == "null" ]]; then
-    	skip
+		skip
 	fi
 	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 $HOME_URL)
 	if [[ $HTTP_RESPONSE -ne 200 ]]; then
@@ -95,4 +96,4 @@ setup() {
 		echo "Check the Home URL for this orb."
 		exit 1
 	fi
-	}
+}
