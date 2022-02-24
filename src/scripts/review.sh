@@ -13,11 +13,10 @@ if ! command -v yq > /dev/null; then
   tar xz && mv ${YQ_BIN} /usr/bin/yq
 fi
 
-mkdir -p /tmp/orb_review
+mkdir -p /tmp/orb_dev_kit/review/
 echo "$ORB_REVIEW_BATS_FILE "> review.bats
 echo "Reviewing orb best practices"
 echo "If required, tests can be skipped via their \"RCXXX\" code with the \"exclude\" parameter."
-bats --tap ./review.bats
-
+bats -T --formatter junit ./review.bats > /tmp/orb_dev_kit/review/review.xml
 echo "Review complete!"
-echo "You can review the suggestions above. If you would like to ignore any of the suggestions, add their \"RCXXX\" code to the \"exclude\" parameter."
+echo "Review the results in the \"TESTS\" tab above. If you would like to ignore any of the suggestions, add their \"RCXXX\" code to the \"exclude\" parameter."

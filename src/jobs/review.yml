@@ -14,3 +14,5 @@ steps:
       environment:
         ORB_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
       command: <<include(scripts/review.sh)>>
+  - store_test_results:
+      path: /tmp/orb_dev_kit/review/
