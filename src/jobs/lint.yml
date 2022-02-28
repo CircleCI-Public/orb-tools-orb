@@ -7,5 +7,5 @@ docker:
 steps:
   - checkout
   - run:
-      name: Linting all YAML files
+      # name: Linting all YAML files
       command: <<include(scripts/lint.sh)>>

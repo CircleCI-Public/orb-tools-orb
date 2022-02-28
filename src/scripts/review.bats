@@ -97,3 +97,35 @@ setup() {
 		exit 1
 	fi
 }
+
+@test "RC008: All Run steps should contain a name." {
+	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC008" ]]; then
+		skip
+	fi
+	ERROR_COUNT=0
+	for i in $(find ${REVIEW_TEST_DIR}src/jobs ${REVIEW_TEST_DIR}src/commands -name "*.yml" 2>/dev/null); do
+		ORB_COMPONENT_STEPS_COUNT=$(cat $i | yq '[.steps.[] | .run] | length - 1')
+		for j in $(seq 0 $ORB_COMPONENT_STEPS_COUNT); do
+
+			ORB_COMPONENT_STEP=$(cat $i | yq "[.steps.[] | .run][$j]")
+			ORB_COMPONENT_LINE_NUMBER=$(cat $i | yq "[.steps.[] | .run][$j] | line")
+			ORB_COMPONENT_STEP_NAME=$(cat $i | yq '.steps[$j].run.name')
+			if [[ $ORB_COMPONENT_STEP_NAME == null || $ORB_COMPONENT_STEP_NAME == '""' ]]; then
+				echo "File: \"${i}\""
+				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+				echo ---
+				cat $i | yq "[.steps.[] | .run][$j]"
+				echo ---
+				ERROR_COUNT=$((ERROR_COUNT + 1))
+			fi
+		done
+	done
+	if [[ $ERROR_COUNT -gt 0 ]]; then
+		echo
+		echo "Components were found to contain \"run\" steps without a name."
+		echo "Steps are not invalid without names, but the default used will be the command code, which can be long and confusing."
+		echo "Consider adding a name to the step to make the output in the UI easier to read."
+		echo "https://circleci.com/docs/2.0/configuration-reference/#run"
+		exit 1
+	fi
+}
