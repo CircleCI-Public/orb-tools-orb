@@ -23,4 +23,4 @@ mkdir -p /tmp/orb_dev_kit/
   echo "Your orb has been published to the CircleCI Orb Registry."
   echo "You can view your published orb on the CircleCI Orb Registry at the following link: "
   echo "https://circleci.com/developer/orbs/orb/${ORB_PARAM_ORB_NAME}?version=${ORB_RELEASE_VERSION}"
-} >> /tmp/orb_dev_kit/publishing_message.txt
+} >>/tmp/orb_dev_kit/publishing_message.txt

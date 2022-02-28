@@ -1,7 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2016
 
-
 if [ ! -f /tmp/orb_dev_kit/publishing_message.txt ]; then
   echo "No Publishing message has been found."
   echo "This likely means the publishing scripts have not yet been run."
@@ -13,12 +12,12 @@ PR_COMMENT_BODY=$(awk '{printf "%s\\n", $0}' /tmp/orb_dev_kit/publishing_message
 function postGitHubPRComment() {
   # $1 - PR ID
   HTTP_RESPONSE_GH=$(curl --request POST \
-  -s \
-  -o /tmp/orb_dev_kit/github_comment_response.json \
-  -w "%{http_code}" \
-  --url 'https://api.github.com/graphql?=' \
-  --header "$GH_HEADER_DATA" \
-  --data '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$1"'"},"operationName":"AddCommentToPR"}')
+    -s \
+    -o /tmp/orb_dev_kit/github_comment_response.json \
+    -w "%{http_code}" \
+    --url 'https://api.github.com/graphql?=' \
+    --header "$GH_HEADER_DATA" \
+    --data '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$1"'"},"operationName":"AddCommentToPR"}')
   if [ "$HTTP_RESPONSE_GH" -ne 200 ]; then
     echo "Failed to post comment to GitHub PR"
     echo "Response: $HTTP_RESPONSE_GH"
@@ -31,18 +30,18 @@ function postGitHubPRComment() {
 
 function getGithubPRFromCommit() {
   curl --request POST \
-  -s \
-  --url 'https://api.github.com/graphql?=' \
-  --header "$GH_HEADER_DATA" \
-  --data '{"query":"query SearchForPR($query: String!) {\n  search(query: $query, type: ISSUE, first: 3) {\n    issueCount\n    edges {\n      node {\n        ... on  PullRequest {\n         \tid\n          title\n          number\n        }\n    }\n  }\n }\n}","variables":{"query":"'"$CIRCLE_SHA1"' is:pr"},"operationName":"SearchForPR"}'
+    -s \
+    --url 'https://api.github.com/graphql?=' \
+    --header "$GH_HEADER_DATA" \
+    --data '{"query":"query SearchForPR($query: String!) {\n  search(query: $query, type: ISSUE, first: 3) {\n    issueCount\n    edges {\n      node {\n        ... on  PullRequest {\n         \tid\n          title\n          number\n        }\n    }\n  }\n }\n}","variables":{"query":"'"$CIRCLE_SHA1"' is:pr"},"operationName":"SearchForPR"}'
 }
 
 function isAuthenticatedGitHub() {
   curl --request POST \
-  -s \
-  --url 'https://api.github.com/graphql?=' \
-  --header "$GH_HEADER_DATA" \
-  --data '{"query":"query IsAuthenticated {\n  viewer {\n    login\n  }\n}","variables":{},"operationName":"IsAuthenticated"}'
+    -s \
+    --url 'https://api.github.com/graphql?=' \
+    --header "$GH_HEADER_DATA" \
+    --data '{"query":"query IsAuthenticated {\n  viewer {\n    login\n  }\n}","variables":{},"operationName":"IsAuthenticated"}'
 }
 
 function mainGitHub() {
@@ -58,7 +57,7 @@ function mainGitHub() {
       echo "$PR_COUNT PR(s) found!"
       PR_TITLE=$(echo "$FetchedPRData" | jq -er '.data.search.edges[0].node.title')
       PR_NUMBER=$(echo "$FetchedPRData" | jq -er '.data.search.edges[0].node.number')
-      PR_ID=$(echo "$FetchedPRData "| jq -er '.data.search.edges[0].node.id')
+      PR_ID=$(echo "$FetchedPRData " | jq -er '.data.search.edges[0].node.id')
       echo "Selecting PR: $PR_TITLE (#$PR_NUMBER)"
       echo "Posting comment to PR..."
       postGitHubPRComment "$PR_ID"

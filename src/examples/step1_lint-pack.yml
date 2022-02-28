@@ -22,7 +22,13 @@ usage:
             exclude: SC2148,SC2038,SC2086,SC2002,SC2016
         - orb-tools-/publish-dev:
             orb-name: circleci/orb-tools
-            requires: [orb-tools/lint, orb-tools/review, orb-tools/pack, shellcheck/check]
+            requires:
+              [
+                orb-tools/lint,
+                orb-tools/review,
+                orb-tools/pack,
+                shellcheck/check,
+              ]
             # Use a context to hold your publishing token.
             context: publishing-context
         # Triggers the next workflow in the Orb Development Kit.

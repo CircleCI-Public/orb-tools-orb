@@ -6,7 +6,7 @@ An orb for orb authors - provides a full suite of jobs for packing, validating, 
 
 The _orb-tools_ orb is a key component of the "[Orb Development Kit](https://circleci.com/docs/2.0/orb-author/#orb-development-kit)". For the full documentation for developing orbs, see the [CircleCI Orb Authoring Process](https://circleci.com/docs/2.0/orb-author/) documentation.
 
-When you initialize a new orb project using the Orb Development Kit, a customized `.circleci/config.yml` file is created containing a full CI pipeline for building, testing, and publishing your orb. You can find the config template [here](https://github.com/CircleCI-Public/Orb-Project-Template/).
+When you initialize a new orb project using the Orb Development Kit, a customized `.circleci/config.yml` file is created containing a full CI pipeline for building, testing, and publishing your orb which utilizes the "orb-tools" orb for the majority of these functions. You can find the config template [here](https://github.com/CircleCI-Public/Orb-Project-Template/).
 
 Once automatically configured, on each code push to your repo, CircleCI will trigger the pipeline defined in the `.circleci/config.yml` file, which will execute (among several others) the orb-tools orb's jobs.
 
@@ -16,7 +16,7 @@ For the full documentation for Orb Publishing, see the [CircleCI Orb Publishing 
 
 ### Local Usage
 
-A subset of the orb-tools orb jobs and scripts can be ran locally. It is useful to be able to lint, shellcheck, and review your orbs locally, before pushing them to the orb registry. We can test nearly anything locally that does not require building and executing the orb directly.
+A subset of the orb-tools orb jobs and scripts can be ran locally. It is useful to be able to lint, shellcheck, and review your orbs locally, before committing. We can test nearly anything locally that does not require building and executing the orb directly.
 
 #### Local Linting
 
@@ -35,6 +35,8 @@ $ circleci local execute --job orb-tools/lint
 ```shell
 $ yamllint ./src
 ```
+
+Note: you will need a `.yamllint` file in the current directory to run the yamllint command. This will also be generated for you by the Orb Development Kit. Preview the file in the [Orb Project Template](https://github.com/CircleCI-Public/Orb-Project-Template).
 
 #### Local Shellcheck
 
@@ -64,7 +66,11 @@ The `review` job is a suite of Bash unit tests written using [bats-core](https:/
 $ circleci local execute --job orb-tools/review
 ```
 
+**Note:** You will _always_ see a failure at the end of this job when ran locally because the job contains a step to upload test results to CircleCI.com, which is not supported in the local agent.
+
 ##### Bats CLI Review
+
+You can also install the `bats-core` package locally and run the tests with the `bats` CLI.
 
 ```shell
 $ bats ./src/scripts/review.bats

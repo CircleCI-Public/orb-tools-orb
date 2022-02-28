@@ -22,4 +22,4 @@ mkdir -p /tmp/orb_dev_kit/
   echo "Your development orb has been published. It will expire in 30 days."
   echo "You can preview what this will look like on the CircleCI Orb Registry at the following link: "
   echo "https://circleci.com/developer/orbs/orb/${ORB_PARAM_ORB_NAME}?version=dev:${CIRCLE_SHA1}"
-} >> /tmp/orb_dev_kit/publishing_message.txt
+} >>/tmp/orb_dev_kit/publishing_message.txt

@@ -1,3 +1,4 @@
+#!/bin/bash
 if [ ! -d "./src" ]; then
 	echo "No source directory located at ./src"
 	echo "This orb assumes you have build your orb using the Orb Development Kit"

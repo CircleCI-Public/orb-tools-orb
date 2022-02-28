@@ -18,7 +18,13 @@ workflows:
       - orb-tools-alpha/publish-dev:
           orb-name: circleci/orb-tools
           vcs-type: << pipeline.project.type >>
-          requires: [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack, shellcheck/check]
+          requires:
+            [
+              orb-tools-alpha/lint,
+              orb-tools-alpha/review,
+              orb-tools-alpha/pack,
+              shellcheck/check,
+            ]
           github-token: GHI_TOKEN
           context: orb-publisher
       - orb-tools-alpha/continue:
