@@ -129,3 +129,34 @@ setup() {
 		exit 1
 	fi
 }
+
+@test "RC009: All Run step's commands should be imported." {
+	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC009" ]]; then
+		skip
+	fi
+	ERROR_COUNT=0
+	for i in $(find ${REVIEW_TEST_DIR}src/jobs ${REVIEW_TEST_DIR}src/commands -name "*.yml" 2>/dev/null); do
+		ORB_COMPONENT_STEPS_COUNT=$(cat $i | yq '[.steps.[] | .run] | length - 1')
+		for j in $(seq 0 $ORB_COMPONENT_STEPS_COUNT); do
+			ORB_COMPONENT_STEP=$(cat $i | yq "[.steps.[] | .run][$j]")
+			ORB_COMPONENT_LINE_NUMBER=$(cat $i | yq "[.steps.[] | .run][$j] | line")
+			ORB_COMPONENT_STEP_COMMAND=$(cat $i | yq '.steps[$j].run.command')
+			if [[ ! $ORB_COMPONENT_STEP_COMMAND =~ \<\<include\(* ]]; then
+				echo "File: \"${i}\""
+				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+				echo ---
+				echo $ORB_COMPONENT_STEP_COMMAND
+				echo ---
+				ERROR_COUNT=$((ERROR_COUNT + 1))
+			fi
+		done
+	done
+	if [[ $ERROR_COUNT -gt 0 ]]; then
+		echo
+		echo "Components were found to contain \"run\" steps with a command that is not imported."
+		echo "Did you know you can write your shell scripts and other commands in external files and import them here?"
+		echo "Writing your scripts externally will allow you to take advantage of syntax hilighting and avoid mixing code and markup."
+		echo "https://circleci.com/docs/2.0/using-orbs/#file-include-syntax"
+		exit 1
+	fi
+}

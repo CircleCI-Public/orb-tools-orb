@@ -17,6 +17,9 @@ steps:
   - checkout
   - run:
       name: Packing orb source
+      environment:
+        ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
+        ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
       command: mkdir -p <<parameters.output-dir>> && circleci orb pack --skip-update-check <<parameters.source-dir>> > <<parameters.output-dir>>orb.yml
   - run:
       name: Validating orb
