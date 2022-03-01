@@ -15,6 +15,9 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
 - **Review system**
   - The new "review" job can automatically detect opportunities to improve best-practices and provide native JUNIT output which will be displayed in the CircleCI UI.
   - Modeled after _shellcheck_, it is easy to skip any "review check" by supplying its "RC" code in the "exclude" parameter of the job.
+- **Simplified/Improved PR Commenting**
+  - Automatically comment on the PR associated with a commit when each new orb version is published (dev or production.)
+  - The comment will include a link to the Orb Registry to preview dev versions of the orb, and a live link to the production version of the orb.
 
 ### How to Migrate
 
@@ -31,17 +34,19 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
    - `chmod +x migrate.sh`
    - `bash migrate.sh`
 6. After executing the script:
+
    - The script will ask you for some basic information about your orb, such as the namespace, name of the orb, and name of your publishing context. All of this information is present in your existing configuration.
    - Your existing configuration will be renamed to `config.yml.bak`
    - Two new configuration files will be downloaded from the template repository and modified with your inputs.
    - The migrate script will self-delete.
 
 7. _(OPTIONAL)_ Enable PR comments.
-    - If a GitHub token is provided, when a new dev or production version of your orb is published, a comment will be added to the PR associated with the commit.
-    - The comment will provide a live preview link of your orb on the Orb Registry.
-    - Add `GITHUB_TOKEN` to your `<publishing-context>`.
-      - UNKNOWN WHAT PERMISSIONS ARE NEEDED. tested with repo, possible no permissions needed.
-    - You can find and edit your contexts in your CircleCI organization settings.
+
+   - If a GitHub token is provided, when a new dev or production version of your orb is published, a comment will be added to the PR associated with the commit.
+   - The comment will provide a live preview link of your orb on the Orb Registry.
+   - Add `GITHUB_TOKEN` to your `<publishing-context>`.
+     - UNKNOWN WHAT PERMISSIONS ARE NEEDED. tested with repo, possible no permissions needed.
+   - You can find and edit your contexts in your CircleCI organization settings.
 
 8. Add, commit and push your changes.
 

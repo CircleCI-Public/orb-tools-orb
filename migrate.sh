@@ -16,7 +16,6 @@ curl -Ls "$ORB_TEMPLATE_DOWNLOAD_URL" -o "$ORB_TEMP_DIR/orb-project-template.tar
 tar -xzf "$ORB_TEMP_DIR/orb-project-template.tar.gz" -C "$ORB_TEMP_DIR"
 cp -r "${ORB_TEMP_DIR}/orb-project-template/.circleci/*" .circleci/
 
-
 read -rp 'Namespace: ' ORB_NAMESPACE
 read -rp 'Orb name: ' ORB_NAME
 read -rp 'Context name: ' ORB_CONTEXT_NAME
