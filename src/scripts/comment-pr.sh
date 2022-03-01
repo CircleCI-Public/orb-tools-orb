@@ -78,6 +78,12 @@ function mainGitHub() {
 if [[ "$PIPELINE_VCS_TYPE" == "gh" || "$PIPELINE_VCS_TYPE" == "github" ]]; then
   # GitHub PR Comment Process
   PARAM_GH_TOKEN_VALUE=${!ORB_PARAM_GITHUB_TOKEN}
+  if [ -z "$PARAM_GH_TOKEN_VALUE" ]; then
+    echo "UNABLE TO COMMENT"
+    echo "GitHub Personal Access Token not found."
+    echo "Please set the GITHUB_TOKEN environment variable to your GitHub personal access token."
+    exit 0
+  fi
   GH_HEADER_DATA="Authorization: Bearer $PARAM_GH_TOKEN_VALUE"
   mainGitHub
 elif [[ "$PIPELINE_VCS_TYPE" == "bb" || "$PIPELINE_VCS_TYPE" == "bitbucket" ]]; then
