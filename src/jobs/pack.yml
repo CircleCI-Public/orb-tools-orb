@@ -20,10 +20,12 @@ steps:
       environment:
         ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
         ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
-      command: mkdir -p <<parameters.output-dir>> && circleci orb pack --skip-update-check <<parameters.source-dir>> > <<parameters.output-dir>>orb.yml
+      command: <<include(scripts/pack.sh)>>
   - run:
       name: Validating orb
-      command: circleci orb validate --skip-update-check <<parameters.output-dir>>orb.yml
+      environment:
+        ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
+      command: <<include(scripts/validate.sh)>>
   - persist_to_workspace:
       paths:
         - orb.yml
