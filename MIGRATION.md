@@ -26,40 +26,30 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
 2. Clone your orb project locally.
 3. Create a new branch for upgrading your pipeline
    - `git checkout -b orb-tools-11-migration`
-4. Rename your `.circleci/config.yml` file to `.circleci/config.yml.bak`
-   - We will delete this file later, but we may wish to refer to it while modifying the new config.
-5. _In a separate directory_, clone the [Orb-Project-Template repository](https://github.com/CircleCI-Public/Orb-Project-Template).
-   - `git clone git@github.com:CircleCI-Public/Orb-Project-Template.git`
-6. Inside the `.circleci/` directory of the Orb Project Template, there will be two config files, `config.yml` and `test-deploy.yml`. Copy both of these to the `.circleci/` directory of your orb project.
-7. In both configuration files, replace the placeholder values with your orb's information.
+4. Copy the `migrate.sh` script from this repository into your project's root directory.
+5. Run the script
+   - `chmod +x migrate.sh`
+   - `bash migrate.sh`
+6. After executing the script:
+   - The script will ask you for some basic information about your orb, such as the namespace, name of the orb, and name of your publishing context. All of this information is present in your existing configuration.
+   - Your existing configuration will be renamed to `config.yml.bak`
+   - Two new configuration files will be downloaded from the template repository and modified with your inputs.
+   - The migrate script will self-delete.
 
-**Example:**
-
-original:
-```yaml
-- orb-tools-/publish-dev:
-    orb-name: <namespace>/<orb>
-```
-
-modified:
-```yaml
-- orb-tools-/publish-dev:
-    orb-name: circleci/orb-tools
-```
-
-8. _(OPTIONAL)_ Enable PR comments.
+7. _(OPTIONAL)_ Enable PR comments.
     - If a GitHub token is provided, when a new dev or production version of your orb is published, a comment will be added to the PR associated with the commit.
     - The comment will provide a live preview link of your orb on the Orb Registry.
     - Add `GITHUB_TOKEN` to your `<publishing-context>`.
+      - UNKNOWN WHAT PERMISSIONS ARE NEEDED. tested with repo, possible no permissions needed.
     - You can find and edit your contexts in your CircleCI organization settings.
 
-9. Add, commit and push your changes.
+8. Add, commit and push your changes.
 
 - `git add .circleci/config.yml .circleci/test-deploy.yml`
 - `git commit -m "Add orb-tools config files"`
 - `git push -u origin orb-tools-11-migration`
 
-10. Publish the next version of your orb.
+9. Publish the next version of your orb.
 
 - You can push a tag directly to the repository, or use the GitHub release feature.
 - If you use the GitHub release feature, you will be able to create a release note.
