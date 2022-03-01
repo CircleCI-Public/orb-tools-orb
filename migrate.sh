@@ -8,7 +8,7 @@ for file in .circleci/*; do
   fi
 done
 
-ORB_TEMPLATE_VERSION=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/CircleCI-Public/Orb-Project-Template/releases/latest" | sed 's:.*/::' | xargs)
+ORB_TEMPLATE_VERSION=$(curl -Ls -o /dev/null -w "%{url_effective}\n" "https://github.com/CircleCI-Public/Orb-Project-Template/releases/latest" | sed 's:.*/::' | xargs)
 ORB_TEMPLATE_DOWNLOAD_URL="https://github.com/CircleCI-Public/Orb-Project-Template/archive/refs/tags/${ORB_TEMPLATE_VERSION}.tar.gz"
 ORB_TEMP_DIR=$(mktemp -d)
 
