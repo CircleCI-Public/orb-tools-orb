@@ -19,7 +19,7 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
   - Automatically comment on the PR associated with a commit when each new orb version is published (dev or production.)
   - The comment will include a link to the Orb Registry to preview dev versions of the orb, and a live link to the production version of the orb.
 
-### How to Migrate
+## How to Migrate
 
 1. Enable "[dynamic configuration](https://circleci.com/docs/2.0/dynamic-config/#getting-started-with-dynamic-config-in-circleci)" for your project on CircleCI.
    - Visit https://app.circleci.com/ and navigate to your project.
@@ -56,8 +56,10 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
 
 9. Publish the next version of your orb.
 
-- You can push a tag directly to the repository, or use the GitHub release feature.
-- If you use the GitHub release feature, you will be able to create a release note.
+    _See Full Docs:_ [Publishing an Orb](https://circleci.com/docs/2.0/creating-orbs/)
+
+- You can push a tag directly to the repository, or use the GitHub release feature (preferred).
+- If you use the GitHub release feature, you will be able to create release notes.
 - **NOTE:** In the previous versions of orb-tools, the next version of the orb was semi-automatically selected by being informed of the _type_ of change via the commit message. This new system requires you enter a full semantically versioned tag. So it is important to double check the currently live version of the orb and verify which version you intend to release next.
 - **NOTE:** Remember, which GitHub tags can be deleted or overwritten, orbs can not. Once and orb version has been published, it must be incremented in version to apply any changes.
 - **TIP:** Utilize [Conventional Commit Messages](https://conventionalcommits.org/) to help you decide what type of release to make based on the changes made in the previous commits.

@@ -77,6 +77,7 @@ destroy_script() {
 }
 
 verify_run
+user_input
 backup_contents
 download_template
 user_input
