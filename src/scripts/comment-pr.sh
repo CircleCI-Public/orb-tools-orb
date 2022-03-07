@@ -1,5 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2016
+# shellcheck disable=SC2028
 
 function postGitHubPRComment() {
   # $1 - PR ID
