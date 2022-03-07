@@ -10,7 +10,7 @@ function postGitHubPRComment() {
     -w "%{http_code}" \
     --url 'https://api.github.com/graphql?=' \
     --header "$GH_HEADER_DATA" \
-    --data '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$1"'"},"operationName":"AddCommentToPR"}')
+    --data '{"query":"mutation AddCommentToPR($body: String!, $sid: ID!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$1"'"},"operationName":"AddCommentToPR"}')
   if [[ "$HTTP_RESPONSE_GH" -ne 200  || "$(jq '.errors | length' /tmp/orb_dev_kit/github_comment_response.json)" -gt 0 ]]; then
     echo "Failed to post comment to GitHub PR"
     echo "Response: $HTTP_RESPONSE_GH"
