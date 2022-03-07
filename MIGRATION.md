@@ -7,7 +7,7 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
 ### Notable changes:
 
 - **Removed the 90 day limit**
-  - Previously, the configuration relied on calling a `dev:alpha` tag of the orb for testing. If it had been over 90 days since the orb was last published, this would result in an error in the CircleCI pipeline. Users would have to manually publish their orb locally to re-start the ci pipeline
+  - Previously, the configuration relied on calling a `dev:alpha` tagged version of the orb for testing. Due to "dev" tags on CircleCI being ephemeral with a 90-day life span, if it had been over 90 days since the orb was last published this would result in an error in the CircleCI pipeline. Users would have to manually publish their orb locally to re-start the ci pipeline
   - The new dynamic configuration system allows us to publish the dev version of the orb _before_ calling it for testing. This means that the 90 day limit is no longer an issue.
 - **Adopting Tag/Release based publishing**
   - Publishing previously required a special text flag to be added to the commit message and a new version was published on every merge to the main branch.
@@ -42,7 +42,7 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
 
 7. _(OPTIONAL)_ Enable PR comments.
 
-   - If a GitHub token is provided, when a new dev or production version of your orb is published, a comment will be added to the PR associated with the commit.
+   - When a new dev or production version of your orb is published, a comment will be added to the PR associated with the commit. NOTE: This will only be enabled if a GitHub token is provided
    - The comment will provide a live preview link of your orb on the Orb Registry.
    - Add `GITHUB_TOKEN` to your `<publishing-context>`.
      - UNKNOWN WHAT PERMISSIONS ARE NEEDED. tested with repo, possible no permissions needed.
@@ -60,6 +60,6 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
 
 - You can push a tag directly to the repository, or use the GitHub release feature (preferred).
 - If you use the GitHub release feature, you will be able to create release notes.
-- **NOTE:** In the previous versions of orb-tools, the next version of the orb was semi-automatically selected by being informed of the _type_ of change via the commit message. This new system requires you enter a full semantically versioned tag. So it is important to double check the currently live version of the orb and verify which version you intend to release next.
-- **NOTE:** Remember, which GitHub tags can be deleted or overwritten, orbs can not. Once and orb version has been published, it must be incremented in version to apply any changes.
+- **NOTE:** In the previous versions of orb-tools, new versions of the orb were semi-automatically selected by using the commit message to detect the _type_ of change. This new system requires you to enter a full semantically versioned tag. It is important to double check the current live version of the orb and verify which version you intend to release next.
+- **NOTE:** Remember, GitHub tags can be deleted or overwritten while orbs can not. Once an orb version has been published, the version itself must be incremented in order for any changes to be applied.
 - **TIP:** Utilize [Conventional Commit Messages](https://conventionalcommits.org/) to help you decide what type of release to make based on the changes made in the previous commits.
