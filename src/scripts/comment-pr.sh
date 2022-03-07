@@ -1,14 +1,6 @@
 #!/bin/bash
 # shellcheck disable=SC2016
 
-if [ ! -f /tmp/orb_dev_kit/publishing_message.txt ]; then
-  echo "No Publishing message has been found."
-  echo "This likely means the publishing scripts have not yet been run."
-  echo "Please open an issue: https://github.com/CircleCI-Public/orb-tools-orb/issues"
-  exit 1
-fi
-PR_COMMENT_BODY=$(awk '{printf "%s\\n", $0}' /tmp/orb_dev_kit/publishing_message.txt)
-
 function postGitHubPRComment() {
   # $1 - PR ID
   HTTP_RESPONSE_GH=$(curl --request POST \
@@ -18,7 +10,7 @@ function postGitHubPRComment() {
     --url 'https://api.github.com/graphql?=' \
     --header "$GH_HEADER_DATA" \
     --data '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$1"'"},"operationName":"AddCommentToPR"}')
-  if [ "$HTTP_RESPONSE_GH" -ne 200 ]; then
+  if [[ "$HTTP_RESPONSE_GH" -ne 200  || "$(jq '.errors | length' /tmp/orb_dev_kit/github_comment_response.json)" -gt 0 ]]; then
     echo "Failed to post comment to GitHub PR"
     echo "Response: $HTTP_RESPONSE_GH"
     echo "Response body: $(cat /tmp/orb_dev_kit/github_comment_response.json)"
@@ -60,6 +52,9 @@ function mainGitHub() {
       PR_ID=$(echo "$FetchedPRData " | jq -er '.data.search.edges[0].node.id')
       echo "Selecting PR: $PR_TITLE (#$PR_NUMBER)"
       echo "Posting comment to PR..."
+      echo "DEBUG: PR ID: $PR_ID"
+      echo "DEBUG: "
+      echo '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$PR_ID"'"},"operationName":"AddCommentToPR"}'
       postGitHubPRComment "$PR_ID"
     else
       echo "No PR found!"
@@ -74,6 +69,15 @@ function mainGitHub() {
     exit 1
   fi
 }
+
+if [ ! -f /tmp/orb_dev_kit/publishing_message.txt ]; then
+  echo "No Publishing message has been found."
+  echo "This likely means the publishing scripts have not yet been run."
+  echo "Please open an issue: https://github.com/CircleCI-Public/orb-tools-orb/issues"
+  exit 1
+fi
+
+PR_COMMENT_BODY=$(awk '{printf "%s\\n", $0}' /tmp/orb_dev_kit/publishing_message.txt)
 
 if [[ "$PIPELINE_VCS_TYPE" == "gh" || "$PIPELINE_VCS_TYPE" == "github" ]]; then
   # GitHub PR Comment Process
