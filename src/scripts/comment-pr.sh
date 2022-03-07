@@ -53,9 +53,6 @@ function mainGitHub() {
       PR_ID=$(echo "$FetchedPRData " | jq -er '.data.search.edges[0].node.id')
       echo "Selecting PR: $PR_TITLE (#$PR_NUMBER)"
       echo "Posting comment to PR..."
-      echo "DEBUG: PR ID: $PR_ID"
-      echo "DEBUG: "
-      echo '{"query":"mutation AddCommentToPR($body: String!, $sid: String!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$PR_ID"'"},"operationName":"AddCommentToPR"}'
       postGitHubPRComment "$PR_ID"
     else
       echo "No PR found!"
