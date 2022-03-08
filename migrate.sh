@@ -21,8 +21,8 @@ backup_contents() {
 
 download_template() {
   ORB_TEMPLATE_TAG_LIST=$(curl --request GET \
-  --url https://api.github.com/repos/CircleCI-Public/Orb-Template/tags \
-  --header 'Accept: application/vnd.github.v3+json' | jq -r '.[].name' | grep -v '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -Vr)
+    --url https://api.github.com/repos/CircleCI-Public/Orb-Template/tags \
+    --header 'Accept: application/vnd.github.v3+json' | jq -r '.[].name' | grep -v '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -Vr)
   ORB_TEMPLATE_VERSION=$(echo "$ORB_TEMPLATE_TAG_LIST" | head -n 1)
   ORB_TEMPLATE_DOWNLOAD_URL="https://github.com/CircleCI-Public/Orb-Template/archive/refs/tags/${ORB_TEMPLATE_VERSION}.tar.gz"
   ORB_TEMP_DIR=$(mktemp -d)

@@ -1,6 +1,6 @@
 setup() {
 	REVIEW_TEST_DIR="./"
-	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<< "${PARAM_RC_EXCLUDE}"
+	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${PARAM_RC_EXCLUDE}"
 }
 
 @test "RC001: Include source_url in @orb.yml" {

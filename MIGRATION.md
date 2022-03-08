@@ -56,7 +56,7 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
 
 9. Publish the next version of your orb.
 
-    _See Full Docs:_ [Publishing an Orb](https://circleci.com/docs/2.0/creating-orbs/)
+   _See Full Docs:_ [Publishing an Orb](https://circleci.com/docs/2.0/creating-orbs/)
 
 - You can push a tag directly to the repository, or use the GitHub release feature (preferred).
 - If you use the GitHub release feature, you will be able to create release notes.

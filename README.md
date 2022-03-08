@@ -13,10 +13,11 @@ Once automatically configured, on each code push to your repo, CircleCI will tri
 When you are ready to publish a new version of your orb, you can create a new release on GitHub and/or push a [semantically versioned](https://semver.org/) tag.
 
 ### Quick Docs
- - [Getting Started](https://circleci.com/docs/2.0/orb-author-intro/)
- - [Creating an Orb](https://circleci.com/docs/2.0/orb-author/)
- - [Testing an Orb](https://circleci.com/docs/2.0/testing-orbs/)
- - [Publishing an Orb](https://circleci.com/docs/2.0/creating-orbs/)
+
+- [Getting Started](https://circleci.com/docs/2.0/orb-author-intro/)
+- [Creating an Orb](https://circleci.com/docs/2.0/orb-author/)
+- [Testing an Orb](https://circleci.com/docs/2.0/testing-orbs/)
+- [Publishing an Orb](https://circleci.com/docs/2.0/creating-orbs/)
 
 ## Migrate From Older Orb Tools Versions
 
