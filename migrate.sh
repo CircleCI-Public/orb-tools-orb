@@ -36,9 +36,6 @@ copy_custom_components() {
   ORIGINAL_EXECUTORS=$(yq '.executors' .circleci/config.yml.bak)
   ORIGINAL_JOBS=$(yq '.jobs' .circleci/config.yml.bak)
   ORIGINAL_COMMANDS=$(yq '.commands' .circleci/config.yml.bak)
-  export ORIGINAL_EXECUTORS
-  export ORIGINAL_JOBS
-  export ORIGINAL_COMMANDS
   if [[ -n "$ORIGINAL_EXECUTORS" && ! "$ORIGINAL_EXECUTORS" == "null" ]]; then
     yq -i '. += {"executors": env(ORIGINAL_EXECUTORS)}' .circleci/test-deploy.yml
   fi
