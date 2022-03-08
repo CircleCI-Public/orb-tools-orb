@@ -1,5 +1,6 @@
 description: |
-  Check for various orb authoring best practices to ensure high quality releases with minimal friction.
+  Automatically reviews your orb for best practices and produces JUNIT test reports which are natively displayed in the CircleCI UI.
+  The "Review" job checks against a suite of "RC" review checks, and if an opportunity for improvement is found, a suggestion with links to the relevant documentation is made.
 
 parameters:
   exclude:
