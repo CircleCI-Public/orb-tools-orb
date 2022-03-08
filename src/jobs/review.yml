@@ -1,6 +1,15 @@
 description: |
   Check for various orb authoring best practices to ensure high quality releases with minimal friction.
 
+parameters:
+  exclude:
+    description: |
+      A comma separated list of "RC"" codes to explicitly ignore.
+      Each review test has an associated RC code that can be included to skip in future tests. If a review item fails, the RC code will be included in the output.
+      Example: "RC001,RC002"
+    type: string
+    default: ""
+
 docker:
   - image: cimg/base:current
 
@@ -10,6 +19,7 @@ steps:
   - run:
       name: Review Best Practices
       environment:
+        PARAM_RC_EXCLUDE: <<parameters.exclude>>
         ORB_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
       command: <<include(scripts/review.sh)>>
   - store_test_results:
