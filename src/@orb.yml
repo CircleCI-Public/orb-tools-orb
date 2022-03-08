@@ -1,9 +1,9 @@
 version: 2.1
 
 description: |
-  An orb for creating orbs. A crucial part of the Orb Development Kit.
+  An orb for creating orbs.
   This orb is automatically implemented as a part of the generated config produced by the Orb Development Kit.
-  To get started writing your own orb, see the docs linked in the "Homepage" url just below.
+  To get started writing your own orb, see the docs linked in the "Homepage" url below.
 
 display:
   source_url: https://github.com/CircleCI-Public/orb-tools-orb/
