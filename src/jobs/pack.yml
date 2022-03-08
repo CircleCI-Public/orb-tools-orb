@@ -1,120 +1,32 @@
-description: >
-  *Experimental*
-  Uses the CLI to pack an orb file structure into a single orb yml.
+description: |
+  Packs the orb source into a single "orb.yml" file and validates for orb config errors.
 
 parameters:
   source-dir:
-    description: >
-      Path to the root of the orb source directory to be packed. (ie: my-orb/src/)
+    description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
-    default: src
-
-  destination-orb-path:
-    description: >
-      Path including filename of where the packed orb will be written.
+    default: ./src/
+  output-dir:
+    description: The orb output directory. The orb will be named "orb.yml" in this directory and persisted to the workspace. Path must be absolute or relative to the working directory.
     type: string
-    default: orb.yml
-
-  validate:
-    description: >
-      Boolean for whether or not to do validation on the orb. Default
-      is true.
-    type: boolean
-    default: true
-
-  checkout:
-    description: >
-      Boolean for whether or not to checkout as a first step. Default is true.
-    type: boolean
-    default: true
-
-  attach-workspace:
-    description: >
-      Boolean for whether or not to attach to an existing workspace. Default
-      is false.
-    type: boolean
-    default: false
-
-  workspace-root:
-    description: >
-      Workspace root path that is either an absolute path or a path relative
-      to the working directory. Defaults to '.' (the working directory)
-    type: string
-    default: "."
-
-  persist-to-workspace:
-    type: boolean
-    default: true
-    description: >
-      Should this job persist files to a workspace? Defaults to true
-
-  workspace-path:
-    description: >
-      Path of the workspace to persist to relative to workspace-root.
-      Typically this is the same as the destination-orb-path. If the default
-      value of blank is provided then this job will not persist to a
-      workspace.
-    type: string
-    default: orb.yml
-
-  store-artifacts:
-    type: boolean
-    default: true
-    description: >
-      Store this job store files as job artifacts? Defaults to true
-
-  artifact-path:
-    description: >
-      Path to directory that should be saved as a job artifact. If the
-      default value of blank is provided then this job will not save any
-      artifacts.
-    type: string
-    default: orb.yml
-
-  use-orb-pack:
-    description: Setting this will use the new "orb pack" instead of "config pack"
-    type: boolean
-    default: false
+    default: ./dist/
 
 executor: cli/default
 
 steps:
-  # Setup
-  - when:
-      condition: << parameters.checkout >>
-      steps:
-        - checkout
-
-  - when:
-      condition: << parameters.attach-workspace >>
-      steps:
-        - attach_workspace:
-            at: << parameters.workspace-root >>
-
-  # Pack
-  - pack:
-      source: << parameters.source-dir >>
-      destination: << parameters.destination-orb-path >>
-      use-orb-pack: << parameters.use-orb-pack >>
-
-  # Validate
-  - when:
-      condition: << parameters.validate >>
-      steps:
-        - validate:
-            orb-path: << parameters.destination-orb-path >>
-
-  # Save
-  - when:
-      condition: << parameters.persist-to-workspace >>
-      steps:
-        - persist_to_workspace:
-            root: << parameters.workspace-root >>
-            paths:
-              - << parameters.workspace-path >>
-
-  - when:
-      condition: << parameters.store-artifacts >>
-      steps:
-        - store_artifacts:
-            path: << parameters.artifact-path >>
+  - checkout
+  - run:
+      name: Packing orb source
+      environment:
+        ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
+        ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
+      command: <<include(scripts/pack.sh)>>
+  - run:
+      name: Validating orb
+      environment:
+        ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
+      command: <<include(scripts/validate.sh)>>
+  - persist_to_workspace:
+      paths:
+        - orb.yml
+      root: <<parameters.output-dir>>
