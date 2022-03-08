@@ -1,5 +1,6 @@
 description: |
   Publish a production version of your orb under a new semantic version. This job is designed to be triggered by tagged commits with valid semantic version tags.
+  Example: Pushing tag "v1.0.0" will publish version "1.0.0" of your orb as long as it has not previously been published.
 
 executor: cli/default
 
