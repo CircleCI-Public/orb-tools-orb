@@ -2,6 +2,7 @@ description: |
   After your orb has been packed and published to a dev version, we can load that specific development version in this workflow.
   With the orb loaded, we can run "integration tests" by executing our orbs commands and jobs and validating their output.
   Finally, if the commit has been tagged (ex v1.0.0), we can publish the orb to a production version.
+  For advanced usage, see the full docs linked in the "Homepage" url above.
 usage:
   version: 2.1
   orbs:
