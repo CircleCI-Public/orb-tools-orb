@@ -45,14 +45,15 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
    - When a new dev or production version of your orb is published, a comment will be added to the PR associated with the commit. NOTE: This will only be enabled if a GitHub token is provided
    - The comment will provide a live preview link of your orb on the Orb Registry.
    - Add `GITHUB_TOKEN` to your `<publishing-context>`.
-     - UNKNOWN WHAT PERMISSIONS ARE NEEDED. tested with repo, possible no permissions needed.
-   - You can find and edit your contexts in your CircleCI organization settings.
+     - If the repo is public, no scope is required.
+     - You can find and edit your contexts in your CircleCI organization settings.
+     - You can also [manage your contexts from the CLI](https://circleci.com/docs/2.0/local-cli/#context-management).
 
 8. Add, commit and push your changes.
 
-- `git add .circleci/config.yml .circleci/test-deploy.yml`
-- `git commit -m "Add orb-tools config files"`
-- `git push -u origin orb-tools-11-migration`
+   1. `git add .circleci/config.yml .circleci/test-deploy.yml`
+   1. `git commit -m "Add orb-tools config files"`
+   1. `git push -u origin orb-tools-11-migration`
 
 9. Publish the next version of your orb.
 
