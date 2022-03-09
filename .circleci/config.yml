@@ -10,12 +10,24 @@ orbs:
 workflows:
   lint-pack:
     jobs:
-      - orb-tools-alpha/lint
-      - orb-tools-alpha/pack
-      - orb-tools-alpha/review
+      - orb-tools-alpha/lint:
+          filters:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/pack:
+          filters:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/review:
+          filters:
+            tags:
+              only: /.*/
       - shellcheck/check:
           exclude: SC2148,SC2038,SC2086,SC2002,SC2016
-      - orb-tools-alpha/publish-dev:
+          filters:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/publish:
           orb-name: circleci/orb-tools
           vcs-type: << pipeline.project.type >>
           requires:
@@ -27,7 +39,13 @@ workflows:
             ]
           github-token: GHI_TOKEN
           context: orb-publisher
+          filters:
+            tags:
+              only: /.*/
       - orb-tools-alpha/continue:
           pipeline-number: << pipeline.number >>
           vcs-type: << pipeline.project.type >>
-          requires: [orb-tools-alpha/publish-dev]
+          requires: [orb-tools-alpha/publish]
+          filters:
+            tags:
+              only: /.*/

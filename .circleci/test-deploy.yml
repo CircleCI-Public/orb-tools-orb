@@ -17,13 +17,12 @@ workflows:
           filters:
             tags:
               only: /.*/
-      - orb-tools-alpha/publish-release:
+      - orb-tools-alpha/publish:
           orb-name: circleci/orb-tools
+          publish-version: <<pipeline.git.tag>>
           requires:
             [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
           context: orb-publisher
           filters:
             tags:
-              only: /^v.*/
-            branches:
-              ignore: /.*/
+              only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
