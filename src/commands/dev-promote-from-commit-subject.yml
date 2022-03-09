@@ -1,0 +1,101 @@
+description: >
+  Uses the CLI to promote a dev version of an orb to the registry.
+  This command supports Semantic Versioning support.
+  It assumes the context of a GitHub pull request, and promotion of
+  the orb to a new major/minor/patch version is
+  based on information that must be contained in the subject of
+  the commit that merges the pull request.
+  Namely, the commit subject must include the `[semver:FOO]` pattern,
+  where FOO is major, minor, patch, or skip (to skip promotion).
+  e.g. 'Merge pull request #XX from some-branch [semver:minor]'
+
+parameters:
+  orb-name:
+    type: string
+    description: >
+      Semver-less name of an orb, e.g. circleci/orb-tools
+
+  orb-ref:
+    type: string
+    default: dev:${CIRCLE_SHA1:0:7}
+    description: >
+      Dev:reference to promote to a production release, defaults to
+      'dev:${CIRCLE_SHA1:0:7}' (evaluates to the first 7
+      characters of the job's commit hash)
+
+  token-variable:
+    description: >
+      Name of env var containing your token. Pass this as a raw string such
+      as ORB_PUBLISHING_TOKEN. Do not paste the actual token into your
+      configuration. If omitted it's assumed the CLI has already been setup
+      with a valid token.
+    type: env_var_name
+    default: CIRCLE_TOKEN
+
+  add-pr-comment:
+    description: >
+      CircleCI can comment on the merged PR with the final production version.
+      If you want contributors to see a message with the production version,
+      please provide the username & token, and ensure the merge commit subject
+      includes the PR number in default format.
+      i.e. 'Merge pull request #XX from some-branch'
+    type: boolean
+
+  pr-number-sed-expression:
+    description: >
+      Used to extract the PR number from the commit subject with sed.
+      The default value works with the default
+      GitHub PR merge commit subject.
+      Only applicable when add-pr-comment is set to true.
+    type: string
+    default: 's/Merge pull request #\([0-9]*\) from.*/\1/p'
+
+  bot-user:
+    description: >
+      The GitHub user to post PR comment.
+      Only applicable when add-pr-comment is set to true.
+    type: string
+    default: ""
+
+  bot-token-variable:
+    description: >
+      Name of env var containing the GitHub token value of the GitHub user that
+      to be used for posting the PR comment. Pass this as a raw string such
+      as GITHUB_TOKEN. Do not paste the actual token into your
+      configuration.
+      Only applicable when add-pr-comment is set to true.
+    type: env_var_name
+    default: PR_COMMENTER_GITHUB_TOKEN
+
+  checkout:
+    description: >
+      Whether to perform the CircleCI checkout step.
+    type: boolean
+    default: true
+
+  fail-if-semver-not-indicated:
+    description: >
+      Whether to fail if the commit subject did not include [semver:patch|minor|major|skip]
+    type: boolean
+
+steps:
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
+  - run:
+      name: Promote dev orb to production
+      environment:
+        ORB_NAME: <<parameters.orb-name>>
+        ORB_REF: <<parameters.orb-ref>>
+        TOKEN: "$<<parameters.token-variable>>"
+        SHOULD_FAIL: <<parameters.fail-if-semver-not-indicated>>
+      command: <<include(scripts/dev-promote-from-commit-subject.sh)>>
+  - when:
+      condition: <<parameters.add-pr-comment>>
+      steps:
+        - post-pr-comment:
+            comment: $PR_MESSAGE
+            pr-number-sed-expression: <<parameters.pr-number-sed-expression>>
+            bot-user: <<parameters.bot-user>>
+            bot-token-variable: <<parameters.bot-token-variable>>

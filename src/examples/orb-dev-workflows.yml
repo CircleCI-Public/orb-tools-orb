@@ -1,0 +1,102 @@
+description: >
+  Use the lint, pack, publish-dev, and trigger-integration-tests-workflow jobs
+  to lint a destructured orb's YAML source code, pack it into a single
+  orb.yml file, release a @dev:${CIRCLE_SHA1:0:7} version of the orb, and trigger
+  an integration testing workflow that will run against the new dev
+  release of the orb. After running integration tests, use the orb's
+  dev-promote-prod-from-commit-subject job to promote the orb's @dev:${CIRCLE_SHA1:0:7} release to a
+  production release. See the orb's GitHub README for a version of this
+  example with extensive usage and context comments:
+  https://github.com/circleci-public/orb-tools-orb#examples
+
+usage:
+  version: 2.1
+
+  orbs:
+    orb-tools: circleci/orb-tools@10
+    # add your orb below, to be used in integration tests (note: a
+    # @dev:alpha release must exist; if none exists, you'll need to
+    # publish manually once before this worklow can succeed)
+    your-orb: your-namespace/your-orb@<<pipeline.parameters.dev-orb-version>>
+
+  orb_prep_jobs: &orb_prep_jobs
+    [
+      orb-tools/lint,
+      orb-tools/pack
+    ]
+
+  # Pipeline parameters
+  parameters:
+    # These pipeline parameters are required by the "trigger-integration-tests-workflow"
+    # job, by default.
+    run-integration-tests:
+      type: boolean
+      default: false
+    dev-orb-version:
+      type: string
+      default: "dev:alpha"
+
+  jobs:
+    integration-tests-for-your-orb:
+      executor: orb-tools/ubuntu
+      steps:
+        - checkout
+      # Test your orb e.g.
+      # - your-orb/your-orb-command
+
+  workflows:
+    test-pack:
+      unless: << pipeline.parameters.run-integration-tests >>
+      jobs:
+        # This `lint-pack_validate_publish-dev` workflow will run on any commit
+        # Lint your YAML
+        - orb-tools/lint
+        # Pack the orb into a single file and validate the result.
+        - orb-tools/pack
+        # release dev version of orb, for testing & possible publishing.
+        # orb will be published as dev:alpha and dev:${CIRCLE_SHA1:0:7}.
+        # requires a CircleCI API token to be stored as CIRCLE_TOKEN (default)
+        # https://circleci.com/docs/2.0/managing-api-tokens
+        # store CIRCLE_TOKEN as a project env var or Contexts resource
+        # if using Contexts, add your context below
+        - orb-tools/publish-dev:
+            orb-name: your-namespace/your-orb-name
+            requires: *orb_prep_jobs
+
+        # trigger an integration workflow to test the
+        # dev:${CIRCLE_SHA1:0:7} version of your orb
+        - orb-tools/trigger-integration-tests-workflow:
+            name: trigger-integration-dev
+            requires:
+              - orb-tools/publish-dev
+
+    # This `integration-tests_prod-release` workflow will only run
+    # when the run-integration-tests pipeline parameter is set to true.
+    # It is meant to be triggered by the "trigger-integration-tests-workflow"
+    # job, and run tests on <your orb>@dev:${CIRCLE_SHA1:0:7}.
+    integration-test_deploy:
+      when: << pipeline.parameters.run-integration-tests >>
+      jobs:
+        # your integration test jobs go here: essentially, run all your orb's
+        # jobs and commands to ensure they behave as expected. or, run other
+        # integration tests of your choosing
+
+        # an example job
+        - integration-tests-for-your-orb
+
+        # publish a semver version of the orb. relies on
+        # the commit subject containing the text "[semver:patch|minor|major|skip]"
+        # as that will determine whether a patch, minor or major
+        # version will be published or if publishing should
+        # be skipped.
+        # e.g. [semver:patch] will cause a patch version to be published.
+        - orb-tools/dev-promote-prod-from-commit-subject:
+            orb-name: your-namespace/your-orb
+            add-pr-comment: false
+            publish-version-tag: false
+            fail-if-semver-not-indicated: false
+            requires:
+              - integration-tests-for-your-orb
+            filters:
+              branches:
+                only: master
