@@ -1,0 +1,54 @@
+description: >
+  Trigger an integration-testing workflow for a just-published
+  alpha version of an orb using CircleCI v2 API.
+  See examples for further usage details.
+
+parameters:
+  checkout:
+    type: boolean
+    default: true
+    description: >
+      Checkout as a first step? Default is true
+
+  pipeline-param-map:
+    type: string
+    default: '{"run-integration-tests": true, "dev-orb-version": "dev:${CIRCLE_SHA1:0:7}"}'
+    description: >
+      Map of pipeline parameters that the new pipeline will be invoked with.
+      Make use of this to target the integration workflow that should be triggered
+      and exclude other workflows from being triggered.
+
+  token-variable:
+    type: env_var_name
+    default: CIRCLE_TOKEN
+    description: >
+      Name of environment variable containing your personal CircleCI API token
+
+  circleci-api-host:
+    type: string
+    default: https://circleci.com
+    description: >
+      Host URL of CircleCI API
+
+  circleci-app-host:
+    type: string
+    default: https://app.circleci.com
+    description: >
+      Host URL of CircleCI Web UI
+
+steps:
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
+
+  - jq/install
+
+  - run:
+      name: Trigger integration test workflow
+      environment:
+        PARAM_MAP: '<<parameters.pipeline-param-map>>'
+        TOKEN: "$<<parameters.token-variable>>"
+        CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
+        CIRCLECI_APP_HOST: <<parameters.circleci-app-host>>
+      command: <<include(scripts/trigger-integration-tests-workflow.sh)>>
