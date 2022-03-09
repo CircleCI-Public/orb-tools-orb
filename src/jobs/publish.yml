@@ -49,6 +49,7 @@ steps:
       environment:
         ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
         ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
+        ORB_PARAM_ORB_DIR: <<parameters.orb-dir>>
         PARAM_GH_TOKEN: <<parameters.github-token>>
       command: <<include(scripts/publish.sh)>>
   - when:
