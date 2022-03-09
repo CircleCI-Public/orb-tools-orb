@@ -19,7 +19,6 @@ workflows:
               only: /.*/
       - orb-tools-alpha/publish:
           orb-name: circleci/orb-tools
-          publish-version: <<pipeline.git.tag>>
           vcs-type: <<pipeline.project.type>>
           requires:
             [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
