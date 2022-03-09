@@ -27,6 +27,7 @@ function validateOrbPubToken() {
 function publishOrb() {
   #$1 = full tag
   circleci orb publish --skip-update-check "${ORB_PARAM_ORB_DIR}/orb.yml" "${ORB_PARAM_ORB_NAME}@${1}" --token "$ORB_PARAM_ORB_PUB_TOKEN"
+  printf "\n"
   {
     echo "Your orb has been published to the CircleCI Orb Registry."
     echo "You can view your published orb on the CircleCI Orb Registry at the following link: "
@@ -55,12 +56,15 @@ function orbPublish() {
     ORB_RELEASE_VERSION="${CIRCLE_TAG//v/}"
     echo "Production version: ${ORB_RELEASE_VERSION}"
   fi
+  printf "\n"
   if [ "${PUBLISH_PRODUCTION_ORB}" = true ]; then
     publishOrb "${ORB_RELEASE_VERSION}"
   else
     publishDevOrbs
   fi
   # print out the orb publishing message
+  printf "\n\n"
+  echo "********************************************************************************"
   cat /tmp/orb_dev_kit/publishing_message.txt
 }
 
