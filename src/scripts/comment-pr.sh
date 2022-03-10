@@ -44,7 +44,7 @@ function mainGitHub() {
     echo "Authenticated as: $(isAuthenticatedGitHub | jq -r '.data.viewer.login')"
     FetchedPRData="$(getGithubPRFromCommit)"
     # Fetch the PR ID from the commit
-    if [ "$(echo "$FetchedPRData" | jq -e '.data.search.issueCount | length > 0')" ]; then
+    if [ "$(echo "$FetchedPRData" | jq -e '.data.search.issueCount | length > 0')" -gt 0 ]; then
       # PR Found
       PR_COUNT=$(echo "$FetchedPRData" | jq -e '.data.search.issueCount')
       echo "$PR_COUNT PR(s) found!"
@@ -59,6 +59,7 @@ function mainGitHub() {
       echo "It may be that the PR has not yet been created from this commit at the time of this build."
       echo "If you have recently created a PR, subsequent code pushes should properly identify the PR."
       echo "Skipping commenting..."
+      exit 0
     fi
 
   else
