@@ -49,7 +49,7 @@ function publishDevOrbs() {
 function orbPublish() {
   echo "Preparing to publish your orb."
   validateOrbPubToken
-  if [ -n "${CIRCLE_TAG}" ]; then
+  if [[ -n "${CIRCLE_TAG}" && "$ORB_PARAM_DEV_ONLY" -eq 0 ]]; then
     PUBLISH_PRODUCTION_ORB=true
     echo "Production release detected!"
     validateProdTag

@@ -2,6 +2,7 @@ description: |
   Publish a new version of your orb.
   This job will produce a development version of an orb by default or will produce a new production version if the $CIRCLE_TAG environment variable is set.
   Push a new semantic version tag to the repository to publish a new production version of your orb.
+  To ignore tags and only produce development version of orbs, set "dev" to true.
 
 executor: cli/default
 
@@ -41,6 +42,10 @@ parameters:
       For GitHub users, a $GITHUB_TOKEN environment variable must be set.
     type: boolean
     default: true
+  dev:
+    description: If enabled, tags will be ignored and only development versions will be published.
+    type: boolean
+    default: false
 steps:
   - attach_workspace:
       at: <<parameters.orb-dir>>
@@ -50,6 +55,7 @@ steps:
         ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
         ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
         ORB_PARAM_ORB_DIR: <<parameters.orb-dir>>
+        ORB_PARAM_DEV_ONLY: <<parameters.dev>>
         PARAM_GH_TOKEN: <<parameters.github-token>>
       command: <<include(scripts/publish.sh)>>
   - when:

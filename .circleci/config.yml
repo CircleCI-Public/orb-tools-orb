@@ -30,6 +30,7 @@ workflows:
       - orb-tools-alpha/publish:
           orb-name: circleci/orb-tools
           vcs-type: << pipeline.project.type >>
+          dev: true
           requires:
             [
               orb-tools-alpha/lint,
