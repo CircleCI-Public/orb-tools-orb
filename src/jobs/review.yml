@@ -1,0 +1,27 @@
+description: |
+  Automatically reviews your orb for best practices and produces JUNIT test reports which are natively displayed in the CircleCI UI.
+  The "Review" job checks against a suite of "RC" review checks, and if an opportunity for improvement is found, a suggestion with links to the relevant documentation is made.
+
+parameters:
+  exclude:
+    description: |
+      A comma separated list of "RC"" codes to explicitly ignore.
+      Each review test has an associated RC code that can be included to skip in future tests. If a review item fails, the RC code will be included in the output.
+      Example: "RC001,RC002"
+    type: string
+    default: ""
+
+docker:
+  - image: cimg/base:current
+
+steps:
+  - checkout
+  - bats/install
+  - run:
+      name: Review Best Practices
+      environment:
+        PARAM_RC_EXCLUDE: <<parameters.exclude>>
+        ORB_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
+      command: <<include(scripts/review.sh)>>
+  - store_test_results:
+      path: /tmp/orb_dev_kit/review/

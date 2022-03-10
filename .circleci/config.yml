@@ -1,320 +1,51 @@
 version: 2.1
-
+setup: true
 orbs:
-  cli: circleci/circleci-cli@0.1
-  orb-tools: circleci/orb-tools@10
-  orb-tools-alpha: circleci/orb-tools@<<pipeline.parameters.dev-orb-version>>
-  jq: circleci/jq@2.2
-  bats: circleci/bats@1.0
-  shellcheck: circleci/shellcheck@2.0
-
-parameters:
-  run-integration-tests:
-    type: boolean
-    default: false
-  dev-orb-version:
-    type: string
-    default: "dev:alpha"
-
-commands:
-  set-up-test-repository:
-    parameters:
-      segment:
-        description: >
-          The semver segment to increment 'major' or 'minor' or 'patch'
-        type: enum
-        enum: [major, minor, patch, skip, none]
-        default: patch
-    steps:
-      - orb-tools-alpha/configure-git
-      - run:
-          name: Set up test repository
-          command: |
-            cd ..
-            rm -rf project
-            mkdir project
-            cd project
-            git init
-            echo "test" > test
-            git add . && git commit -am "Merge pull request #99TEST from dummy-branch [semver:<<parameters.segment>>]"
-
-  check-pr-message:
-    parameters:
-      orb-name:
-        type: string
-      expect-orb-to-be-published:
-        type: boolean
-    steps:
-      - run:
-          name: Check PR message
-          command: |
-            echo "PR message: $PR_MESSAGE"
-            if [ "<<parameters.expect-orb-to-be-published>>" == "true" ];then
-              echo $PR_MESSAGE | grep -e "orb available for use.*<<parameters.orb-name>>"
-            else
-              echo $PR_MESSAGE | grep "skipped"
-            fi
-jobs:
-  test-commands:
-    parameters:
-      segment:
-        description: >
-          The semver segment to increment 'major' or 'minor' or 'patch'
-        type: enum
-        enum: [major, minor, patch]
-        default: patch
-
-    docker:
-      - image: cimg/base:edge
-
-    steps:
-      - checkout
-      - cli/install
-      - orb-tools-alpha/pack
-      - orb-tools-alpha/validate
-
-      - orb-tools-alpha/publish:
-          orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
-
-      - orb-tools-alpha/increment:
-          orb-ref: sandbox/orb-tools
-          segment: <<parameters.segment>>
-
-  test-promote-from-commit-subject:
-    parameters:
-      segment:
-        description: >
-          The semver segment to increment 'major' or 'minor' or 'patch'
-        type: enum
-        enum: [major, minor, patch, skip, none]
-        default: patch
-
-      expect-orb-to-be-published:
-        type: boolean
-
-    docker:
-      - image: cimg/base:edge
-
-    steps:
-      - checkout
-      - cli/install
-      - set-up-test-repository:
-          segment: <<parameters.segment>>
-      - orb-tools-alpha/dev-promote-from-commit-subject:
-          checkout: false
-          orb-name: sandbox/orb-tools
-          fail-if-semver-not-indicated: false
-          add-pr-comment: true
-          bot-user: orb-publisher
-          bot-token-variable: GHI_TOKEN
-          pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
-      - check-pr-message:
-          orb-name: sandbox/orb-tools
-          expect-orb-to-be-published: <<parameters.expect-orb-to-be-published>>
-
-  test-promote-from-git-tag:
-    parameters:
-      segment:
-        description: >
-          The semver segment to increment 'major' or 'minor' or 'patch'
-        type: enum
-        enum: [major, minor, patch]
-        default: patch
-
-    docker:
-      - image: cimg/base:edge
-
-    steps:
-      - cli/install
-      - checkout
-      - run:
-          name: Mock the built-in CIRCLE_TAG environment variable
-          command: |
-            echo "export CIRCLE_TAG=\"<<parameters.segment>>-release-v10.8.10\"" >> $BASH_ENV
-      - orb-tools-alpha/dev-promote-from-git-tag:
-          checkout: false
-          orb-name: sandbox/orb-tools
-          add-pr-comment: true
-          bot-user: orb-publisher
-          bot-token-variable: GHI_TOKEN
-          required-branch: $CIRCLE_BRANCH
-          # Make it unmatchable to avoid an actual PR being commented on
-          pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
-      - check-pr-message:
-          orb-name: sandbox/orb-tools
-          expect-orb-to-be-published: true
-
-# yaml anchor filters
-requires_commands: &requires_commands
-  - test-commands-cimg
-
-orb_promotion_filters: &orb_promotion_filters
-  branches:
-    ignore: /.*/
-  tags:
-    only: /^(major|minor|patch)-release-v\d+\.\d+\.\d+$/
+  # For the orb-tools-orb it must call itself within the first workflow,
+  #   meaning this dev version will need to be published every 90 days.
+  # No other orbs will need to import themselves here.
+  orb-tools-alpha: circleci/orb-tools@dev:alpha
+  shellcheck: circleci/shellcheck@3.0
 
 workflows:
-  test-pack:
-    unless: << pipeline.parameters.run-integration-tests >>
+  lint-pack:
     jobs:
-      - orb-tools/lint:
-          use-default-rules: false
-
-      - orb-tools/pack:
-          source-dir: src
-          destination-orb-path: orb.yml
-          workspace-path: orb.yml
-          artifact-path: orb.yml
-
+      - orb-tools-alpha/lint:
+          filters:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/pack:
+          filters:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/review:
+          filters:
+            tags:
+              only: /.*/
       - shellcheck/check:
           exclude: SC2148,SC2038,SC2086,SC2002,SC2016
-
-      - bats/run:
-          path: ./src/tests
-
-      - orb-tools/publish-dev:
-          context: orb-publisher
-          orb-name: circleci/orb-tools
-          requires: [orb-tools/pack, orb-tools/lint, bats/run, shellcheck/check]
-
-      - orb-tools/trigger-integration-tests-workflow:
-          name: trigger-integration
-          context: orb-publisher
-          requires: [orb-tools/publish-dev]
-
-  integration-test_deploy:
-    when: << pipeline.parameters.run-integration-tests >>
-    jobs:
-      # test commands with executors
-      - test-commands:
-          name: test-commands-cimg
-          context: orb-publisher
-
-      # test jobs
-      - orb-tools-alpha/pack:
-          name: test-pack-job
-          workspace-path: orb.yml
-          artifact-path: orb.yml
-          requires: *requires_commands
-
-      - orb-tools-alpha/publish:
-          name: test-publish-job
-          attach-workspace: true
-          context: orb-publisher
-          orb-ref: sandbox/orb-tools@dev:${CIRCLE_SHA1:0:7}
-          requires: [test-pack-job]
-
-      - orb-tools-alpha/increment:
-          name: test-increment-job
-          attach-workspace: true
-          context: orb-publisher
-          orb-ref: sandbox/orb-tools
-          requires:
-            - test-publish-job
-
-      - test-promote-from-commit-subject:
-          name: test-promote-from-commit-subject-semver-patch
-          segment: patch
-          expect-orb-to-be-published: true
-          context: orb-publisher
-          requires:
-            - test-increment-job
-
-      - test-promote-from-commit-subject:
-          name: test-promote-from-commit-subject-semver-skip
-          segment: skip
-          expect-orb-to-be-published: false
-          context: orb-publisher
-          requires:
-            - test-increment-job
-
-      - test-promote-from-commit-subject:
-          name: test-promote-from-commit-subject-semver-none
-          segment: none
-          expect-orb-to-be-published: false
-          context: orb-publisher
-          requires:
-            - test-increment-job
-
-      - test-promote-from-git-tag:
-          segment: minor
-          context: orb-publisher
-          requires:
-            - test-promote-from-commit-subject-semver-patch
-            - test-promote-from-commit-subject-semver-skip
-            - test-promote-from-commit-subject-semver-none
-
-      - orb-tools-alpha/dev-promote-prod-from-commit-subject:
-          name: test-publish-tags-skipped-on-semver-skip
-          checkout: false
-          orb-name: sandbox/orb-tools
-          fail-if-semver-not-indicated: false
-          add-pr-comment: true
-          bot-user: orb-publisher
-          bot-token-variable: GHI_TOKEN
-          pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
-          publish-version-tag: true
-          # use invalid fingerprints to make the job fail if it doesn't skip tag publishing
-          ssh-fingerprints: 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
-          pre-steps:
-            - checkout
-            - set-up-test-repository:
-                segment: "skip"
-          requires:
-            - test-promote-from-git-tag
-
-      - orb-tools-alpha/dev-promote-prod-from-commit-subject:
-          name: test-publish-tags-skipped-on-missing-semver
-          checkout: false
-          orb-name: sandbox/orb-tools
-          fail-if-semver-not-indicated: false
-          add-pr-comment: true
-          bot-user: orb-publisher
-          bot-token-variable: GHI_TOKEN
-          pr-number-sed-expression: 's/Merge pull request #\([0-9]*TEST\) from.*/\1/p'
-          publish-version-tag: true
-          # use invalid fingerprints to make the job fail if it doesn't skip tag publishing
-          ssh-fingerprints: 00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
-          pre-steps:
-            - checkout
-            - set-up-test-repository:
-                segment: "none"
-          requires:
-            - test-promote-from-git-tag
-
-      # Actually publish the orb
-      - orb-tools/dev-promote-prod-from-commit-subject:
-          name: dev-promote-semver
-          add-pr-comment: true
-          fail-if-semver-not-indicated: false
-          bot-user: orb-publisher
-          bot-token-variable: GHI_TOKEN
-          context: orb-publisher
-          orb-name: circleci/orb-tools
-          publish-version-tag: true
-          ssh-fingerprints: 90:b0:06:e8:a6:bb:62:e6:92:c2:9c:34:d4:35:56:6d
-          requires:
-            - test-publish-tags-skipped-on-semver-skip
-            - test-publish-tags-skipped-on-missing-semver
           filters:
-            branches:
-              only: master
-
-  # Tag-triggered workflow to promote a dev orb into production.
-  # The tag is expected to have been applied manually.
-  tag-triggered-orb-publishing:
-    unless: << pipeline.parameters.run-integration-tests >>
-    jobs:
-      - hold-for-approval:
-          type: approval
-          filters: *orb_promotion_filters
-      - orb-tools/dev-promote-prod-from-git-tag:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/publish:
           orb-name: circleci/orb-tools
-          context: orb-publisher
-          add-pr-comment: true
-          bot-user: orb-publisher
-          bot-token-variable: GHI_TOKEN
+          vcs-type: << pipeline.project.type >>
           requires:
-            - hold-for-approval
-          filters: *orb_promotion_filters
+            [
+              orb-tools-alpha/lint,
+              orb-tools-alpha/review,
+              orb-tools-alpha/pack,
+              shellcheck/check,
+            ]
+          github-token: GHI_TOKEN
+          context: orb-publisher
+          filters:
+            tags:
+              only: /.*/
+      - orb-tools-alpha/continue:
+          pipeline-number: << pipeline.number >>
+          vcs-type: << pipeline.project.type >>
+          requires: [orb-tools-alpha/publish]
+          filters:
+            tags:
+              only: /.*/

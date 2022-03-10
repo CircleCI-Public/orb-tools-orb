@@ -1,12 +1,14 @@
 version: 2.1
 
 description: |
-  Various tools for creating, testing, and publishing Orbs.
+  An orb for creating orbs.
+  This orb is automatically implemented as a part of the generated config produced by the Orb Development Kit.
+  To get started writing your own orb, see the docs linked in the "Homepage" url below.
 
 display:
-  source_url: https://github.com/CircleCI-Public/orb-tools-orb
+  source_url: https://github.com/CircleCI-Public/orb-tools-orb/
+  home_url: https://circleci.com/docs/2.0/orb-author/
 
 orbs:
-  build-tools: circleci/build-tools@2.6.3
-  cli: circleci/circleci-cli@0.1.8
-  jq: circleci/jq@2.2
+  cli: circleci/circleci-cli@0.1
+  bats: circleci/bats@1.0.0

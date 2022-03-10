@@ -1,73 +1,66 @@
-description: >
-  Uses the CLI to publish an orb to the registry.
+description: |
+  Publish a new version of your orb.
+  This job will produce a development version of an orb by default or will produce a new production version if the $CIRCLE_TAG environment variable is set.
+  Push a new semantic version tag to the repository to publish a new production version of your orb.
 
 executor: cli/default
 
 parameters:
-  orb-path:
-    description: Path of the orb file to publish.
+  orb-name:
     type: string
-    default: workspace/orb.yml
-
-  orb-ref:
-    description: A full orb-ref in the form of <namespace>/<orbname>@<semver>
+    description: >
+      The version-less orb slug, e.g. "circleci/orb-tools"
+  orb-dir:
+    description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output-dir" of the "pack" job.
     type: string
-
-  publish-token-variable:
+    default: ./dist/
+  circleci-token:
+    description: |
+      Enter the name of the environment variable containing your CircleCI API Token.
+      This token must have production publishing scope (organization owner).
+      Never directly enter the value of any secret tokens in your config.
     type: env_var_name
     default: CIRCLE_TOKEN
-    description: >
-      Name of environment variable containing your CircleCI API token
-
-  validate:
-    description: >
-      Boolean for whether or not to do validation on the orb. Default
-      is true.
+  vcs-type:
+    description: The VCS type. Required to be passed in as a parameter for compatibility. Should be configured automatically by the Orb Development Kit.
+    type: enum
+    enum:
+      - gh
+      - github
+      - bb
+      - bitbucket
+  github-token:
+    description: |
+      For GitHub users with "enable-pr-comment" enabled, the GitHub API token must be set.
+      Use this parameter in the event you need to set a custom environment variable name other than the default.
+    type: env_var_name
+    default: GITHUB_TOKEN
+  enable-pr-comment:
+    description: |
+      If true, a comment will be added to the PR when the orb is published for both development and production orbs.
+      For GitHub users, a $GITHUB_TOKEN environment variable must be set.
     type: boolean
     default: true
-
-  checkout:
-    description: >
-      Boolean for whether or not to checkout as a first step. Default is true.
-    type: boolean
-    default: true
-
-  attach-workspace:
-    description: >
-      Boolean for whether or not to attach to an existing workspace. Default
-      is false.
-    type: boolean
-    default: false
-
-  workspace-root:
-    description: >
-      Workspace root path that is either an absolute path or a path relative
-      to the working directory. Defaults to '.' (the working directory)
-    type: string
-    default: workspace
-
 steps:
-  # Setup
+  - attach_workspace:
+      at: <<parameters.orb-dir>>
+  - run:
+      name: Publishing Orb Release
+      environment:
+        ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
+        ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
+        ORB_PARAM_ORB_DIR: <<parameters.orb-dir>>
+        PARAM_GH_TOKEN: <<parameters.github-token>>
+      command: <<include(scripts/publish.sh)>>
   - when:
-      condition: << parameters.checkout >>
+      condition: <<parameters.enable-pr-comment>>
       steps:
-        - checkout
+        - run:
+            name: Adding Comment To PR
+            environment:
+              ORB_PARAM_GITHUB_TOKEN: <<parameters.github-token>>
+              ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
+              ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
+              PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
+            command: <<include(scripts/comment-pr.sh)>>
 
-  - when:
-      condition: << parameters.attach-workspace >>
-      steps:
-        - attach_workspace:
-            at: << parameters.workspace-root >>
-
-  # Validate
-  - when:
-      condition: << parameters.validate >>
-      steps:
-        - validate:
-            orb-path: << parameters.orb-path >>
-
-  # Publish
-  - publish:
-      orb-path: << parameters.orb-path >>
-      orb-ref: << parameters.orb-ref >>
-      token-variable: << parameters.publish-token-variable >>
