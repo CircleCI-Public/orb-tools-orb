@@ -44,7 +44,7 @@ function mainGitHub() {
     echo "Authenticated as: $(isAuthenticatedGitHub | jq -r '.data.viewer.login')"
     FetchedPRData="$(getGithubPRFromCommit)"
     # Fetch the PR ID from the commit
-    if [ "$(echo "$FetchedPRData" | jq -e '.data.search.issueCount | length > 0')" -gt 0 ]; then
+    if [ "$(echo "$FetchedPRData" | jq -e '.data.search.issueCount')" -gt 0 ]; then
       # PR Found
       PR_COUNT=$(echo "$FetchedPRData" | jq -e '.data.search.issueCount')
       echo "$PR_COUNT PR(s) found!"
