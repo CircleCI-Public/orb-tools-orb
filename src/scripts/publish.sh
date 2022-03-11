@@ -1,9 +1,4 @@
 #!/bin/bash
-PUBLISH_PRODUCTION_ORB=false
-ORB_RELEASE_VERSION=""
-ORB_PARAM_ORB_PUB_TOKEN=${!ORB_PARAM_ORB_PUB_TOKEN}
-mkdir -p /tmp/orb_dev_kit/
-
 function validateProdTag() {
   if [[ ! "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Malformed tag detected."
@@ -49,23 +44,35 @@ function publishDevOrbs() {
 function orbPublish() {
   echo "Preparing to publish your orb."
   validateOrbPubToken
-  if [[ -n "${CIRCLE_TAG}" && "$ORB_PARAM_DEV_ONLY" -eq 0 ]]; then
-    PUBLISH_PRODUCTION_ORB=true
+
+  if [ "$ORB_PARAM_PUB_TYPE" == "production" ]; then
     echo "Production release detected!"
+    if [ -z "$CIRCLE_TAG" ]; then
+      echo "No tag detected. Peacfully exiting."
+      echo "If you are trying to publish a production orb, you must push a semantically versioned tag."
+      exit 0
+    fi
     validateProdTag
     ORB_RELEASE_VERSION="${CIRCLE_TAG//v/}"
     echo "Production version: ${ORB_RELEASE_VERSION}"
-  fi
-  printf "\n"
-  if [ "${PUBLISH_PRODUCTION_ORB}" = true ]; then
+    printf "\n"
     publishOrb "${ORB_RELEASE_VERSION}"
-  else
+  elif [ "$ORB_PARAM_PUB_TYPE" == "dev" ]; then
+    echo "Development release detected!"
+    printf "\n"
     publishDevOrbs
+  else
+    echo "No release type detected."
+    echo "Please report this error."
   fi
-  # print out the orb publishing message
+
   printf "\n\n"
   echo "********************************************************************************"
   cat /tmp/orb_dev_kit/publishing_message.txt
+
 }
 
+ORB_RELEASE_VERSION=""
+ORB_PARAM_ORB_PUB_TOKEN=${!ORB_PARAM_ORB_PUB_TOKEN}
+mkdir -p /tmp/orb_dev_kit/
 orbPublish

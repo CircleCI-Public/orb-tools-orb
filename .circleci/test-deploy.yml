@@ -20,6 +20,7 @@ workflows:
       - orb-tools-alpha/publish:
           orb-name: circleci/orb-tools
           vcs-type: <<pipeline.project.type>>
+          pub-type: production
           requires:
             [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
           context: orb-publisher
