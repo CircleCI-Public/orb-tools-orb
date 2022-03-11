@@ -23,6 +23,7 @@ workflows:
           requires:
             [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
           context: orb-publisher
+          github-token: GHI_TOKEN
           filters:
             tags:
               only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
