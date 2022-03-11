@@ -9,19 +9,32 @@ usage:
   version: 2.1
   setup: true
   orbs:
-    orb-tools: circleci/orb-tools@11.0
-    shellcheck: circleci/shellcheck@3.0
+    orb-tools: circleci/orb-tools@11.1
+    shellcheck: circleci/shellcheck@3.1
 
   workflows:
     lint-pack:
       jobs:
-        - orb-tools/lint
-        - orb-tools/pack
-        - orb-tools/review
+        - orb-tools/lint:
+          filters:
+            tags:
+              only: /.*/
+        - orb-tools/pack:
+          filters:
+            tags:
+              only: /.*/
+        - orb-tools/review:
+          filters:
+            tags:
+              only: /.*/
         - shellcheck/check:
             exclude: SC2148,SC2038,SC2086,SC2002,SC2016
-        - orb-tools-/publish-dev:
+            filters:
+              tags:
+                only: /.*/
+        - orb-tools-/publish:
             orb-name: circleci/orb-tools
+            vcs-type: << pipeline.project.type >>
             requires:
               [
                 orb-tools/lint,
@@ -31,8 +44,14 @@ usage:
               ]
             # Use a context to hold your publishing token.
             context: publishing-context
+            filters:
+              tags:
+                only: /.*/
         # Triggers the next workflow in the Orb Development Kit.
         - orb-tools-/continue:
             pipeline-number: << pipeline.number >>
             vcs-type: << pipeline.project.type >>
-            requires: [orb-tools-/publish-dev]
+            requires: [orb-tools-/publish]
+            filters:
+              tags:
+                only: /.*/

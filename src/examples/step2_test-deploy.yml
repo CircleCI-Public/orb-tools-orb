@@ -6,7 +6,7 @@ description: |
 usage:
   version: 2.1
   orbs:
-    orb-tools: circleci/orb-tools@11.0
+    orb-tools: circleci/orb-tools@11.1
     my-orb: namespace/my-orb@dev:<<pipeline.git.revision>>
   jobs:
     # Create a job to test the commands of your orbs.
@@ -33,12 +33,14 @@ usage:
               tags:
                 only: /.*/
         # Because our publishing job has a tag filter, we must also apply a filter to each job it depends on.
-        - orb-tools/publish-release:
+        - orb-tools/publish:
             orb-name: namespace/my-orb
+            pub-type: production
+            vcs-type: <<pipeline.project.type>>
             requires: [command-tests, my-orb/my-job]
             context: orb-publisher
             filters:
               tags:
-                only: /^v.*/
+                only: /^v[0-9]+\.[0-9]+\.[0-9]+$/
               branches:
                 ignore: /.*/
