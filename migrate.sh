@@ -28,14 +28,14 @@ download_template() {
   ORB_TEMP_DIR=$(mktemp -d)
 
   curl -Ls "$ORB_TEMPLATE_DOWNLOAD_URL" -o "$ORB_TEMP_DIR/orb-template.tar.gz"
-  tar -xzf "$ORB_TEMP_DIR/orb-template.tar.gz" -C "$ORB_TEMP_DIR"
-  cp -r "${ORB_TEMP_DIR}/orb-template/.circleci/*" .circleci/
+  tar -xzf "$ORB_TEMP_DIR/orb-template.tar.gz" -C "$ORB_TEMP_DIR" --strip-components 1
+  cp -r "${ORB_TEMP_DIR}/.circleci/." .circleci/
 }
 
 copy_custom_components() {
-  ORIGINAL_EXECUTORS=$(yq '.executors' .circleci/config.yml.bak)
-  ORIGINAL_JOBS=$(yq '.jobs' .circleci/config.yml.bak)
-  ORIGINAL_COMMANDS=$(yq '.commands' .circleci/config.yml.bak)
+  export ORIGINAL_EXECUTORS=$(yq '.executors' .circleci/config.yml.bak)
+  export ORIGINAL_JOBS=$(yq '.jobs' .circleci/config.yml.bak)
+  export ORIGINAL_COMMANDS=$(yq '.commands' .circleci/config.yml.bak)
   if [[ -n "$ORIGINAL_EXECUTORS" && ! "$ORIGINAL_EXECUTORS" == "null" ]]; then
     yq -i '. += {"executors": env(ORIGINAL_EXECUTORS)}' .circleci/test-deploy.yml
   fi
@@ -54,13 +54,13 @@ user_input() {
 }
 
 replace_values() {
-  sed -i'.bak' "s/<namespace>/$ORB_NAMESPACE/g" .circleci/config.yml
-  sed -i'.bak' "s/<orb-name>/$ORB_NAME/g" .circleci/config.yml
-  sed -i'.bak' "s/<publishing-context>/$ORB_CONTEXT_NAME/g" .circleci/config.yml
+  sed -i '' "s/<namespace>/$ORB_NAMESPACE/g" .circleci/config.yml
+  sed -i '' "s/<orb-name>/$ORB_NAME/g" .circleci/config.yml
+  sed -i '' "s/<publishing-context>/$ORB_CONTEXT_NAME/g" .circleci/config.yml
 
-  sed -i'.bak' "s/<namespace>/$ORB_NAMESPACE/g" .circleci/test-deploy.yml
-  sed -i'.bak' "s/<orb-name>/$ORB_NAME/g" .circleci/test-deploy.yml
-  sed -i'.bak' "s/<publishing-context>/$ORB_CONTEXT_NAME/g" .circleci/test-deploy.yml
+  sed -i '' "s/<namespace>/$ORB_NAMESPACE/g" .circleci/test-deploy.yml
+  sed -i '' "s/<orb-name>/$ORB_NAME/g" .circleci/test-deploy.yml
+  sed -i '' "s/<publishing-context>/$ORB_CONTEXT_NAME/g" .circleci/test-deploy.yml
 }
 
 msg_success() {
@@ -80,7 +80,6 @@ verify_run
 user_input
 backup_contents
 download_template
-user_input
 replace_values
 copy_custom_components
 msg_success
