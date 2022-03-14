@@ -104,13 +104,23 @@ setup() {
 	fi
 	ERROR_COUNT=0
 	for i in $(find ${REVIEW_TEST_DIR}src/jobs ${REVIEW_TEST_DIR}src/commands -name "*.yml" 2>/dev/null); do
-		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run] | length - 1' "$i")
-		for j in $(seq 0 "$ORB_COMPONENT_STEPS_COUNT"); do
-
+		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run] | length' "$i")
+		j=0
+		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
 			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run][$j]" "$i")
+			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq -o=json '.' | jq 'type')
 			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run][$j] | line" "$i")
-			ORB_COMPONENT_STEP_NAME=$(yq ".steps[$j].run.name" "$i")
-			if [[ $ORB_COMPONENT_STEP_NAME == null || $ORB_COMPONENT_STEP_NAME == '""' ]]; then
+			ORB_COMPONENT_STEP_NAME=$(yq "[.steps.[] | .run][$j] | .name" "$i")
+			if [[ "$ORB_COMPONENT_STEP_TYPE" == '"string"' ]]; then
+				echo "File: \"${i}\""
+				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+				echo "It appears this 'run' step is using 'string' formatting."
+				echo "Consider converting this step into an object with a \"name\" and \"command\" property."
+				echo ---
+				echo "$ORB_COMPONENT_STEP"
+				echo ---
+				ERROR_COUNT=$((ERROR_COUNT + 1))
+			elif [[ $ORB_COMPONENT_STEP_NAME == null || $ORB_COMPONENT_STEP_NAME == '""' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
 				echo ---
@@ -118,6 +128,7 @@ setup() {
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
 			fi
+			j=$((j + 1))
 		done
 	done
 	if [[ $ERROR_COUNT -gt 0 ]]; then
