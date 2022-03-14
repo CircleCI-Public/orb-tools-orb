@@ -130,30 +130,45 @@ setup() {
 	fi
 }
 
-@test "RC009: All Run step's commands should be imported." {
+@test "RC009: Complex Run step's commands should be imported." {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[@]} " =~ "RC009" ]]; then
 		skip
 	fi
 	ERROR_COUNT=0
 	for i in $(find ${REVIEW_TEST_DIR}src/jobs ${REVIEW_TEST_DIR}src/commands -name "*.yml" 2>/dev/null); do
-		ORB_COMPONENT_STEPS_COUNT=$(cat $i | yq '[.steps.[] | .run] | length - 1')
-		for j in $(seq 0 $ORB_COMPONENT_STEPS_COUNT); do
+		ORB_COMPONENT_STEPS_COUNT=$(cat $i | yq '[.steps.[] | .run] | length')
+		j=0
+		while [ $j -lt $ORB_COMPONENT_STEPS_COUNT ]; do
 			ORB_COMPONENT_STEP=$(cat $i | yq "[.steps.[] | .run][$j]")
+			ORB_COMPONENT_STEP_TYPE=$(echo $ORB_COMPONENT_STEP | yq -o=json '.' | jq 'type')
 			ORB_COMPONENT_LINE_NUMBER=$(cat $i | yq "[.steps.[] | .run][$j] | line")
-			ORB_COMPONENT_STEP_COMMAND=$(cat $i | yq '.steps[$j].run.command')
-			if [[ ! $ORB_COMPONENT_STEP_COMMAND =~ \<\<include\(* ]]; then
+			ORB_COMPONENT_STEP_COMMAND=$(cat $i | yq "[.steps.[] | .run][$j] | .command")
+			if [[ "$ORB_COMPONENT_STEP_TYPE" == '"string"' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+				echo "It appears this 'run' step is using 'string' formatting."
+				echo "Consider converting this step into an object with a \"name\" and \"command\" property."
 				echo ---
-				echo $ORB_COMPONENT_STEP_COMMAND
+				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
+			elif [[ $(echo $ORB_COMPONENT_STEP_COMMAND | wc -c | xargs) -gt 32 ]]; then
+				if [[ ! $ORB_COMPONENT_STEP_COMMAND =~ \<\<include\(* ]]; then
+					echo "File: \"${i}\""
+					echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+					echo "This command appears longer than 32 characters. Consider using the 'include' syntax."
+					echo ---
+					echo "$ORB_COMPONENT_STEP_COMMAND"
+					echo ---
+					ERROR_COUNT=$((ERROR_COUNT + 1))
+				fi
 			fi
+			j=$((j + 1))
 		done
 	done
 	if [[ $ERROR_COUNT -gt 0 ]]; then
 		echo
-		echo "Components were found to contain \"run\" steps with a command that is not imported."
+		echo "Components were found to contain \"run\" steps with a long command that is not imported."
 		echo "Did you know you can write your shell scripts and other commands in external files and import them here?"
 		echo "Writing your scripts externally will allow you to take advantage of syntax hilighting and avoid mixing code and markup."
 		echo "https://circleci.com/docs/2.0/using-orbs/#file-include-syntax"
