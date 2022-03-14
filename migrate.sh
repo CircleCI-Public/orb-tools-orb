@@ -30,6 +30,10 @@ download_template() {
   curl -Ls "$ORB_TEMPLATE_DOWNLOAD_URL" -o "$ORB_TEMP_DIR/orb-template.tar.gz"
   tar -xzf "$ORB_TEMP_DIR/orb-template.tar.gz" -C "$ORB_TEMP_DIR" --strip-components 1
   cp -r "${ORB_TEMP_DIR}/.circleci/." .circleci/
+
+  if [[ ! -e .yamllint ]]; then
+    cp "${ORB_TEMP_DIR}/.yamllint" .yamllint
+  fi
 }
 
 copy_custom_components() {
