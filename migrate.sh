@@ -8,6 +8,13 @@ verify_run() {
     echo "This does not appear to be the root of a CircleCI project"
     exit 1
   fi
+
+  # Ensure yq is installed
+  if ! command -v yq >/dev/null 2>&1; then
+    echo "Looks like you don't have \"yq\" installed"
+    echo "Please install it and run the script again: https://github.com/mikefarah/yq#install."
+    exit 1
+  fi
 }
 
 backup_contents() {
