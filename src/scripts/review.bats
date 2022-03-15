@@ -60,7 +60,7 @@ setup() {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC005" ]]; then
 		skip
 	fi
-	ORB_ELEMENT_DESCRIPTION=$(cat ${REVIEW_TEST_DIR}src/@orb.yml | yq '.description')
+	ORB_ELEMENT_DESCRIPTION=$(yq '.description' "${REVIEW_TEST_DIR}src/@orb.yml")
 	if [[ ${#ORB_ELEMENT_DESCRIPTION} -lt 64 ]]; then
 		echo
 		echo "Orb description appears short (under 64 characters)."
@@ -74,7 +74,7 @@ setup() {
 	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC006" ]]; then
 		skip
 	fi
-	SOURCE_URL=$(cat ${REVIEW_TEST_DIR}/src/@orb.yml | yq '.display.source_url')
+	SOURCE_URL=$(yq '.display.source_url' "${REVIEW_TEST_DIR}/src/@orb.yml")
 	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$SOURCE_URL")
 	if [[ $HTTP_RESPONSE -ne 200 ]]; then
 		echo
@@ -85,7 +85,7 @@ setup() {
 }
 
 @test "RC007: Home URL should be valid." {
-	HOME_URL=$(cat ${REVIEW_TEST_DIR}/src/@orb.yml | yq '.display.home_url')
+	HOME_URL=$(yq '.display.home_url' "${REVIEW_TEST_DIR}/src/@orb.yml")
 	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC007" || "$HOME_URL" == "null" ]]; then
 		skip
 	fi
