@@ -4,7 +4,7 @@ setup() {
 }
 
 @test "RC001: Include source_url in @orb.yml" {
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC001" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC001" ]]; then
 		skip
 	fi
 	result=$(yq '.display.source_url' "${REVIEW_TEST_DIR}src/@orb.yml")
@@ -14,10 +14,10 @@ setup() {
 }
 
 @test "RC002: All components (jobs, commands, executors, examples) must have descriptions" {
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC002" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC002" ]]; then
 		skip
 	fi
-	for i in $(find ${REVIEW_TEST_DIR}src/jobs ${REVIEW_TEST_DIR}src/examples ${REVIEW_TEST_DIR}src/commands ${REVIEW_TEST_DIR}src/executors -name "*.yml" 2>/dev/null); do
+	for i in $(find "${REVIEW_TEST_DIR}src/jobs" "${REVIEW_TEST_DIR}src/examples" "${REVIEW_TEST_DIR}src/commands" "${REVIEW_TEST_DIR}src/executors" -name "*.yml" 2>/dev/null); do
 		ORB_ELEMENT_DESCRIPTION=$(yq '.description' "$i")
 		if [[ $ORB_ELEMENT_DESCRIPTION == null || $ORB_ELEMENT_DESCRIPTION == '""' ]]; then
 			echo
@@ -30,7 +30,7 @@ setup() {
 }
 
 @test "RC003: All production-ready orbs should contain at least one usage example." {
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC003" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC003" ]]; then
 		skip
 	fi
 	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${REVIEW_TEST_DIR}src/examples/*.yml -type f 2>/dev/null | wc -l | xargs)
@@ -43,10 +43,10 @@ setup() {
 }
 
 @test "RC004: Usage example names shoud be descriptive." {
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC004" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC004" ]]; then
 		skip
 	fi
-	for i in $(find ${REVIEW_TEST_DIR}/src/examples/*.yml -type f >/dev/null 2>&1); do
+	for i in $(find "${REVIEW_TEST_DIR}/src/examples/*.yml" -type f >/dev/null 2>&1); do
 		if [[ $i =~ "example" ]]; then
 			echo
 			echo "Usage example file name ${i} contains the word 'example'."
@@ -57,11 +57,11 @@ setup() {
 }
 
 @test "RC005: Write a detailed orb description." {
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC005" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC005" ]]; then
 		skip
 	fi
 	ORB_ELEMENT_DESCRIPTION=$(yq '.description' "${REVIEW_TEST_DIR}src/@orb.yml")
-	if [[ ${#ORB_ELEMENT_DESCRIPTION} -lt 64 ]]; then
+	if [[ "${#ORB_ELEMENT_DESCRIPTION}" -lt 64 ]]; then
 		echo
 		echo "Orb description appears short (under 64 characters)."
 		echo "Update the description in ${REVIEW_TEST_DIR}src/@orb.yml to provide a detailed description of the orb."
@@ -71,7 +71,7 @@ setup() {
 }
 
 @test "RC006: Source URL should be valid." {
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC006" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC006" ]]; then
 		skip
 	fi
 	SOURCE_URL=$(yq '.display.source_url' "${REVIEW_TEST_DIR}/src/@orb.yml")
@@ -86,7 +86,7 @@ setup() {
 
 @test "RC007: Home URL should be valid." {
 	HOME_URL=$(yq '.display.home_url' "${REVIEW_TEST_DIR}/src/@orb.yml")
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC007" || "$HOME_URL" == "null" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC007" || "$HOME_URL" == "null" ]]; then
 		skip
 	fi
 	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$HOME_URL")
@@ -99,11 +99,11 @@ setup() {
 }
 
 @test "RC008: All Run steps should contain a name." {
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC008" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC008" ]]; then
 		skip
 	fi
 	ERROR_COUNT=0
-	for i in $(find ${REVIEW_TEST_DIR}src/jobs ${REVIEW_TEST_DIR}src/commands -name "*.yml" 2>/dev/null); do
+	for i in $(find "${REVIEW_TEST_DIR}src/jobs" "${REVIEW_TEST_DIR}src/commands" -name "*.yml" 2>/dev/null); do
 		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run] | length' "$i")
 		j=0
 		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
@@ -120,7 +120,7 @@ setup() {
 				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
-			elif [[ $ORB_COMPONENT_STEP_NAME == null || $ORB_COMPONENT_STEP_NAME == '""' ]]; then
+			elif [[ "$ORB_COMPONENT_STEP_NAME" == null || "$ORB_COMPONENT_STEP_NAME" == '""' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
 				echo ---
@@ -142,7 +142,7 @@ setup() {
 }
 
 @test "RC009: Complex Run step's commands should be imported." {
-	if [[ " ${SKIPPED_REVIEW_CHECKS[*]} " =~ "RC009" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC009" ]]; then
 		skip
 	fi
 	ERROR_COUNT=0
@@ -163,11 +163,11 @@ setup() {
 				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
-			elif [[ $(echo "$ORB_COMPONENT_STEP_COMMAND" | wc -c | xargs) -gt 32 ]]; then
+			elif [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt 64 ]]; then
 				if [[ ! "$ORB_COMPONENT_STEP_COMMAND" =~ \<\<include\(* ]]; then
 					echo "File: \"${i}\""
 					echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
-					echo "This command appears longer than 32 characters. Consider using the 'include' syntax."
+					echo "This command appears longer than 64 characters. Consider using the 'include' syntax."
 					echo ---
 					echo "$ORB_COMPONENT_STEP_COMMAND"
 					echo ---
@@ -177,7 +177,7 @@ setup() {
 			j=$((j + 1))
 		done
 	done
-	if [[ $ERROR_COUNT -gt 0 ]]; then
+	if [[ "$ERROR_COUNT" -gt 0 ]]; then
 		echo
 		echo "Components were found to contain \"run\" steps with a long command that is not imported."
 		echo "Did you know you can write your shell scripts and other commands in external files and import them here?"
