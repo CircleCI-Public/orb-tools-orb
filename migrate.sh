@@ -8,6 +8,20 @@ verify_run() {
     echo "This does not appear to be the root of a CircleCI project"
     exit 1
   fi
+
+  # Ensure jq is installed
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "Looks like you don't have \"jq\" installed"
+    echo "Please install it and run the script again: https://stedolan.github.io/jq/download/."
+    exit 1
+  fi
+
+  # Ensure yq is installed
+  if ! command -v yq >/dev/null 2>&1; then
+    echo "Looks like you don't have \"yq\" installed"
+    echo "Please install it and run the script again: https://github.com/mikefarah/yq#install."
+    exit 1
+  fi
 }
 
 backup_contents() {
@@ -30,6 +44,10 @@ download_template() {
   curl -Ls "$ORB_TEMPLATE_DOWNLOAD_URL" -o "$ORB_TEMP_DIR/orb-template.tar.gz"
   tar -xzf "$ORB_TEMP_DIR/orb-template.tar.gz" -C "$ORB_TEMP_DIR" --strip-components 1
   cp -r "${ORB_TEMP_DIR}/.circleci/." .circleci/
+
+  if [[ ! -e .yamllint ]]; then
+    cp "${ORB_TEMP_DIR}/.yamllint" .yamllint
+  fi
 }
 
 copy_custom_components() {
