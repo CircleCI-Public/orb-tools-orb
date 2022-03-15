@@ -9,6 +9,13 @@ verify_run() {
     exit 1
   fi
 
+  # Ensure jq is installed
+  if ! command -v jq >/dev/null 2>&1; then
+    echo "Looks like you don't have \"jq\" installed"
+    echo "Please install it and run the script again: https://stedolan.github.io/jq/download/."
+    exit 1
+  fi
+
   # Ensure yq is installed
   if ! command -v yq >/dev/null 2>&1; then
     echo "Looks like you don't have \"yq\" installed"
