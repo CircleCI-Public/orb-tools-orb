@@ -89,7 +89,7 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC007" || "$HOME_URL" == "null" ]]; then
 		skip
 	fi
-	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$HOME_URL")
+	HTTP_RESPONSE=$(curl -s -L -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$HOME_URL")
 	if [[ "$HTTP_RESPONSE" -ne 200 ]]; then
 		echo
 		echo "Home URL: \"$HOME_URL\" is not reachable."
