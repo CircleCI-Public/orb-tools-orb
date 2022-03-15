@@ -19,7 +19,7 @@ setup() {
 	fi
 	for i in $(find "${REVIEW_TEST_DIR}src/jobs" "${REVIEW_TEST_DIR}src/examples" "${REVIEW_TEST_DIR}src/commands" "${REVIEW_TEST_DIR}src/executors" -name "*.yml" 2>/dev/null); do
 		ORB_ELEMENT_DESCRIPTION=$(yq '.description' "$i")
-		if [[ $ORB_ELEMENT_DESCRIPTION == null || $ORB_ELEMENT_DESCRIPTION == '""' ]]; then
+		if [[ "$ORB_ELEMENT_DESCRIPTION" == null || "$ORB_ELEMENT_DESCRIPTION" == '""' ]]; then
 			echo
 			echo "Orb component ${i} is missing a description"
 			echo "Orb components are not invalid without descriptions, but these descriptions appear on the Orb Registry for documentation and provide a better experience."
@@ -76,7 +76,7 @@ setup() {
 	fi
 	SOURCE_URL=$(yq '.display.source_url' "${REVIEW_TEST_DIR}/src/@orb.yml")
 	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$SOURCE_URL")
-	if [[ $HTTP_RESPONSE -ne 200 ]]; then
+	if [[ "$HTTP_RESPONSE" -ne 200 ]]; then
 		echo
 		echo "Source URL: \"$SOURCE_URL\" is not reachable."
 		echo "Check the Source URL for this orb."
@@ -90,7 +90,7 @@ setup() {
 		skip
 	fi
 	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$HOME_URL")
-	if [[ $HTTP_RESPONSE -ne 200 ]]; then
+	if [[ "$HTTP_RESPONSE" -ne 200 ]]; then
 		echo
 		echo "Home URL: \"$HOME_URL\" is not reachable."
 		echo "Check the Home URL for this orb."
@@ -131,7 +131,7 @@ setup() {
 			j=$((j + 1))
 		done
 	done
-	if [[ $ERROR_COUNT -gt 0 ]]; then
+	if [[ "$ERROR_COUNT" -gt 0 ]]; then
 		echo
 		echo "Components were found to contain \"run\" steps without a name."
 		echo "Steps are not invalid without names, but the default used will be the command code, which can be long and confusing."
