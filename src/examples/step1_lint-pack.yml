@@ -16,17 +16,17 @@ usage:
     lint-pack:
       jobs:
         - orb-tools/lint:
-          filters:
-            tags:
-              only: /.*/
+            filters:
+              tags:
+                only: /.*/
         - orb-tools/pack:
-          filters:
-            tags:
-              only: /.*/
+            filters:
+              tags:
+                only: /.*/
         - orb-tools/review:
-          filters:
-            tags:
-              only: /.*/
+            filters:
+              tags:
+                only: /.*/
         - shellcheck/check:
             exclude: SC2148,SC2038,SC2086,SC2002,SC2016
             filters:
