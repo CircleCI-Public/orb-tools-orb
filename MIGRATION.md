@@ -33,12 +33,14 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
 5. Run the script
    - `chmod +x migrate.sh`
    - `bash migrate.sh`
+
 6. After executing the script:
 
    - The script will ask you for some basic information about your orb, such as the namespace, name of the orb, and name of your publishing context. All of this information is present in your existing configuration.
    - Your existing configuration will be renamed to `config.yml.bak`
    - Two new configuration files will be downloaded from the template repository and modified with your inputs.
    - The migrate script will self-delete.
+   - You will be asked to modify the generated `.circleci/test-deploy` to ensure any jobs you have defined and orb jobs are tested.
 
 7. _(OPTIONAL)_ Enable PR comments.
 
