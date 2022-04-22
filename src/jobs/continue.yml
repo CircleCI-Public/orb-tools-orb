@@ -20,6 +20,12 @@ parameters:
     description: Path to the next config file to execute. By default, this will execute the "test-deploy" workflow.
     type: string
     default: .circleci/test-deploy.yml
+  circleci-api-host:
+    description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
+    default: https://circleci.com
+  circleci-app-host:
+    description: Host URL of CircleCI Web UI. If you are using self-hosted CircleCI, this value should be set.
+    default: https://app.circleci.com
 
 steps:
   - checkout
@@ -29,4 +35,6 @@ steps:
         ORB_PARAM_CONTINUE_CONFIG_PATH: <<parameters.config-path>>
         PIPELINE_NUMBER: <<parameters.pipeline-number>>
         PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
+        CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
+        CIRCLECI_APP_HOST: <<parameters.circleci-app-host>>
       command: <<include(scripts/continue.sh)>>
