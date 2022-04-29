@@ -75,7 +75,7 @@ setup() {
 		skip
 	fi
 	SOURCE_URL=$(yq '.display.source_url' "${REVIEW_TEST_DIR}/src/@orb.yml")
-	HTTP_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$SOURCE_URL")
+	HTTP_RESPONSE=$(curl -s -L -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$SOURCE_URL")
 	if [[ "$HTTP_RESPONSE" -ne 200 ]]; then
 		echo
 		echo "Source URL: \"$SOURCE_URL\" is not reachable."
