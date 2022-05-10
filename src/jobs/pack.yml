@@ -16,11 +16,14 @@ executor: cli/default
 steps:
   - checkout
   - run:
+      name: Pre-pack orb source
+      command: << include(scripts/pre-pack.sh) >>
+  - run:
       name: Packing orb source
       environment:
         ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
         ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
-      command: <<include(scripts/pack.sh)>>
+      command: << include(scripts/pack.sh) >>
   - run:
       name: Validating orb
       environment:
@@ -29,4 +32,4 @@ steps:
   - persist_to_workspace:
       paths:
         - orb.yml
-      root: <<parameters.output-dir>>
+      root: << parameters.output-dir >>
