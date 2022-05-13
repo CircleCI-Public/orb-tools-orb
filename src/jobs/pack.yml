@@ -28,7 +28,7 @@ steps:
       name: Validating orb
       environment:
         ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
-      command: <<include(scripts/validate.sh)>>
+      command: << include(scripts/validate.sh) >>
   - persist_to_workspace:
       paths:
         - orb.yml

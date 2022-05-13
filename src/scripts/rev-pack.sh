@@ -4,14 +4,8 @@
 
 # shellcheck disable=SC2216
 
-# Directory under which revpack directories reside.
-SRC="${1:-src}"
-
-# The subdirectory to revpack.
-TYP="${2:-commands}"
-
 # Force deletion of files even if checksums (i.e. their contents) don't match.
-FORCE="${3:-false}"
+FORCE="${1:-false}"
 
 rev-pack()
 {
@@ -54,4 +48,4 @@ rev-pack()
     return 0
 }
 
-rev-pack "$SRC/$TYP/"
+find src -maxdepth 1 -mindepth 1 -type d -print0 | xargs --null -I % basename % | xargs --null -I % rev-pack src/%

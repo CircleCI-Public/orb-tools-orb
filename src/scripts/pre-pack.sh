@@ -2,12 +2,6 @@
 # Reduce nested commands and jobs to files under src/commands or src/jobs so they can be packed by 'circleci orb pack src/'.
 # Allows you to group collections of commands under directories.
 
-# Directory under which prepack directories reside.
-SRC="${1:-src}"
-
-# The subdirectory to prepack.
-TYP="${2:-commands}"
-
 pre-pack()
 {
     local current_directory="$1"
@@ -36,4 +30,4 @@ pre-pack()
     return 0
 }
 
-pre-pack "$SRC/$TYP/"
+find src -maxdepth 1 -mindepth 1 -type d -print0 | xargs --null -I % basename % | xargs --null -I % pre-pack src/%
