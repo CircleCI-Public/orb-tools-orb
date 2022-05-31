@@ -32,7 +32,7 @@ usage:
             filters:
               tags:
                 only: /.*/
-        - orb-tools-/publish:
+        - orb-tools/publish:
             orb-name: circleci/orb-tools
             vcs-type: << pipeline.project.type >>
             requires:
@@ -48,10 +48,10 @@ usage:
               tags:
                 only: /.*/
         # Triggers the next workflow in the Orb Development Kit.
-        - orb-tools-/continue:
+        - orb-tools/continue:
             pipeline-number: << pipeline.number >>
             vcs-type: << pipeline.project.type >>
-            requires: [orb-tools-/publish]
+            requires: [orb-tools/publish]
             filters:
               tags:
                 only: /.*/
