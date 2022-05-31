@@ -22,9 +22,11 @@ parameters:
     default: .circleci/test-deploy.yml
   circleci-api-host:
     description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
+    type: string
     default: https://circleci.com
   circleci-app-host:
     description: Host URL of CircleCI Web UI. If you are using self-hosted CircleCI, this value should be set.
+    type: string
     default: https://app.circleci.com
 
 steps:
