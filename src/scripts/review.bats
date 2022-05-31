@@ -181,7 +181,7 @@ setup() {
 		echo
 		echo "Components were found to contain \"run\" steps with a long command that is not imported."
 		echo "Did you know you can write your shell scripts and other commands in external files and import them here?"
-		echo "Writing your scripts externally will allow you to take advantage of syntax hilighting and avoid mixing code and markup."
+		echo "Writing your scripts externally will allow you to take advantage of syntax highlighting and avoid mixing code and markup."
 		echo "https://circleci.com/docs/2.0/using-orbs/#file-include-syntax"
 		exit 1
 	fi
