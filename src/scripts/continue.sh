@@ -4,6 +4,12 @@ if [ -z "${CIRCLE_CONTINUATION_KEY}" ]; then
 	echo "This Job is designed to be used with the Orb Development Kit."
 	exit 1
 fi
+if [ -z "${CIRCLECI_API_HOST}" ]; then
+	echo "CIRCLECI_API_HOST is required."
+	echo "If you are using CircleCI Cloud, use default value or set https://circleci.com."
+	exit 1
+fi
+
 if ! command -v curl; then
 	echo "curl is required to use this command"
 	exit 1
@@ -33,8 +39,8 @@ jq -n \
 	-H "Content-Type: application/json" \
 	-H "Accept: application/json" \
 	--data @/tmp/circleci/continue_post.json \
-	"https://circleci.com/api/v2/pipeline/continue") -eq 200 ]]
+	"${CIRCLECI_API_HOST}/api/v2/pipeline/continue") -eq 200 ]]
 
 echo "Continuation successful!"
 echo "Your newly published development orb will now be tested in the next workflow."
-echo "View the full pipeline progress: https://app.circleci.com/pipelines/${PIPELINE_VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${PIPELINE_VCS_TYPE}/${PIPELINE_NUMBER}"
+echo "View the full pipeline progress: ${CIRCLECI_APP_HOST}/pipelines/${PIPELINE_VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${PIPELINE_VCS_TYPE}/${PIPELINE_NUMBER}"
