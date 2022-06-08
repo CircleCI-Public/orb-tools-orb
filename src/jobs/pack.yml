@@ -2,6 +2,11 @@ description: |
   Packs the orb source into a single "orb.yml" file and validates for orb config errors.
 
 parameters:
+  resource_class:
+    description: Configure the executor resource class
+    type: enum
+    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
+    default: "medium"
   source-dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
@@ -11,7 +16,9 @@ parameters:
     type: string
     default: ./dist/
 
-executor: cli/default
+executor:
+  name: default
+  resource_class: << parameters.resource_class >>
 
 steps:
   - checkout

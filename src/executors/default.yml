@@ -1,0 +1,19 @@
+description: >
+  The circleci-cli Docker image, which includes the CircleCI CLI
+
+parameters:
+  tag:
+    type: string
+    default: latest
+    description: >
+      What version of the CircleCI CLI Docker image? For full list, see
+      https://hub.docker.com/r/circleci/circleci-cli/tags
+  resource_class:
+    description: Configure the xecutor resource class
+    type: enum
+    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
+    default: "medium"
+
+resource_class: << parameters.resource_class >>
+docker:
+  - image: circleci/circleci-cli:<< parameters.tag >>
