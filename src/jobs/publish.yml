@@ -3,6 +3,7 @@ description: |
   This job will produce a development version of an orb by default or will produce a new production version if the $CIRCLE_TAG environment variable is , and the "pub-type" parameter is set to "production".
 
 executor: cli/default
+resource_class: small
 
 parameters:
   orb-name:

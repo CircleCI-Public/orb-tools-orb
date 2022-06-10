@@ -3,6 +3,7 @@ description: |
 
 docker:
   - image: cimg/python:3.10.2
+resource_class: small
 
 steps:
   - checkout

@@ -13,6 +13,7 @@ parameters:
 
 docker:
   - image: cimg/base:current
+resource_class: small
 
 steps:
   - checkout

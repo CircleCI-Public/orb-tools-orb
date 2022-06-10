@@ -3,6 +3,7 @@ description: |
 
 docker:
   - image: cimg/base:current
+resource_class: small
 
 parameters:
   pipeline-number:
