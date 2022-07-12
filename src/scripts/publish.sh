@@ -1,6 +1,6 @@
 #!/bin/bash
 function validateProdTag() {
-  if [[ ! "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  if [[ ! "${CIRCLE_TAG}" =~ ^(v)?[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Malformed tag detected."
     echo "Tag: $CIRCLE_TAG"
     echo
