@@ -76,4 +76,3 @@ ORB_RELEASE_VERSION=""
 ORB_PARAM_ORB_PUB_TOKEN=${!ORB_PARAM_ORB_PUB_TOKEN}
 mkdir -p /tmp/orb_dev_kit/
 orbPublish
-
