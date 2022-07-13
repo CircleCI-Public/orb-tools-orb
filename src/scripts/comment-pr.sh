@@ -8,7 +8,7 @@ function postGitHubPRComment() {
     -s \
     -o /tmp/orb_dev_kit/github_comment_response.json \
     -w "%{http_code}" \
-    --url 'https://api.github.com/graphql?=' \
+    --url "$ORB_PARAM_GH_GRAPHQL_URL" \
     --header "$GH_HEADER_DATA" \
     --data '{"query":"mutation AddCommentToPR($body: String!, $sid: ID!) {\n  addComment(input: {\n    body: $body,\n    subjectId: $sid\n  }) {\n    clientMutationId\n  }\n}","variables":{"body":"'"$PR_COMMENT_BODY"'","sid":"'"$1"'"},"operationName":"AddCommentToPR"}')
   if [[ "$HTTP_RESPONSE_GH" -ne 200 || "$(jq '.errors | length' /tmp/orb_dev_kit/github_comment_response.json)" -gt 0 ]]; then
@@ -24,7 +24,7 @@ function postGitHubPRComment() {
 function getGithubPRFromCommit() {
   curl --request POST \
     -s \
-    --url 'https://api.github.com/graphql?=' \
+    --url "$ORB_PARAM_GH_GRAPHQL_URL" \
     --header "$GH_HEADER_DATA" \
     --data '{"query":"query SearchForPR($query: String!) {\n  search(query: $query, type: ISSUE, first: 3) {\n    issueCount\n    edges {\n      node {\n        ... on  PullRequest {\n         \tid\n          title\n          number\n        }\n    }\n  }\n }\n}","variables":{"query":"'"$CIRCLE_SHA1"' is:pr"},"operationName":"SearchForPR"}'
 }
@@ -32,7 +32,7 @@ function getGithubPRFromCommit() {
 function isAuthenticatedGitHub() {
   curl --request POST \
     -s \
-    --url 'https://api.github.com/graphql?=' \
+    --url "$ORB_PARAM_GH_GRAPHQL_URL" \
     --header "$GH_HEADER_DATA" \
     --data '{"query":"query IsAuthenticated {\n  viewer {\n    login\n  }\n}","variables":{},"operationName":"IsAuthenticated"}'
 }
