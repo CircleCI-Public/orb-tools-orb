@@ -43,4 +43,4 @@ jq -n \
 
 echo "Continuation successful!"
 echo "Your newly published development orb will now be tested in the next workflow."
-echo "View the full pipeline progress: ${CIRCLECI_APP_HOST}/pipelines/${PIPELINE_VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${PIPELINE_VCS_TYPE}/${PIPELINE_NUMBER}"
+echo "View the full pipeline progress: ${CIRCLECI_APP_HOST}/pipelines/${PIPELINE_VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${PIPELINE_NUMBER}"
