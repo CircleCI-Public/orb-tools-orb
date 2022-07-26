@@ -1,5 +1,4 @@
 setup() {
-	REVIEW_TEST_DIR="./"
 	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${PARAM_RC_EXCLUDE}"
 }
 
