@@ -21,7 +21,7 @@ function validateOrbPubToken() {
 
 function publishOrb() {
   #$1 = full tag
-  circleci orb publish --host "${CIRCLE_API_HOST}" --skip-update-check "${ORB_PARAM_ORB_DIR}/orb.yml" "${ORB_PARAM_ORB_NAME}@${1}" --token "$ORB_PARAM_ORB_PUB_TOKEN"
+  circleci orb publish --host "${CIRCLECI_API_HOST}" --skip-update-check "${ORB_PARAM_ORB_DIR}/orb.yml" "${ORB_PARAM_ORB_NAME}@${1}" --token "$ORB_PARAM_ORB_PUB_TOKEN"
   printf "\n"
   {
     echo "Your orb has been published to the CircleCI Orb Registry."
