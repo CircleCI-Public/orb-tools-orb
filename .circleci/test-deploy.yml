@@ -10,7 +10,6 @@ workflows:
             tags:
               only: /.*/
       - orb-tools-alpha/pack:
-          context: publishing-context
           filters:
             tags:
               only: /.*/
