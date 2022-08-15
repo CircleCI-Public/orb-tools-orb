@@ -1,5 +1,6 @@
 description: |
   Packs the orb source into a single "orb.yml" file and validates for orb config errors.
+  For self-hosted CircleCI servers, please ensure you set the `circleci-api-host` job parameter and CIRCLE_TOKEN environment variable.
 
 parameters:
   source-dir:
@@ -25,6 +26,19 @@ steps:
         ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
         ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
       command: <<include(scripts/pack.sh)>>
+  - when:
+      condition:
+        # i.e., CircleCI is self-hosted
+        not:
+          equal: [ https://circleci.com, << parameters.circleci-api-host >> ]
+      steps:
+        - run:
+            name: Verify that the CircleCI API token is set
+            command: |
+              if [ -z "${CIRCLE_TOKEN}" ]; then
+                echo "Please set a valid CIRCLE_TOKEN token from your self-hosted CircleCI at << parameters.circleci-api-host >>"
+                exit 1
+              fi
   - run:
       name: Validating orb
       environment:
