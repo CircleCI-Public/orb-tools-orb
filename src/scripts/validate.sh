@@ -6,4 +6,4 @@ if [ "https://circleci.com" != "${CIRCLECI_API_HOST}" ] && [ -z "${CIRCLE_TOKEN}
     exit 1
 fi
 
-circleci orb validate --host "${CIRCLECI_API_HOST:-}" --token "${CIRCLE_TOKEN:-dummy}" --skip-update-check "${ORB_PARAM_OUTPUT_DIR}orb.yml"
+circleci orb validate --host "${CIRCLECI_API_HOST:-https://circleci.com}" --token "${CIRCLE_TOKEN:-dummy}" --skip-update-check "${ORB_PARAM_OUTPUT_DIR}orb.yml"
