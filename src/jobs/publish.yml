@@ -40,6 +40,15 @@ parameters:
       For GitHub users, a $GITHUB_TOKEN environment variable must be set.
     type: boolean
     default: true
+  circleci-api-host:
+    description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
+    type: string
+    default: https://circleci.com
+  pr-comment-graphql-url:
+    description: |
+      The url used for GitHub graphql queries when adding comments to pull requests.
+    type: string
+    default: https://api.github.com/graphql?=
   pub-type:
     description: |
       Select the publishing type. Available options are "dev" and "production".
@@ -61,6 +70,7 @@ steps:
         ORB_PARAM_ORB_DIR: <<parameters.orb-dir>>
         ORB_PARAM_PUB_TYPE: <<parameters.pub-type>>
         PARAM_GH_TOKEN: <<parameters.github-token>>
+        CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
       command: <<include(scripts/publish.sh)>>
   - when:
       condition: <<parameters.enable-pr-comment>>
@@ -71,5 +81,6 @@ steps:
               ORB_PARAM_GITHUB_TOKEN: <<parameters.github-token>>
               ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
               ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
+              ORB_PARAM_GH_GRAPHQL_URL: <<parameters.pr-comment-graphql-url>>
               PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
             command: <<include(scripts/comment-pr.sh)>>
