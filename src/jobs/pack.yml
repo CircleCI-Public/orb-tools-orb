@@ -3,6 +3,11 @@ description: |
   For self-hosted CircleCI servers, please ensure you set the `circleci-api-host` job parameter and CIRCLE_TOKEN environment variable.
 
 parameters:
+  resource_class:
+    description: Configure the executor resource class
+    type: enum
+    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
+    default: "medium"
   source-dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
@@ -16,7 +21,9 @@ parameters:
     type: string
     default: https://circleci.com
 
-executor: cli/default
+executor:
+  name: default
+  resource_class: << parameters.resource_class >>
 
 steps:
   - checkout

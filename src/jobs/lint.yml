@@ -2,7 +2,15 @@ description: |
   Lint all YAML files in the project. A ".yamllint" file will be generated for you automatically by the Orb Development Kit.
 
 docker:
-  - image: cimg/python:3.10.2
+  - image: cimg/python:3.10.5
+resource_class: << parameters.resource_class >>
+
+parameters:
+  resource_class:
+    description: Configure the executor resource class
+    type: enum
+    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
+    default: "medium"
 
 steps:
   - checkout

@@ -3,6 +3,7 @@ description: |
 
 docker:
   - image: cimg/base:current
+resource_class: << parameters.resource_class >>
 
 parameters:
   pipeline-number:
@@ -28,6 +29,11 @@ parameters:
     description: Host URL of CircleCI Web UI. If you are using self-hosted CircleCI, this value should be set.
     type: string
     default: https://app.circleci.com
+  resource_class:
+    description: Configure the executor resource class
+    type: enum
+    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
+    default: "medium"
 
 steps:
   - checkout
