@@ -1,4 +1,6 @@
 setup() {
+    ORB_DEFAULT_SRC_DIR="./src/"
+    ORB_SOURCE_DIR=${ORB_PARAM_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
 	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${PARAM_RC_EXCLUDE}"
 }
 
@@ -6,7 +8,7 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC001" ]]; then
 		skip
 	fi
-	result=$(yq '.display.source_url' "${REVIEW_TEST_DIR}src/@orb.yml")
+	result=$(yq '.display.source_url' "${ORB_SOURCE_DIR}@orb.yml")
 
 	echo 'Set a value for "source_url" under the "display" key in "@orb.yml"'
 	[[ ! $result = null ]]
@@ -16,7 +18,7 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC002" ]]; then
 		skip
 	fi
-	for i in $(find "${REVIEW_TEST_DIR}src/jobs" "${REVIEW_TEST_DIR}src/examples" "${REVIEW_TEST_DIR}src/commands" "${REVIEW_TEST_DIR}src/executors" -name "*.yml" 2>/dev/null); do
+	for i in $(find "${ORB_SOURCE_DIR}jobs" "${ORB_SOURCE_DIR}examples" "${ORB_SOURCE_DIR}commands" "${ORB_SOURCE_DIR}executors" -name "*.yml" 2>/dev/null); do
 		ORB_ELEMENT_DESCRIPTION=$(yq '.description' "$i")
 		if [[ "$ORB_ELEMENT_DESCRIPTION" == null || "$ORB_ELEMENT_DESCRIPTION" == '""' ]]; then
 			echo
@@ -32,11 +34,11 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC003" ]]; then
 		skip
 	fi
-	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${REVIEW_TEST_DIR}src/examples/*.yml -type f 2>/dev/null | wc -l | xargs)
+	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${ORB_SOURCE_DIR}examples/*.yml -type f 2>/dev/null | wc -l | xargs)
 	if [ "$ORB_ELEMENT_EXAMPLE_COUNT" -lt 1 ]; then
 		echo
 		echo "This orb appears to be missing a usage example."
-		echo "Add examples under $(${REVIEW_TEST_DIR}src/examples) to document how to use the orb for any available use cases."
+		echo "Add examples under $(${ORB_SOURCE_DIR}examples) to document how to use the orb for any available use cases."
 		exit 1
 	fi
 }
@@ -45,7 +47,7 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC004" ]]; then
 		skip
 	fi
-	for i in $(find "${REVIEW_TEST_DIR}/src/examples/*.yml" -type f >/dev/null 2>&1); do
+	for i in $(find "${ORB_SOURCE_DIR}examples/*.yml" -type f >/dev/null 2>&1); do
 		if [[ $i =~ "example" ]]; then
 			echo
 			echo "Usage example file name ${i} contains the word 'example'."
@@ -59,11 +61,11 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC005" ]]; then
 		skip
 	fi
-	ORB_ELEMENT_DESCRIPTION=$(yq '.description' "${REVIEW_TEST_DIR}src/@orb.yml")
+	ORB_ELEMENT_DESCRIPTION=$(yq '.description' "${ORB_SOURCE_DIR}@orb.yml")
 	if [[ "${#ORB_ELEMENT_DESCRIPTION}" -lt 64 ]]; then
 		echo
 		echo "Orb description appears short (under 64 characters)."
-		echo "Update the description in ${REVIEW_TEST_DIR}src/@orb.yml to provide a detailed description of the orb."
+		echo "Update the description in ${ORB_SOURCE_DIR}@orb.yml to provide a detailed description of the orb."
 		echo "Use the orb description to help users find your orb via search. Try describing what use-case this orb solves for."
 		exit 1
 	fi
@@ -73,7 +75,7 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC006" ]]; then
 		skip
 	fi
-	SOURCE_URL=$(yq '.display.source_url' "${REVIEW_TEST_DIR}/src/@orb.yml")
+	SOURCE_URL=$(yq '.display.source_url' "${ORB_SOURCE_DIR}@orb.yml")
 	HTTP_RESPONSE=$(curl -s -L -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$SOURCE_URL")
 	if [[ "$HTTP_RESPONSE" -ne 200 ]]; then
 		echo
@@ -84,7 +86,7 @@ setup() {
 }
 
 @test "RC007: Home URL should be valid." {
-	HOME_URL=$(yq '.display.home_url' "${REVIEW_TEST_DIR}/src/@orb.yml")
+	HOME_URL=$(yq '.display.home_url' "${ORB_SOURCE_DIR}@orb.yml")
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC007" || "$HOME_URL" == "null" ]]; then
 		skip
 	fi
@@ -102,7 +104,7 @@ setup() {
 		skip
 	fi
 	ERROR_COUNT=0
-	for i in $(find "${REVIEW_TEST_DIR}src/jobs" "${REVIEW_TEST_DIR}src/commands" -name "*.yml" 2>/dev/null); do
+	for i in $(find "${ORB_SOURCE_DIR}jobs" "${ORB_SOURCE_DIR}commands" -name "*.yml" 2>/dev/null); do
 		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run] | length' "$i")
 		j=0
 		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
@@ -145,7 +147,7 @@ setup() {
 		skip
 	fi
 	ERROR_COUNT=0
-	for i in $(find ${REVIEW_TEST_DIR}src/jobs ${REVIEW_TEST_DIR}src/commands -name "*.yml" 2>/dev/null); do
+	for i in $(find ${ORB_SOURCE_DIR}jobs ${ORB_SOURCE_DIR}commands -name "*.yml" 2>/dev/null); do
 		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run] | length' "$i")
 		j=0
 		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
