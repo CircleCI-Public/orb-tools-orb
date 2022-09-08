@@ -59,13 +59,18 @@ parameters:
   pub-type:
     description: |
       Select the publishing type. Available options are "dev" and "production".
-      If "production" is selected, the orb will be published to the orb registry only if the $CIRCLE_TAG environment variable is set. Publishing will be skipped otherwise.
+      If "production" is selected, the orb will be published to the orb registry with the content of orb-version parameter, defaulting to the $CIRCLE_TAG environment variable. Publishing will be skipped if no value can be found.
       If "dev" is selected, two tags will be created: "dev:alpha" and "dev:<SHA1>".
     type: enum
     enum:
       - dev
       - production
     default: "dev"
+  orb-version:
+    description: |
+      Declare the orb version for publishing. Defaults to $CIRCLE_TAG content.
+    type: string
+    default: <<pipeline.git.tag>>
 
 steps:
   - attach_workspace:
@@ -79,6 +84,7 @@ steps:
         ORB_PARAM_PUB_TYPE: <<parameters.pub-type>>
         PARAM_GH_TOKEN: <<parameters.github-token>>
         CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
+        ORB_VERSION: <<parameters.orb-version>>
       command: <<include(scripts/publish.sh)>>
   - when:
       condition: <<parameters.enable-pr-comment>>

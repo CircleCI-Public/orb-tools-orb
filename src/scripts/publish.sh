@@ -1,8 +1,8 @@
 #!/bin/bash
 function validateProdTag() {
-  if [[ ! "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  if [[ ! "${ORB_VERSION}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     echo "Malformed tag detected."
-    echo "Tag: $CIRCLE_TAG"
+    echo "Tag: $ORB_VERSION"
     echo
     echo "Ensure your tag fits the standard semantic version form. Example: v1.0.0"
     echo "Aborting deployment. Push a new tag with the compatible form."
@@ -47,13 +47,13 @@ function orbPublish() {
 
   if [ "$ORB_PARAM_PUB_TYPE" == "production" ]; then
     echo "Production release detected!"
-    if [ -z "$CIRCLE_TAG" ]; then
+    if [ -z "$ORB_VERSION" ]; then
       echo "No tag detected. Peacfully exiting."
       echo "If you are trying to publish a production orb, you must push a semantically versioned tag."
       exit 0
     fi
     validateProdTag
-    ORB_RELEASE_VERSION="${CIRCLE_TAG//v/}"
+    ORB_RELEASE_VERSION="${ORB_VERSION//v/}"
     echo "Production version: ${ORB_RELEASE_VERSION}"
     printf "\n"
     publishOrb "${ORB_RELEASE_VERSION}"
