@@ -68,6 +68,7 @@ parameters:
     default: "dev"
 
 steps:
+  - checkout
   - attach_workspace:
       at: <<parameters.orb-dir>>
   - run:
