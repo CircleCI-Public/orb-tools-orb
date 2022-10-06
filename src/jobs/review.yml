@@ -19,6 +19,13 @@ parameters:
     type: enum
     enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
     default: "medium"
+  max_command_length:
+    description: |
+      The maximum length of a command (RC009).
+      This is used to check for commands that are too long.
+      Commands longer than this will fail the review.
+    type: integer
+    default: 64
 
 docker:
   - image: cimg/base:current
@@ -31,6 +38,7 @@ steps:
       name: Review Best Practices
       environment:
         PARAM_RC_EXCLUDE: <<parameters.exclude>>
+        PARAM_MAX_COMMAND_LENGTH: <<parameters.exclude>>
         ORB_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
         ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
       command: <<include(scripts/review.sh)>>
