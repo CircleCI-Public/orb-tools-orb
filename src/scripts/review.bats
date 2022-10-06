@@ -164,7 +164,7 @@ setup() {
 				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
-			elif [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt 64 ]]; then
+			elif [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt "${PARAM_MAX_COMMAND_LENGTH}" ]]; then
 				if [[ ! "$ORB_COMPONENT_STEP_COMMAND" =~ \<\<include\(* ]]; then
 					echo "File: \"${i}\""
 					echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
