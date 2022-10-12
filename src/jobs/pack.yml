@@ -20,10 +20,17 @@ parameters:
     description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
     type: string
     default: https://circleci.com
+  image-tag:
+    type: string
+    default: "current"
+    description: >
+      What version of the CircleCI CLI Docker image? For full list, see
+      https://hub.docker.com/r/circleci/circleci-cli/tags
 
 executor:
   name: default
   resource_class: << parameters.resource_class >>
+  tag: << parameters.image-tag >>
 
 steps:
   - checkout

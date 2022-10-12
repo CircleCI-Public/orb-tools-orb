@@ -26,9 +26,15 @@ parameters:
       Commands longer than this will fail the review.
     type: integer
     default: 64
+  image-tag:
+    type: string
+    default: "current"
+    description: |
+      By default the most current stable release of `cimg/base` image will be used, but you may statically set the image tag with this parameter.
+      https://circleci.com/developer/images/image/cimg/base    
 
 docker:
-  - image: cimg/base:current
+  - image: cimg/base:<< parameters.image-tag >>
 resource_class: << parameters.resource_class >>
 
 steps:
