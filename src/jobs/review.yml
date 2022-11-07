@@ -26,7 +26,7 @@ parameters:
       Commands longer than this will fail the review.
     type: integer
     default: 64
-  image-tag:
+  tag:
     type: string
     default: "current"
     description: |
@@ -34,7 +34,7 @@ parameters:
       https://circleci.com/developer/images/image/cimg/base   
 
 docker:
-  - image: cimg/base:<< parameters.image-tag >>
+  - image: cimg/base:<< parameters.tag >>
 resource_class: << parameters.resource_class >>
 
 steps:

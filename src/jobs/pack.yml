@@ -20,7 +20,7 @@ parameters:
     description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
     type: string
     default: https://circleci.com
-  image-tag:
+  tag:
     type: string
     default: "current"
     description: >
@@ -30,7 +30,7 @@ parameters:
 executor:
   name: default
   resource_class: << parameters.resource_class >>
-  tag: << parameters.image-tag >>
+  tag: << parameters.tag >>
 
 steps:
   - checkout

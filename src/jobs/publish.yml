@@ -5,7 +5,7 @@ description: |
 executor:
   name: default
   resource_class: << parameters.resource_class >>
-  tag: << parameters.image-tag >>
+  tag: << parameters.tag >>
 
 parameters:
   resource_class:
@@ -67,7 +67,7 @@ parameters:
       - dev
       - production
     default: "dev"
-  image-tag:
+  tag:
     type: string
     default: "current"
     description: >
