@@ -69,7 +69,7 @@ parameters:
     default: "dev"
   tag:
     type: string
-    default: "current"
+    default: "latest"
     description: >
       What version of the CircleCI CLI Docker image? For full list, see
       https://hub.docker.com/r/circleci/circleci-cli/tags
