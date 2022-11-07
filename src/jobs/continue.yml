@@ -39,7 +39,7 @@ parameters:
     default: "current"
     description: |
       By default the most current stable release of `cimg/base` image will be used, but you may statically set the image tag with this parameter.
-      https://circleci.com/developer/images/image/cimg/base    
+      https://circleci.com/developer/images/image/cimg/base
 
 steps:
   - checkout
