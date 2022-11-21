@@ -2,24 +2,29 @@
 # Use this tool to assist in migrating your Orb Development Kit pipeline.
 
 verify_run() {
+  CHECK_FAILED=false
   # Ensure .circleci/config.yml exists
   if [ ! -f .circleci/config.yml ]; then
     echo "No .circleci/config.yml found"
     echo "This does not appear to be the root of a CircleCI project"
-    exit 1
+    CHECK_FAILED=true
   fi
 
   # Ensure jq is installed
   if ! command -v jq >/dev/null 2>&1; then
     echo "Looks like you don't have \"jq\" installed"
     echo "Please install it and run the script again: https://stedolan.github.io/jq/download/."
-    exit 1
+    CHECK_FAILED=true
   fi
 
   # Ensure yq is installed
   if ! command -v yq >/dev/null 2>&1; then
     echo "Looks like you don't have \"yq\" installed"
     echo "Please install it and run the script again: https://github.com/mikefarah/yq#install."
+    CHECK_FAILED=true
+  fi
+
+  if [ "$CHECK_FAILED" == true ]; then 
     exit 1
   fi
 }

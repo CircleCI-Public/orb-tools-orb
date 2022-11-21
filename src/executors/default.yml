@@ -9,7 +9,7 @@ parameters:
       What version of the CircleCI CLI Docker image? For full list, see
       https://hub.docker.com/r/circleci/circleci-cli/tags
   resource_class:
-    description: Configure the xecutor resource class
+    description: Configure the executor resource class
     type: enum
     enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
     default: "medium"

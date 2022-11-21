@@ -5,6 +5,7 @@ description: |
 executor:
   name: default
   resource_class: << parameters.resource_class >>
+  tag: << parameters.tag >>
 
 parameters:
   resource_class:
@@ -71,6 +72,12 @@ parameters:
       Declare the orb version for publishing. Defaults to $CIRCLE_TAG content.
     type: string
     default: <<pipeline.git.tag>>
+  tag:
+    type: string
+    default: "latest"
+    description: >
+      What version of the CircleCI CLI Docker image? For full list, see
+      https://hub.docker.com/r/circleci/circleci-cli/tags
 
 steps:
   - attach_workspace:
