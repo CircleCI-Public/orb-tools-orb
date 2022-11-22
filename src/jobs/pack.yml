@@ -20,6 +20,15 @@ parameters:
     description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
     type: string
     default: https://circleci.com
+  circleci-org-slug:
+    description: CircleCI organization slug (e.g. gh/my-org)
+    type: string
+    default: ""
+  circleci-token:
+    description: CircleCI token to use for validating private orbs
+    type: string
+    enum: 
+    default: ""
   tag:
     type: string
     default: "latest"
@@ -45,6 +54,8 @@ steps:
       environment:
         ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
         CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
+        CIRCLECI_ORG_SLUG: <<parameters.circleci-org-slug>>
+        CIRCLECI_TOKEN: <<parameters.circleci-token>>
       command: <<include(scripts/validate.sh)>>
   - persist_to_workspace:
       paths:
