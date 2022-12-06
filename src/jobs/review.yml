@@ -28,7 +28,7 @@ parameters:
     default: 64
   tag:
     type: string
-    default: "current"
+    default: "2022.12-18.04"
     description: |
       By default the most current stable release of `cimg/base` image will be used, but you may statically set the image tag with this parameter.
       https://circleci.com/developer/images/image/cimg/base
