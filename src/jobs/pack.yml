@@ -26,9 +26,8 @@ parameters:
     default: ""
   circleci-token:
     description: CircleCI token to use for validating private orbs
-    type: string
-    enum: 
-    default: ""
+    type: env_var_name
+    default: CIRCLECI_TOKEN
   tag:
     type: string
     default: "latest"
