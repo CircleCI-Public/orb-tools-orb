@@ -12,8 +12,10 @@ fi
 if [ -n "${CIRCLECI_ORG_SLUG}" ]; then
   set -- "$@" --org-slug "${CIRCLECI_ORG_SLUG}"
 fi
+if [ -n "${CIRCLECI_API_HOST}" ]; then
+    set -- "$@" --host "${CIRCLECI_API_HOST}"
+fi
 
-circleci orb validate --host "${CIRCLECI_API_HOST:-https://circleci.com}" \
-                      --skip-update-check \
+circleci orb validate  --skip-update-check \
                       "$@" \
                       "${ORB_PARAM_OUTPUT_DIR}orb.yml"
