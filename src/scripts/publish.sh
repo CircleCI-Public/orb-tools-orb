@@ -53,7 +53,7 @@ function orbPublish() {
       exit 0
     fi
     validateProdTag
-    ORB_RELEASE_VERSION="$(printf '%s' "CIRCLE_TAG" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+')"
+    ORB_RELEASE_VERSION="$(printf '%s' "$CIRCLE_TAG" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+')"
     echo "Production version: ${ORB_RELEASE_VERSION}"
     printf "\n"
     publishOrb "${ORB_RELEASE_VERSION}"
