@@ -1,6 +1,6 @@
 #!/bin/bash
 function validateProdTag() {
-  if [[ ! "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  if [[ ! "${CIRCLE_TAG}" =~ v[0-9]+\.[0-9]+\.[0-9]+ ]]; then
     echo "Malformed tag detected."
     echo "Tag: $CIRCLE_TAG"
     echo
@@ -53,7 +53,7 @@ function orbPublish() {
       exit 0
     fi
     validateProdTag
-    ORB_RELEASE_VERSION="${CIRCLE_TAG//v/}"
+    ORB_RELEASE_VERSION="$(printf '%s' "CIRCLE_TAG" | grep -o -E '[0-9]+\.[0-9]+\.[0-9]+')"
     echo "Production version: ${ORB_RELEASE_VERSION}"
     printf "\n"
     publishOrb "${ORB_RELEASE_VERSION}"
