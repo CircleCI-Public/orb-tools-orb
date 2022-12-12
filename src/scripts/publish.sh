@@ -13,7 +13,7 @@ function validateProdTag() {
 function validateOrbPubToken() {
   if [[ -z "${ORB_PARAM_ORB_PUB_TOKEN}" ]]; then
     echo "No Orb Publishing Token detected."
-    echo "Please set the ORB_PARAM_ORB_PUB_TOKEN environment variable."
+    echo "Please set the CIRCLE_TOKEN environment variable."
     echo "Aborting deployment."
     exit 1
   fi
