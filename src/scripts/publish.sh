@@ -1,11 +1,12 @@
 #!/bin/bash
 function validateProdTag() {
-  if [[ ! "${CIRCLE_TAG}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  if [[ ! "${CIRCLE_TAG}" =~ $ORB_PARAM_TAG_PATTERN ]]; then
     echo "Malformed tag detected."
     echo "Tag: $CIRCLE_TAG"
     echo
-    echo "Ensure your tag fits the standard semantic version form. Example: v1.0.0"
+    echo "A production release has attempted to occur, but the tag does not match the expected pattern."
     echo "Aborting deployment. Push a new tag with the compatible form."
+    echo "Current tag pattern: $ORB_PARAM_TAG_PATTERN"
     exit 1
   fi
 }
@@ -53,7 +54,7 @@ function orbPublish() {
       exit 0
     fi
     validateProdTag
-    ORB_RELEASE_VERSION="${CIRCLE_TAG//v/}"
+    ORB_RELEASE_VERSION="$(echo "${CIRCLE_TAG}" | grep -Eo "[0-9]+\.[0-9]+\.[0-9]")"
     echo "Production version: ${ORB_RELEASE_VERSION}"
     printf "\n"
     publishOrb "${ORB_RELEASE_VERSION}"
