@@ -21,6 +21,14 @@ parameters:
     description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output-dir" of the "pack" job.
     type: string
     default: ./dist/
+  tag-pattern:
+    description: |
+      A Regular Expression to compare against `$CIRCLE_TAG` when publishing a production version of an orb.
+      Your tag must include a full semantic version number, which will be used to automatically version the published orb.
+      Ensure you CircleCI config is also properly configured to trigger for this tag pattern.
+      It is recommended to prefix or suffix around this pattern: '[0-9]+\.[0-9]+\.[0-9]'.
+    default: '^v[0-9]+\.[0-9]+\.[0-9]+$'
+    type: string
   circleci-token:
     description: |
       Enter the name of the environment variable containing your CircleCI API Token.
@@ -84,6 +92,7 @@ steps:
         ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
         ORB_PARAM_ORB_DIR: <<parameters.orb-dir>>
         ORB_PARAM_PUB_TYPE: <<parameters.pub-type>>
+        ORB_PARAM_TAG_PATTERN: <<parameters.tag-pattern>>
         PARAM_GH_TOKEN: <<parameters.github-token>>
         CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
       command: <<include(scripts/publish.sh)>>
