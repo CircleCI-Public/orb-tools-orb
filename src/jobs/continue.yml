@@ -1,5 +1,5 @@
 description: |
-  After the "publish-dev" job has completed along with any other preliminary checks, this job will trigger the next workflow (test-deploy) in the Orb Development Kit.
+  Continue the pipeline for testing. This job will inject your orb source code into the provided config file prior to continuing the pipeline. With the orb injected, it will be possible to test your orbs features as if it were published.
 
 docker:
   - image: cimg/base:<< parameters.tag >>
@@ -21,6 +21,18 @@ parameters:
     description: Path to the next config file to execute. By default, this will execute the "test-deploy" workflow.
     type: string
     default: .circleci/test-deploy.yml
+  orb-dir:
+    description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output-dir" of the "pack" job.
+    type: string
+    default: ./dist/
+  orb-name:
+    type: string
+    description: >
+      The reference name of the orb to be injected in the config, no namespace or version number. e.g. "orb-tools"
+  inject-orb:
+    description: If true, the orb will be injected into the provided config file.
+    type: boolean
+    default: true
   circleci-api-host:
     description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
     type: string
@@ -43,10 +55,15 @@ parameters:
 
 steps:
   - checkout
+  - attach_workspace:
+      at: <<parameters.orb-dir>>
   - run:
       name: Continuing To Orb Testing And Deployment
       environment:
-        ORB_PARAM_CONTINUE_CONFIG_PATH: <<parameters.config-path>>
+        ORB_VAL_INJECT_ORB: <<parameters.inject-orb>>
+        ORB_VAL_ORB_DIR: <<parameters.orb-dir>>
+        ORB_VAL_ORB_NAME: <<parameters.orb-name>>
+        ORB_VAL_CONTINUE_CONFIG_PATH: <<parameters.config-path>>
         PIPELINE_NUMBER: <<parameters.pipeline-number>>
         PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
         CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
