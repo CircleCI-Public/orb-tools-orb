@@ -26,7 +26,7 @@ parameters:
       A Regular Expression to compare against `$CIRCLE_TAG` when publishing a production version of an orb.
       Your tag must include a full semantic version number, which will be used to automatically version the published orb.
       Ensure you CircleCI config is also properly configured to trigger for this tag pattern.
-      It is recommended to prefix or suffix around this pattern: '[0-9]+\.[0-9]+\.[0-9]'.
+      It is recommended to prefix or suffix around this pattern: '[0-9]+\.[0-9]+\.[0-9]+'.
     default: '^v[0-9]+\.[0-9]+\.[0-9]+$'
     type: string
   circleci-token:
