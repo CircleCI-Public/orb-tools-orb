@@ -1,12 +1,12 @@
 description: |
-  Automatically reviews your orb for best practices and produces JUNIT test reports which are natively displayed in the CircleCI UI.
+  Automatically reviews your orb for best practices and produces JUnit test reports which are natively displayed in the CircleCI UI.
   The "Review" job checks against a suite of "RC" review checks, and if an opportunity for improvement is found, a suggestion with links to the relevant documentation is made.
 
 parameters:
   exclude:
     description: |
-      A comma separated list of "RC"" codes to explicitly ignore.
-      Each review test has an associated RC code that can be included to skip in future tests. If a review item fails, the RC code will be included in the output.
+      A comma separated list of "RC" review check codes to explicitly ignore.
+      Each review check has an associated "RC" code that can be identified to skip in future tests. If a review check fails, the "RC" code will be included in the output.
       Example: "RC001,RC002"
     type: string
     default: ""
