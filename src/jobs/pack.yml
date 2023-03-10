@@ -26,6 +26,10 @@ parameters:
     description: >
       What version of the CircleCI CLI Docker image? For full list, see
       https://hub.docker.com/r/circleci/circleci-cli/tags
+  persist-to-workspace:
+    description: Should the pack output orb.yml be stored on workspace
+    type: boolean
+    default: true
 
 executor:
   name: default
@@ -46,7 +50,10 @@ steps:
         ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
         CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
       command: <<include(scripts/validate.sh)>>
-  - persist_to_workspace:
-      paths:
-        - orb.yml
-      root: <<parameters.output-dir>>
+  - when:
+      condition: <<parameters.persist-to-workspace>>
+      steps:
+        - persist_to_workspace:
+            paths:
+              - orb.yml
+            root: <<parameters.output-dir>>
