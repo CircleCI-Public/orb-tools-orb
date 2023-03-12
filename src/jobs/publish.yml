@@ -21,6 +21,10 @@ parameters:
     description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output-dir" of the "pack" job.
     type: string
     default: ./dist/
+  orb-filename:
+    description: Filename of the packed orb source file. orb-filename parameter is joined together with the orb-dir parameter to produce full path.
+    type: string
+    default: orb.yml
   tag-pattern:
     description: |
       A Regular Expression to compare against `$CIRCLE_TAG` when publishing a production version of an orb.
@@ -91,6 +95,7 @@ steps:
         ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
         ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
         ORB_PARAM_ORB_DIR: <<parameters.orb-dir>>
+        ORB_PARAM_ORB_FILENAME: <<parameters.orb-filename>>
         ORB_PARAM_PUB_TYPE: <<parameters.pub-type>>
         ORB_PARAM_TAG_PATTERN: <<parameters.tag-pattern>>
         PARAM_GH_TOKEN: <<parameters.github-token>>
