@@ -105,13 +105,13 @@ setup() {
 	fi
 	ERROR_COUNT=0
 	for i in $(find "${ORB_SOURCE_DIR}jobs" "${ORB_SOURCE_DIR}commands" -name "*.yml" 2>/dev/null); do
-		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run] | length' "$i")
+		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run | select(. != null)] | length' "$i")
 		j=0
 		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
-			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run][$j]" "$i")
+			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run | select(. != null)][$j]" "$i")
 			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq -o=json '.' | jq 'type')
-			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run][$j] | line" "$i")
-			ORB_COMPONENT_STEP_NAME=$(yq "[.steps.[] | .run][$j] | .name" "$i")
+			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run | select(. != null)][$j] | line" "$i")
+			ORB_COMPONENT_STEP_NAME=$(yq "[.steps.[] | .run | select(. != null)][$j] | .name" "$i")
 			if [[ "$ORB_COMPONENT_STEP_TYPE" == '"string"' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
@@ -125,7 +125,7 @@ setup() {
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
 				echo ---
-				yq "[.steps.[] | .run][$j]" "$i"
+				yq "[.steps.[] | .run | select(. != null)][$j]" "$i"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
 			fi
@@ -148,13 +148,13 @@ setup() {
 	fi
 	ERROR_COUNT=0
 	for i in $(find ${ORB_SOURCE_DIR}jobs ${ORB_SOURCE_DIR}commands -name "*.yml" 2>/dev/null); do
-		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run] | length' "$i")
+		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run | select(. != null)] | length' "$i")
 		j=0
 		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
-			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run][$j]" "$i")
+			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run | select(. != null)][$j]" "$i")
 			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq -o=json '.' | jq 'type')
-			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run][$j] | line" "$i")
-			ORB_COMPONENT_STEP_COMMAND=$(yq "[.steps.[] | .run][$j] | .command" "$i")
+			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run | select(. != null)][$j] | line" "$i")
+			ORB_COMPONENT_STEP_COMMAND=$(yq "[.steps.[] | .run | select(. != null)][$j] | .command" "$i")
 			if [[ "$ORB_COMPONENT_STEP_TYPE" == '"string"' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
