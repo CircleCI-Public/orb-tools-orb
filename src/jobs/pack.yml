@@ -26,6 +26,11 @@ parameters:
     description: >
       What version of the CircleCI CLI Docker image? For full list, see
       https://hub.docker.com/r/circleci/circleci-cli/tags
+  persist_to_workspace:
+    type: boolean
+    default: true
+    description: >
+      By default, the output-dir will be persisted to a workspace so that it may be used by the "continue" job. If you are implementing a custom workflow, you may want to disable this behavior.
 
 executor:
   name: default
@@ -46,7 +51,10 @@ steps:
         ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
         CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
       command: <<include(scripts/validate.sh)>>
-  - persist_to_workspace:
-      paths:
-        - orb.yml
-      root: <<parameters.output-dir>>
+  - when:
+      condition: <<parameters.persist_to_workspace>>
+      steps:
+        - persist_to_workspace:
+            paths:
+              - orb.yml
+            root: <<parameters.output-dir>>

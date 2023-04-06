@@ -52,11 +52,19 @@ parameters:
     description: |
       By default the most current stable release of `cimg/base` image will be used, but you may statically set the image tag with this parameter.
       https://circleci.com/developer/images/image/cimg/base
+  attach_workspace:
+    type: boolean
+    default: true
+    description: |
+      By default, the workspace will be attached to the job at the orb-dir path. If you are implementing a custom workflow, you may want to disable this behavior.
 
 steps:
   - checkout
-  - attach_workspace:
-      at: <<parameters.orb-dir>>
+  - when:
+      condition: <<parameters.attach_workspace>>
+      steps:
+        - attach_workspace:
+            at: <<parameters.orb-dir>>
   - run:
       name: Continuing To Orb Testing And Deployment
       environment:
