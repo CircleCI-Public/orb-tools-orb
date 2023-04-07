@@ -2,7 +2,7 @@ description: |
   Lint all YAML files in the project. A ".yamllint" file will be generated for you automatically by the Orb Development Kit.
 
 parameters:
-  source-dir:
+  source_dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
     default: ./src/
@@ -22,4 +22,4 @@ steps:
       name: Linting all YAML files
       command: <<include(scripts/lint.sh)>>
       environment:
-        ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
+        ORB_PARAM_SOURCE_DIR: << parameters.source_dir >>

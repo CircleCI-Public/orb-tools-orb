@@ -1,23 +1,24 @@
 description: |
   Packs the orb source into a single "orb.yml" file and validates for orb config errors.
-  For self-hosted CircleCI servers, please ensure you set the `circleci-api-host` job parameter and CIRCLE_TOKEN environment variable.
+  For CircleCI server servers, please ensure you set the `circleci-api-host` job parameter and CIRCLE_TOKEN environment variable.
 
 parameters:
   resource_class:
     description: Configure the executor resource class
     type: enum
-    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
+    enum:
+      ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
     default: "medium"
-  source-dir:
+  source_dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
     default: ./src/
-  output-dir:
+  output_dir:
     description: The orb output directory. The orb will be named "orb.yml" in this directory and persisted to the workspace. Path must be absolute or relative to the working directory.
     type: string
     default: ./dist/
-  circleci-api-host:
-    description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
+  circleci_api_host:
+    description: Host URL of CircleCI API. If you are using self_hosted CircleCI, this value should be set.
     type: string
     default: https://circleci.com
   tag:
@@ -30,7 +31,7 @@ parameters:
     type: boolean
     default: true
     description: >
-      By default, the output-dir will be persisted to a workspace so that it may be used by the "continue" job. If you are implementing a custom workflow, you may want to disable this behavior.
+      By default, the output_dir will be persisted to a workspace so that it may be used by the "continue" job. If you are implementing a custom workflow, you may want to disable this behavior.
 
 executor:
   name: default
@@ -42,14 +43,14 @@ steps:
   - run:
       name: Packing orb source
       environment:
-        ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
-        ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
+        ORB_PARAM_SOURCE_DIR: << parameters.source_dir >>
+        ORB_PARAM_OUTPUT_DIR: << parameters.output_dir >>
       command: <<include(scripts/pack.sh)>>
   - run:
       name: Validating orb
       environment:
-        ORB_PARAM_OUTPUT_DIR: << parameters.output-dir >>
-        CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
+        ORB_PARAM_OUTPUT_DIR: << parameters.output_dir >>
+        CIRCLECI_API_HOST: <<parameters.circleci_api_host>>
       command: <<include(scripts/validate.sh)>>
   - when:
       condition: <<parameters.persist_to_workspace>>
@@ -57,4 +58,4 @@ steps:
         - persist_to_workspace:
             paths:
               - orb.yml
-            root: <<parameters.output-dir>>
+            root: <<parameters.output_dir>>

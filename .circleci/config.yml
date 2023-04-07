@@ -5,7 +5,7 @@ orbs:
   #   meaning this dev version will need to be published every 90 days.
   # No other orbs will need to import themselves here.
   orb-tools-alpha: circleci/orb-tools@dev:alpha
-  shellcheck: circleci/shellcheck@3.0
+  shellcheck: circleci/shellcheck@3.1
 
 workflows:
   lint-pack:
@@ -28,10 +28,11 @@ workflows:
             tags:
               only: /.*/
       - orb-tools-alpha/continue:
-          pipeline-number: << pipeline.number >>
-          vcs-type: << pipeline.project.type >>
-          orb-name: orb-tools-alpha
-          requires: [
+          pipeline_number: << pipeline.number >>
+          vcs_type: << pipeline.project.type >>
+          orb_name: orb-tools-alpha
+          requires:
+            [
               orb-tools-alpha/lint,
               orb-tools-alpha/review,
               orb-tools-alpha/pack,

@@ -1,6 +1,6 @@
 description: |
   Publish a new version of your orb.
-  This job will produce a development version of an orb by default or will produce a new production version if the $CIRCLE_TAG environment variable is , and the "pub-type" parameter is set to "production".
+  This job will produce a development version of an orb by default or will produce a new production version if the $CIRCLE_TAG environment variable is set, and the "pub_type" parameter is set to "production".
 
 executor:
   name: default
@@ -13,15 +13,15 @@ parameters:
     type: enum
     enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
     default: "medium"
-  orb-name:
+  orb_name:
     type: string
     description: >
       The version-less orb slug, e.g. "circleci/orb-tools"
-  orb-dir:
-    description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output-dir" of the "pack" job.
+  orb_dir:
+    description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output_dir" of the "pack" job.
     type: string
     default: ./dist/
-  tag-pattern:
+  tag_pattern:
     description: |
       A Regular Expression to compare against `$CIRCLE_TAG` when publishing a production version of an orb.
       Your tag must include a full semantic version number, which will be used to automatically version the published orb.
@@ -29,14 +29,14 @@ parameters:
       It is recommended to prefix or suffix around this pattern: '[0-9]+\.[0-9]+\.[0-9]+'.
     default: '^v[0-9]+\.[0-9]+\.[0-9]+$'
     type: string
-  circleci-token:
+  circleci_token:
     description: |
       Enter the name of the environment variable containing your CircleCI API Token.
       This token must have production publishing scope (organization owner).
       Never directly enter the value of any secret tokens in your config.
     type: env_var_name
     default: CIRCLE_TOKEN
-  vcs-type:
+  vcs_type:
     description: The VCS type. Required to be passed in as a parameter for compatibility. Should be configured automatically by the Orb Development Kit.
     type: enum
     enum:
@@ -44,28 +44,28 @@ parameters:
       - github
       - bb
       - bitbucket
-  github-token:
+  github_token:
     description: |
-      For GitHub users with "enable-pr-comment" enabled, the GitHub API token must be set.
+      For GitHub users with "enable_pr_comment" enabled, the GitHub API token must be set.
       Use this parameter in the event you need to set a custom environment variable name other than the default.
     type: env_var_name
     default: GITHUB_TOKEN
-  enable-pr-comment:
+  enable_pr_comment:
     description: |
       If true, a comment will be added to the PR when the orb is published for both development and production orbs.
       For GitHub users, a $GITHUB_TOKEN environment variable must be set.
     type: boolean
     default: true
-  circleci-api-host:
-    description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
+  circleci_api_host:
+    description: Host URL of CircleCI API. If you are using CircleCI server, this value should be set.
     type: string
     default: https://circleci.com
-  pr-comment-graphql-url:
+  pr_comment_graphql_url:
     description: |
       The url used for GitHub graphql queries when adding comments to pull requests.
     type: string
     default: https://api.github.com/graphql?=
-  pub-type:
+  pub_type:
     description: |
       Select the publishing type. Available options are "dev" and "production".
       If "production" is selected, the orb will be published to the orb registry only if the $CIRCLE_TAG environment variable is set. Publishing will be skipped otherwise.
@@ -84,27 +84,27 @@ parameters:
 
 steps:
   - attach_workspace:
-      at: <<parameters.orb-dir>>
+      at: <<parameters.orb_dir>>
   - run:
       name: Publishing Orb Release
       environment:
-        ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
-        ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
-        ORB_PARAM_ORB_DIR: <<parameters.orb-dir>>
-        ORB_PARAM_PUB_TYPE: <<parameters.pub-type>>
-        ORB_PARAM_TAG_PATTERN: <<parameters.tag-pattern>>
-        PARAM_GH_TOKEN: <<parameters.github-token>>
-        CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
+        ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci_token>>
+        ORB_PARAM_ORB_NAME: <<parameters.orb_name>>
+        ORB_PARAM_ORB_DIR: <<parameters.orb_dir>>
+        ORB_PARAM_PUB_TYPE: <<parameters.pub_type>>
+        ORB_PARAM_TAG_PATTERN: <<parameters.tag_pattern>>
+        PARAM_GH_TOKEN: <<parameters.github_token>>
+        CIRCLECI_API_HOST: <<parameters.circleci_api_host>>
       command: <<include(scripts/publish.sh)>>
   - when:
-      condition: <<parameters.enable-pr-comment>>
+      condition: <<parameters.enable_pr_comment>>
       steps:
         - run:
             name: Adding Comment To PR
             environment:
-              ORB_PARAM_GITHUB_TOKEN: <<parameters.github-token>>
-              ORB_PARAM_ORB_NAME: <<parameters.orb-name>>
-              ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci-token>>
-              ORB_PARAM_GH_GRAPHQL_URL: <<parameters.pr-comment-graphql-url>>
-              PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
+              ORB_PARAM_GITHUB_TOKEN: <<parameters.github_token>>
+              ORB_PARAM_ORB_NAME: <<parameters.orb_name>>
+              ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci_token>>
+              ORB_PARAM_GH_GRAPHQL_URL: <<parameters.pr_comment_graphql_url>>
+              PIPELINE_VCS_TYPE: <<parameters.vcs_type>>
             command: <<include(scripts/comment-pr.sh)>>

@@ -17,8 +17,8 @@ usage:
       steps:
         - checkout
         # Run your orb's commands to validate them.
-        - my-orb/my-command
-        - my-orb/my-command-2
+        - my-orb/my_command
+        - my-orb/my_command_2
   workflows:
     test-deploy:
       jobs:
@@ -37,7 +37,7 @@ usage:
             orb-name: namespace/my-orb
             pub-type: production
             vcs-type: <<pipeline.project.type>>
-            requires: [command-tests, my-orb/my-job]
+            requires: [command-tests, my-orb/my_job]
             context: orb-publisher
             filters:
               tags:
