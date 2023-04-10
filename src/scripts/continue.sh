@@ -47,6 +47,7 @@ injectOrb() {
 	printf "%s" "${MODIFIED_CONFIG}"
 	printf "%s" "${MODIFIED_CONFIG}" >/tmp/circleci/modified/orb.yml
 	export MODIFIED_CONFIG_PATH=/tmp/circleci/modified/orb.yml
+	echo
 }
 
 continuePipeline() {
@@ -58,6 +59,7 @@ continuePipeline() {
 		'{"continuation-key": $continuation, "configuration": $config|join("\n")}' >/tmp/circleci/continue_post.json
 
 	[[ $(curl \
+		-s \
 		-o /dev/stderr \
 		-w '%{http_code}' \
 		-XPOST \

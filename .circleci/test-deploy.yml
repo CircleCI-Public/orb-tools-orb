@@ -22,7 +22,7 @@ workflows:
           requires:
             [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
           context: orb-publisher
-          github-token: GHI_TOKEN
+          github_token: GHI_TOKEN
           filters:
             branches:
               ignore: /.*/
