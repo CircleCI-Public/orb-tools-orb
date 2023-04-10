@@ -187,3 +187,29 @@ setup() {
 		exit 1
 	fi
 }
+
+@test "RC010: All components (jobs, commands, executors, examples) should be snake_cased." {
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC010" ]]; then
+		skip
+	fi
+	for i in $(find "${ORB_SOURCE_DIR}jobs" "${ORB_SOURCE_DIR}commands" "${ORB_SOURCE_DIR}executors" -name "*.yml" 2>/dev/null); do
+		# Check file name for snake_case
+		ORB_COMPONENT_FILE_NAME=$(basename "$i")
+		if [[ "$ORB_COMPONENT_FILE_NAME" == *"-"* ]]; then
+			echo "File: \"${i}\""
+			echo "Component names should be snake_cased. Please rename this file to use snake_case."
+			exit 1
+		fi
+		# Check parameter keys on component for snake_case
+		ORB_COMPONENT_PARAMETERS_COUNT=$(yq '.parameters | keys | .[]' "$i")
+		for j in $ORB_COMPONENT_PARAMETERS_COUNT; do
+			if [[ "$j" == *"-"* ]]; then
+				echo "File: \"${i}\""
+				echo " Parameter: \"${j}\""
+				echo "Parameter keys should be snake_cased. Please rename this parameter to use snake_case."
+				exit 1
+			fi
+		done
+
+	done
+}
