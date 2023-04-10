@@ -45,6 +45,7 @@ injectOrb() {
 	echo "Orb Source has been injected into the config."
 	echo "Modified config:"
 	echo 
+	printf "%s" "${MODIFIED_CONFIG}"
 	printf "%s" "${MODIFIED_CONFIG}" >/tmp/circleci/modified/orb.yml
 	export MODIFIED_CONFIG_PATH=/tmp/circleci/modified/orb.yml
 }
