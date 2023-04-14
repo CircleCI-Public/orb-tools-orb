@@ -1,5 +1,33 @@
 # Migration Guide
 
+## v12.0.0
+
+Version 12 of orb-tools enhances the contributor experience by removing the roadblock of needing to publish a development orb for testing. Orbs are now _injected_ dynamically into the pipeline, allowing for orb testing without the need for access to a publishing token.
+
+_Note: If you are upgrading from 11.x to 12.x proceed here. If you are upgrading from an earlier version, please see the [migration guide for v11.x](https://github.com/CircleCI-Public/orb-tools-orb/blob/v11.6.1/MIGRATION.md)._
+
+### Notable Changes:
+
+- **Removed the need for a dev publishing token**
+  - Previously, after the orb was built, it would be published to a development tag and referenced in the test pipeline. This required a publishing token to be present in the dev pipeline.
+   - The dynamic configuration system allows us to inject the orb directly into the pipeline as an "in-line" orb, allowing for orb testing without the need for access to a publishing token.
+- **Snake_Case Renamed Components**
+  - To keep consistency with CircleCI's _native_ configuration schema, all components and parameters have been renamed to use snake_case.
+  (Example: `parameter-name` -> `parameter_name`)
+- **RC010 - Check for Snake_Case**
+  - The `review` job will automatically check for snake_case naming conventions and provide an error if it detects a violation. This (like all RC checks) can be skipped.
+
+### How to Migrate
+
+1. Clone your orb project locally.
+1. Create a new branch for upgrading your pipeline
+   - `git checkout -b orb-tools-12-migration`
+1. Copy the `migrate.sh` script from this repository into your project's root directory.
+1. Run the script
+   - `chmod +x migrate.sh`
+   - `./migrate.sh`
+
+After executing the script, your orb's component names, and parameters will be converted to snake_case. References to components and parameters within your config files will also be updated. You will also see the reference to your orb will also be removed from the `test-deploy` job. This is because the orb will now be injected dynamically into the pipeline.
 ## v11.0.0
 
 Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes and improves the way orbs are deployed, makes use of CircleCI's [dynamic configuration](https://circleci.com/docs/2.0/dynamic-config/), and can even automatically test for best practices.
@@ -19,7 +47,7 @@ Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes
   - Automatically comment on the PR associated with a commit when each new orb version is published (dev or production.)
   - The comment will include a link to the Orb Registry to preview dev versions of the orb, and a live link to the production version of the orb.
 
-## How to Migrate
+### How to Migrate
 
 1. Enable "[dynamic configuration](https://circleci.com/docs/2.0/dynamic-config/#getting-started-with-dynamic-config-in-circleci)" for your project on CircleCI.
    - Visit https://app.circleci.com/ and navigate to your project.
