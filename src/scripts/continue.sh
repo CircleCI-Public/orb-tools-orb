@@ -71,7 +71,7 @@ continuePipeline() {
 
 printComplete() {
 	echo "Continuation successful!"
-	echo "Your newly published development orb will now be tested in the next workflow."
+	echo "Your orb will now be tested in the next workflow."
 	# shellcheck disable=SC2153
 	echo "View the full pipeline progress: ${CIRCLECI_APP_HOST}/pipelines/${PIPELINE_VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${PIPELINE_NUMBER}"
 }
