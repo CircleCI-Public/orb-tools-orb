@@ -1,4 +1,8 @@
 #!/bin/bash
+
+ORB_DIR=${ORB_VAL_ORB_DIR%/}
+ORB_FILE=${ORB_VAL_ORB_FILE_NAME#/}
+
 setup() {
 	mkdir -p /tmp/circleci/modified
 	rm -rf /tmp/circleci/continue_post.json
@@ -17,36 +21,36 @@ checkRequirements() {
 		exit 1
 	fi
 
-	if ! command -v curl > /dev/null; then
+	if ! command -v curl >/dev/null; then
 		echo "curl is required to use this command"
 		exit 1
 	fi
 
-	if ! command -v jq > /dev/null; then
+	if ! command -v jq >/dev/null; then
 		echo "jq is required to use this command"
 		exit 1
 	fi
 
-	if ! command -v yq > /dev/null; then
+	if ! command -v yq >/dev/null; then
 		echo "yq is required to use this command"
 		exit 1
 	fi
 
-	if [ "$ORB_VAL_INJECT_ORB" == 1 ] && [ ! -f "${ORB_VAL_ORB_DIR}orb.yml" ]; then
-		echo "Inject orb is enabled, but orb.yml is not found in ${ORB_VAL_ORB_DIR}."
+	if [ "$ORB_VAL_INJECT_ORB" == 1 ] && [ ! -f "${ORB_DIR}/${ORB_FILE}" ]; then
+		echo "Inject orb is enabled, but ${ORB_FILE} is not found in ${ORB_DIR}."
 	fi
 }
 
 injectOrb() {
-	ORB_SOURCE=$(cat "${ORB_VAL_ORB_DIR}orb.yml")
+	ORB_SOURCE=$(cat "${ORB_DIR}/${ORB_FILE}")
 	export ORB_SOURCE
 	MODIFIED_CONFIG=$(yq '.orbs.[env(ORB_VAL_ORB_NAME)] = env(ORB_SOURCE)' "${ORB_VAL_CONTINUE_CONFIG_PATH}")
 	echo "Orb Source has been injected into the config."
 	echo "Modified config:"
-	echo 
+	echo
 	printf "%s" "${MODIFIED_CONFIG}"
-	printf "%s" "${MODIFIED_CONFIG}" >/tmp/circleci/modified/orb.yml
-	export MODIFIED_CONFIG_PATH=/tmp/circleci/modified/orb.yml
+	printf "%s" "${MODIFIED_CONFIG}" >"/tmp/circleci/modified/${ORB_FILE}"
+	export MODIFIED_CONFIG_PATH="/tmp/circleci/modified/${ORB_FILE}"
 	echo
 }
 

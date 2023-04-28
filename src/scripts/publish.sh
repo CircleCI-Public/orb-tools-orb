@@ -1,4 +1,8 @@
 #!/bin/bash
+
+ORB_DIR=${ORB_PARAM_OUTPUT_DIR%/}
+ORB_FILE=${ORB_PARAM_ORB_OUTPUT_FILE#/}
+
 function validateProdTag() {
   if [[ ! "${CIRCLE_TAG}" =~ $ORB_PARAM_TAG_PATTERN ]]; then
     echo "Malformed tag detected."
@@ -22,7 +26,7 @@ function validateOrbPubToken() {
 
 function publishOrb() {
   #$1 = full tag
-  circleci orb publish --host "${CIRCLECI_API_HOST:-https://circleci.com}" --skip-update-check "${ORB_PARAM_ORB_DIR}/orb.yml" "${ORB_PARAM_ORB_NAME}@${1}" --token "$ORB_PARAM_ORB_PUB_TOKEN"
+  circleci orb publish --host "${CIRCLECI_API_HOST:-https://circleci.com}" --skip-update-check "${ORB_DIR}/${ORB_FILE}" "${ORB_PARAM_ORB_NAME}@${1}" --token "$ORB_PARAM_ORB_PUB_TOKEN"
   printf "\n"
   {
     echo "Your orb has been published to the CircleCI Orb Registry."
