@@ -23,7 +23,7 @@ setup() {
 		if [[ "$ORB_ELEMENT_DESCRIPTION" == null || "$ORB_ELEMENT_DESCRIPTION" == '""' ]]; then
 			echo
 			echo "Orb component ${i} is missing a description"
-			echo "Orb components are not invalid without descriptions, but these descriptions appear on the Orb Registry for documentation and provide a better experience."
+			echo "While descriptions are not required to create a valid orb, they provide a way to document the purpose of each component and will appear in the orb registry."
 			echo "Check all orb components for descriptions."
 			exit 1
 		fi
@@ -135,7 +135,7 @@ setup() {
 	if [[ "$ERROR_COUNT" -gt 0 ]]; then
 		echo
 		echo "Components were found to contain \"run\" steps without a name."
-		echo "Steps are not invalid without names, but the default used will be the command code, which can be long and confusing."
+		echo "While a step does not require a name to be valid, not providing a name will produce a less readable output in the CircleCI UI."
 		echo "Consider adding a name to the step to make the output in the UI easier to read."
 		echo "https://circleci.com/docs/2.0/configuration-reference/#run"
 		exit 1
