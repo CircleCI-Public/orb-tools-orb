@@ -32,8 +32,8 @@ parameters:
   executor:
     description: The executor to use for this job. By default, this will use the "base" executor provided by this orb.
     type: executor
-    default: base
-    
+    default: python
+
 executor: << parameters.executor >>
 
 steps:
