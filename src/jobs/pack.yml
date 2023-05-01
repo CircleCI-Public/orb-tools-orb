@@ -30,9 +30,9 @@ parameters:
     description: |
       If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
   executor:
-    description: The executor to use for this job. By default, this will use the "base" executor provided by this orb.
+    description: The executor to use for this job. By default, this will use the "default" executor provided by this orb.
     type: executor
-    default: python
+    default: default
 
 executor: << parameters.executor >>
 
