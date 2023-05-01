@@ -36,6 +36,11 @@ parameters:
     default: true
     description: >
       By default, the orb_dir will be persisted to a workspace so that it may be used by the "continue" job. If you are implementing a custom workflow, you may want to disable this behavior.
+  checkout:
+    type: boolean
+    default: true
+    description: |
+      If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
 
 executor:
   name: default
@@ -43,7 +48,10 @@ executor:
   tag: << parameters.tag >>
 
 steps:
-  - checkout
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
   - run:
       name: Packing orb source
       environment:

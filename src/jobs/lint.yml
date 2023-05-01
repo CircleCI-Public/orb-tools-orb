@@ -12,13 +12,22 @@ parameters:
     enum:
       ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
     default: "medium"
+  checkout:
+    type: boolean
+    default: true
+    description: |
+      If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
+
 
 docker:
   - image: cimg/python:3.10.5
 resource_class: << parameters.resource_class >>
 
 steps:
-  - checkout
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
   - run:
       name: Linting all YAML files
       command: <<include(scripts/lint.sh)>>

@@ -85,6 +85,11 @@ parameters:
     description: >
       What version of the CircleCI CLI Docker image? For full list, see
       https://hub.docker.com/r/circleci/circleci-cli/tags
+  checkout:
+    type: boolean
+    default: true
+    description: |
+      If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
 
 steps:
   - attach_workspace:

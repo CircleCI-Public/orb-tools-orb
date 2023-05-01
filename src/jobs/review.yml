@@ -32,13 +32,21 @@ parameters:
     description: |
       By default the most current stable release of `cimg/base` image will be used, but you may statically set the image tag with this parameter.
       https://circleci.com/developer/images/image/cimg/base
+  checkout:
+    type: boolean
+    default: true
+    description: |
+      If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
 
 docker:
   - image: cimg/base:<< parameters.tag >>
 resource_class: << parameters.resource_class >>
 
 steps:
-  - checkout
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
   - bats/install
   - run:
       name: Review Best Practices

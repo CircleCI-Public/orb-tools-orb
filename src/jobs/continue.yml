@@ -62,9 +62,17 @@ parameters:
     default: true
     description: |
       By default, the workspace will be attached to the job at the orb_dir path. If you are implementing a custom workflow, you may want to disable this behavior.
+  checkout:
+    type: boolean
+    default: true
+    description: |
+      If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
 
 steps:
-  - checkout
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
   - when:
       condition: <<parameters.attach_workspace>>
       steps:
