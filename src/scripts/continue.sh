@@ -42,7 +42,7 @@ checkRequirements() {
 }
 
 injectOrb() {
-	ORB_SOURCE=$(cat "${ORB_DIR}/${ORB_FILE}")
+	ORB_SOURCE="$(cat "${ORB_DIR}/${ORB_FILE}")"
 	export ORB_SOURCE
 	MODIFIED_CONFIG=$(yq '.orbs.[env(ORB_VAL_ORB_NAME)] = env(ORB_SOURCE)' "${ORB_VAL_CONTINUE_CONFIG_PATH}")
 	echo "Orb Source has been injected into the config."
