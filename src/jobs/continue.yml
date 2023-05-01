@@ -1,10 +1,6 @@
 description: |
   Continue the pipeline for testing. This job will inject your orb source code into the provided config file prior to continuing the pipeline. With the orb injected, it will be possible to test your orbs features as if it were published.
 
-docker:
-  - image: cimg/base:<< parameters.tag >>
-resource_class: << parameters.resource_class >>
-
 parameters:
   pipeline_number:
     description: The CircleCI pipeline number. Required to be passed in as a parameter for compatibility.
@@ -45,18 +41,6 @@ parameters:
     description: Host URL of CircleCI Web UI. If you are using CircleCI server, this value should be set.
     type: string
     default: https://app.circleci.com
-  resource_class:
-    description: Configure the executor resource class
-    type: enum
-    enum:
-      ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
-    default: "medium"
-  tag:
-    type: string
-    default: "current-22.04"
-    description: |
-      By default the most current stable release of the `cimg/base` 22.04 image will be used, but you may statically set the image tag with this parameter.
-      https://circleci.com/developer/images/image/cimg/base
   attach_workspace:
     type: boolean
     default: true
@@ -67,6 +51,12 @@ parameters:
     default: true
     description: |
       If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
+  executor:
+    description: The executor to use for this job. By default, this will use the "default" executor provided by this orb.
+    type: executor
+    default: default
+
+executor: << parameters.executor >>
 
 steps:
   - when:

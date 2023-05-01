@@ -1,10 +1,10 @@
 description: >
-  The circleci-cli Docker image, which includes the CircleCI CLI
+  The circleci-cli Docker image, which includes the CircleCI CLI executable.
 
 parameters:
   tag:
     type: string
-    default: latest
+    default: "0.1.26094"
     description: >
       What version of the CircleCI CLI Docker image? For full list, see
       https://hub.docker.com/r/circleci/circleci-cli/tags

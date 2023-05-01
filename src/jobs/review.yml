@@ -14,11 +14,6 @@ parameters:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
     default: ./src/
-  resource_class:
-    description: Configure the executor resource class
-    type: enum
-    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
-    default: "medium"
   max_command_length:
     description: |
       The maximum length of a command (RC009).
@@ -26,21 +21,17 @@ parameters:
       Commands longer than this will fail the review.
     type: integer
     default: 64
-  tag:
-    type: string
-    default: "current-22.04"
-    description: |
-      By default the most current stable release of the `cimg/base` 22.04 image will be used, but you may statically set the image tag with this parameter.
-      https://circleci.com/developer/images/image/cimg/base
   checkout:
     type: boolean
     default: true
     description: |
       If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
+  executor:
+    description: The executor to use for this job. By default, this will use the "base" executor provided by this orb.
+    type: executor
+    default: base
 
-docker:
-  - image: cimg/base:<< parameters.tag >>
-resource_class: << parameters.resource_class >>
+executor: << parameters.executor >>
 
 steps:
   - when:

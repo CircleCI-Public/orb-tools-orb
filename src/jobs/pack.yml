@@ -3,12 +3,6 @@ description: |
   For CircleCI server servers, please ensure you set the `circleci-api-host` job parameter and CIRCLE_TOKEN environment variable.
 
 parameters:
-  resource_class:
-    description: Configure the executor resource class
-    type: enum
-    enum:
-      ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
-    default: "medium"
   source_dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
@@ -25,12 +19,6 @@ parameters:
     description: Host URL of CircleCI API. If you are using self_hosted CircleCI, this value should be set.
     type: string
     default: https://circleci.com
-  tag:
-    type: string
-    default: "0.1.26094"
-    description: >
-      What version of the CircleCI CLI Docker image? For full list, see
-      https://hub.docker.com/r/circleci/circleci-cli/tags
   persist_to_workspace:
     type: boolean
     default: true
@@ -41,11 +29,12 @@ parameters:
     default: true
     description: |
       If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
-
-executor:
-  name: default
-  resource_class: << parameters.resource_class >>
-  tag: << parameters.tag >>
+  executor:
+    description: The executor to use for this job. By default, this will use the "base" executor provided by this orb.
+    type: executor
+    default: base
+    
+executor: << parameters.executor >>
 
 steps:
   - when:

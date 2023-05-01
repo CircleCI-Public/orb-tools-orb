@@ -1,0 +1,19 @@
+description: >
+  The circleci base docker image. cimg/base is an Ubuntu Docker image created by CircleCI with continuous integration builds in mind.
+
+parameters:
+  tag:
+    type: string
+    default: "current-22.04"
+    description: >
+      What version of the cimg/base image? For full list, see
+      https://circleci.com/developer/images/image/cimg/base
+  resource_class:
+    description: Configure the executor resource class
+    type: enum
+    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
+    default: "medium"
+
+resource_class: << parameters.resource_class >>
+docker:
+  - image: cimg/base:<< parameters.tag >>
