@@ -53,9 +53,9 @@ parameters:
     default: "medium"
   tag:
     type: string
-    default: "current"
+    default: "current-22.04"
     description: |
-      By default the most current stable release of `cimg/base` image will be used, but you may statically set the image tag with this parameter.
+      By default the most current stable release of the `cimg/base` 22.04 image will be used, but you may statically set the image tag with this parameter.
       https://circleci.com/developer/images/image/cimg/base
   attach_workspace:
     type: boolean
