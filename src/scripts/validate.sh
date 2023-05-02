@@ -11,4 +11,4 @@ if [ "https://circleci.com" != "${CIRCLECI_API_HOST}" ] && [ -z "${CIRCLE_TOKEN}
     exit 1
 fi
 
-circleci orb validate --host "${CIRCLECI_API_HOST:-https://circleci.com}" --token "${CIRCLE_TOKEN:-dummy}" --skip-update-check "${ORB_DIR}/${ORB_FILE}"
+circleci orb validate --host "${CIRCLECI_API_HOST:-https://circleci.com}" --token "${CIRCLE_TOKEN:-dummy}" ${ORB_VAL_ORG_ID:+--org-id "$ORB_VAL_ORG_ID"} ${ORB_VAL_ORG_SLUG:+--org-slug "$ORB_VAL_ORG_SLUG"} --skip-update-check "${ORB_DIR}/${ORB_FILE}"

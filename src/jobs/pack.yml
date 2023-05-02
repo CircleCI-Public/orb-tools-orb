@@ -33,6 +33,18 @@ parameters:
     description: The executor to use for this job. By default, this will use the "default" executor provided by this orb.
     type: executor
     default: default
+  org_id:
+    description: >
+      The organization ID. Only necessary if your orb depends on private orbs in the same namespace.
+      You can use "orb_slug" instead if you prefer.
+    type: string
+    default: ""
+  org_slug:
+    description: >
+      The organization slug (e.g., gh/MyOrg). Only necessary if your orb depends on private orbs in the same namespace.
+      You can use "org_id" instead if you prefer.
+    type: string
+    default: ""
 
 executor: << parameters.executor >>
 
@@ -53,6 +65,8 @@ steps:
       environment:
         ORB_VAL_ORB_DIR: << parameters.orb_dir >>
         ORB_VAL_ORB_FILE_NAME: <<parameters.orb_file_name>>
+        ORB_VAL_ORG_ID: << parameters.org_id >>
+        ORB_VAL_ORG_SLUG: << parameters.org_slug >>
         CIRCLECI_API_HOST: <<parameters.circleci_api_host>>
       command: <<include(scripts/validate.sh)>>
   - when:
