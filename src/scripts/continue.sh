@@ -3,11 +3,13 @@
 ORB_DIR=${ORB_VAL_ORB_DIR%/}
 ORB_FILE=${ORB_VAL_ORB_FILE_NAME#/}
 
+# Create temporary directories and files
 setup() {
 	mkdir -p /tmp/circleci/modified
 	rm -rf /tmp/circleci/continue_post.json
 }
 
+# Check for required environment variables and commands
 checkRequirements() {
 	if [ -z "${CIRCLE_CONTINUATION_KEY}" ]; then
 		echo "CIRCLE_CONTINUATION_KEY is required. Make sure setup workflows are enabled."
@@ -41,6 +43,7 @@ checkRequirements() {
 	fi
 }
 
+# Inject orb source into the configuration
 injectOrb() {
 	ORB_SOURCE="$(cat "${ORB_DIR}/${ORB_FILE}")"
 	export ORB_SOURCE
@@ -54,6 +57,7 @@ injectOrb() {
 	echo
 }
 
+# Continue the pipeline using the modified configuration
 continuePipeline() {
 	# Escape the config as a JSON string.
 	jq -Rs '.' "${MODIFIED_CONFIG_PATH:-$ORB_VAL_CONTINUE_CONFIG_PATH}" >/tmp/circleci/config-string.json
@@ -73,6 +77,7 @@ continuePipeline() {
 		"${CIRCLECI_API_HOST}/api/v2/pipeline/continue") -eq 200 ]] || echo "Failed to continue pipeline. Attempt to retry the pipeline, if the problem persists please open an issue on the Orb-Tools Orb repository: https://github.com/CircleCI-Public/orb-tools-orb" >&2 && exit 1
 }
 
+# Print completion message
 printComplete() {
 	echo "Continuation successful!"
 	echo "Your orb will now be tested in the next workflow."
