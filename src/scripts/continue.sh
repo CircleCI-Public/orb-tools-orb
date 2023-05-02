@@ -70,7 +70,7 @@ continuePipeline() {
 		-H "Content-Type: application/json" \
 		-H "Accept: application/json" \
 		--data @/tmp/circleci/continue_post.json \
-		"${CIRCLECI_API_HOST}/api/v2/pipeline/continue") -eq 200 ]]
+		"${CIRCLECI_API_HOST}/api/v2/pipeline/continue") -eq 200 ]] || echo "Failed to continue pipeline. Attempt to retry the pipeline, if the problem persists please open an issue on the Orb-Tools Orb repository: https://github.com/CircleCI-Public/orb-tools-orb" >&2 && exit 1
 }
 
 printComplete() {
