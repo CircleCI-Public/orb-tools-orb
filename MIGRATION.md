@@ -21,13 +21,16 @@ _Note: If you are upgrading from 11.x to 12.x proceed here. If you are upgrading
 
 1. Clone your orb project locally.
 1. Create a new branch for upgrading your pipeline
-   - `git checkout -b orb-tools-12-migration`
+   ```sh
+   git checkout -b orb-tools-12-migration
+   ````
 1. Copy the `migrate.sh` script from this repository into your project's root directory.
 1. Run the script
-   - `chmod +x migrate.sh`
-   - `./migrate.sh`
+   ```sh
+   chmod +x migrate.sh && ./migrate.sh
+   ```
 
-After executing the script, your orb's component names, and parameters will be converted to snake_case. References to components and parameters within your config files will also be updated. You will also see the reference to your orb will also be removed from the `test-deploy` job. This is because the orb will now be injected dynamically into the pipeline.
+After executing the script, your orb's component names and parameters will be converted to snake_case, and references to them within your config files will be updated. The reference to your orb in the `test-deploy` config will be removed, as the orb will now be dynamically injected into the pipeline.
 ## v11.0.0
 
 Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes and improves the way orbs are deployed, makes use of CircleCI's [dynamic configuration](https://circleci.com/docs/2.0/dynamic-config/), and can even automatically test for best practices.
