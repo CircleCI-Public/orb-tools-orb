@@ -72,7 +72,13 @@ steps:
   - when:
       condition: <<parameters.persist_to_workspace>>
       steps:
+        - run:
+            name: Prep Workspace
+            environment:
+              ORB_VAL_ORB_DIR: << parameters.orb_dir >>
+              ORB_VAL_TAR: true
+            command: <<include(scripts/workspace-prep.sh)>>
         - persist_to_workspace:
             paths:
-              - "*.yml"
+              - "orb_source.tar.gz"
             root: <<parameters.orb_dir>>

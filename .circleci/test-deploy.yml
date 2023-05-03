@@ -17,11 +17,19 @@ workflows:
             tags:
               only: /.*/
       - orb-tools-alpha/publish:
+          name: publish_dev_test
+          orb_name: circleci/orb-tools
+          vcs_type: <<pipeline.project.type>>
+          pub_type: dev
+          requires:
+            [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
+          context: orb-publisher
+      - orb-tools-alpha/publish:
           orb_name: circleci/orb-tools
           vcs_type: <<pipeline.project.type>>
           pub_type: production
           requires:
-            [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
+            [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack, publish_dev_test]
           context: orb-publisher
           github_token: GHI_TOKEN
           filters:

@@ -45,15 +45,15 @@ checkRequirements() {
 
 # Inject orb source into the configuration
 injectOrb() {
+	printf "Injecting orb source into configuration.\n"
 	ORB_SOURCE="$(cat "${ORB_DIR}/${ORB_FILE}")"
 	export ORB_SOURCE
 	MODIFIED_CONFIG="$(yq '.orbs.[env(ORB_VAL_ORB_NAME)] = env(ORB_SOURCE)' "${ORB_VAL_CONTINUE_CONFIG_PATH}")"
-	printf "Orb Source has been injected into the config.\n"
 	printf "Modified config:\n\n"
 	printf "%s" "${MODIFIED_CONFIG}"
 	printf "%s" "${MODIFIED_CONFIG}" >"/tmp/circleci/modified/${ORB_FILE}"
 	export MODIFIED_CONFIG_PATH="/tmp/circleci/modified/${ORB_FILE}"
-	printf "\n"
+	printf "\n\n"
 }
 
 # Continue the pipeline using the modified configuration
@@ -65,15 +65,37 @@ continuePipeline() {
 		--slurpfile config /tmp/circleci/config-string.json \
 		'{"continuation-key": $continuation, "configuration": $config|join("\n")}' >/tmp/circleci/continue_post.json
 
-	[[ $(curl \
-		-s \
-		-o /dev/stderr \
-		-w '%{http_code}' \
-		-XPOST \
-		-H "Content-Type: application/json" \
-		-H "Accept: application/json" \
-		--data @/tmp/circleci/continue_post.json \
-		"${CIRCLECI_API_HOST}/api/v2/pipeline/continue") -eq 200 ]] || printf "Failed to continue pipeline. Attempt to retry the pipeline, if the problem persists please open an issue on the Orb-Tools Orb repository: https://github.com/CircleCI-Public/orb-tools-orb\n" >&2 && exit 1
+	# Continue the pipeline
+	printf "Continuing pipeline...\n"
+	RESPONSE=$(
+		curl \
+			-s \
+			-o /dev/stderr \
+			-w '%{http_code}' \
+			-XPOST \
+			-H "Content-Type: application/json" \
+			-H "Accept: application/json" \
+			--data @/tmp/circleci/continue_post.json \
+			"${CIRCLECI_API_HOST}/api/v2/pipeline/continue"
+	)
+	# Check if the pipeline was successfully continued
+	if [[ "$RESPONSE" -eq 200 ]]; then
+		printf "Pipeline successfully continued.\n"
+	else
+		printf "ERROR: Response code %s\n" "$RESPONSE"
+		printf "Failed to continue pipeline. Attempt to retry the pipeline, if the problem persists please open an issue on the Orb-Tools Orb repository: https://github.com/CircleCI-Public/orb-tools-orb\n"
+		exit 1
+	fi
+
+	# [[ $(curl \
+	# 	-s \
+	# 	-o /dev/stderr \
+	# 	-w '%{http_code}' \
+	# 	-XPOST \
+	# 	-H "Content-Type: application/json" \
+	# 	-H "Accept: application/json" \
+	# 	--data @/tmp/circleci/continue_post.json \
+	# 	"${CIRCLECI_API_HOST}/api/v2/pipeline/continue") -eq 200 ]] || printf "Failed to continue pipeline. Attempt to retry the pipeline, if the problem persists please open an issue on the Orb-Tools Orb repository: https://github.com/CircleCI-Public/orb-tools-orb\n" >&2 && exit 1
 }
 
 # Print completion message

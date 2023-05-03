@@ -68,6 +68,12 @@ steps:
       steps:
         - attach_workspace:
             at: <<parameters.orb_dir>>
+        - run:
+            name: Prep Workspace
+            environment:
+              ORB_VAL_ORB_DIR: << parameters.orb_dir >>
+              ORB_VAL_UNTAR: true
+            command: <<include(scripts/workspace-prep.sh)>>
   - run:
       name: Continuing To Orb Testing And Deployment
       environment:

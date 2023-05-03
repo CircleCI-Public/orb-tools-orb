@@ -1,7 +1,7 @@
 #!/bin/bash
 
-ORB_DIR=${ORB_PARAM_OUTPUT_DIR%/}
-ORB_FILE=${ORB_PARAM_ORB_OUTPUT_FILE#/}
+ORB_DIR=${ORB_PARAM_ORB_DIR%/}
+ORB_FILE=${ORB_PARAM_ORB_FILE_NAME#/}
 
 function validateProdTag() {
   if [[ ! "${CIRCLE_TAG}" =~ $ORB_PARAM_TAG_PATTERN ]]; then
@@ -25,6 +25,7 @@ function validateOrbPubToken() {
 
 function publishOrb() {
   #$1 = full tag
+
   circleci orb publish --host "${CIRCLECI_API_HOST:-https://circleci.com}" --skip-update-check "${ORB_DIR}/${ORB_FILE}" "${ORB_PARAM_ORB_NAME}@${1}" --token "$ORB_PARAM_ORB_PUB_TOKEN"
   printf "\n"
   {
@@ -35,12 +36,16 @@ function publishOrb() {
 }
 
 function publishDevOrbs() {
-  publishOrb "dev:${CIRCLE_SHA1}"
-  publishOrb "dev:alpha"
+  printf "Publishing development orb(s).\n\n"
+  DEV_TAG_LIST=$(echo "${ORB_PARAM_DEV_TAGS}" | tr -d ' ')
+  IFS=',' read -ra array <<<"$DEV_TAG_LIST"
+  for tag in "${array[@]}"; do
+    publishOrb "$tag"
+  done
   {
-    printf "Your development orb has been published. It will expire in 30 days.\n"
+    printf "Your development orb(s) have been published. It will expire in 30 days.\n"
     printf "You can preview what this will look like on the CircleCI Orb Registry at the following link: \n"
-    printf "https://circleci.com/developer/orbs/orb/%s?version=dev:%s\n" "${ORB_PARAM_ORB_NAME}" "${CIRCLE_SHA1}"
+    printf "https://circleci.com/developer/orbs/orb/%s?version=dev:%s\n" "${ORB_VAL_ORB_NAME}" "${array[0]}"
   } >/tmp/orb_dev_kit/publishing_message.txt
 }
 
@@ -58,14 +63,14 @@ function orbPublish() {
     fi
     validateProdTag
     ORB_RELEASE_VERSION="$(echo "${CIRCLE_TAG}" | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")"
-    printf "Production version: %s\n\n" "${ORB_RELEASE_VERSION}"
+    printf "  Production version: %s\n\n" "${ORB_RELEASE_VERSION}"
     publishOrb "${ORB_RELEASE_VERSION}"
   elif [ "$ORB_PARAM_PUB_TYPE" == "dev" ]; then
-    printf "Development release detected!\n\n"
+    printf "  Development release detected!\n\n"
     publishDevOrbs
   else
-    printf "No release type detected.\n"
-    printf "Please report this error.\n"
+    printf "  No release type detected.\n"
+    printf "  Please report this error.\n"
   fi
 
   printf "\n\n"
