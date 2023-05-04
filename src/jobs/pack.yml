@@ -6,11 +6,11 @@ parameters:
   source_dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
-    default: ./src/
+    default: src
   orb_dir:
     description: The orb output directory. The orb will be named "orb.yml" by default in this directory and persisted to the workspace. Path must be absolute or relative to the working directory.
     type: string
-    default: ./dist/
+    default: dist
   orb_file_name:
     description: The orb output file name. The orb will be named this value in the output directory. Path must be absolute or relative to the working directory.
     type: string

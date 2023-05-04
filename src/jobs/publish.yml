@@ -10,7 +10,7 @@ parameters:
   orb_dir:
     description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "output_dir" of the "pack" job.
     type: string
-    default: ./dist/
+    default: dist
   orb_file_name:
     description: The orb output file name. The orb will be named this value in the output directory. Should match the "orb_file_name" of the "pack" job.
     type: string

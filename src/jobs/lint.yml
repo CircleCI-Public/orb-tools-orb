@@ -5,7 +5,7 @@ parameters:
   source_dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
-    default: ./src/
+    default: src
   checkout:
     type: boolean
     default: true

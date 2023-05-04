@@ -13,7 +13,7 @@ parameters:
   source_dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
-    default: ./src/
+    default: src
   max_command_length:
     description: |
       The maximum length of a command (RC009).
