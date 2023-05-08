@@ -1,21 +1,20 @@
 version: 2.1
 orbs:
   orb-tools-alpha: {}
+
+filters: &filters
+  tags:
+    only: /.*/
+
 workflows:
   test-deploy:
     jobs:
       - orb-tools-alpha/lint:
-          filters:
-            tags:
-              only: /.*/
+          filters: *filters
       - orb-tools-alpha/pack:
-          filters:
-            tags:
-              only: /.*/
+          filters: *filters
       - orb-tools-alpha/review:
-          filters:
-            tags:
-              only: /.*/
+          filters: *filters
       - orb-tools-alpha/publish:
           name: publish_dev_test
           orb_name: circleci/orb-tools
