@@ -7,22 +7,14 @@ orbs:
   orb-tools-alpha: circleci/orb-tools@dev:alpha
   shellcheck: circleci/shellcheck@3.1
 
-filters: &filters
-  tags:
-    only: /.*/
-
 workflows:
   lint-pack:
     jobs:
-      - orb-tools-alpha/lint:
-          filters: *filters
-      - orb-tools-alpha/pack:
-          filters: *filters
-      - orb-tools-alpha/review:
-          filters: *filters
+      - orb-tools-alpha/lint
+      - orb-tools-alpha/pack
+      - orb-tools-alpha/review
       - shellcheck/check:
           exclude: SC2148,SC2038,SC2086,SC2002,SC2016
-          filters: *filters
       - orb-tools-alpha/continue:
           pipeline_number: << pipeline.number >>
           vcs_type: << pipeline.project.type >>
@@ -34,6 +26,3 @@ workflows:
               orb-tools-alpha/pack,
               shellcheck/check,
             ]
-          filters:
-            tags:
-              only: /.*/
