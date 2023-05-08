@@ -13,8 +13,7 @@ workflows:
       - orb-tools-alpha/lint
       - orb-tools-alpha/pack
       - orb-tools-alpha/review
-      - shellcheck/check:
-          exclude: SC2148,SC2038,SC2086,SC2002,SC2016
+      - shellcheck/check
       - orb-tools-alpha/continue:
           pipeline_number: << pipeline.number >>
           vcs_type: << pipeline.project.type >>
