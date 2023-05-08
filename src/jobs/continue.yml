@@ -1,15 +1,11 @@
 description: |
-  After the "publish-dev" job has completed along with any other preliminary checks, this job will trigger the next workflow (test-deploy) in the Orb Development Kit.
-
-docker:
-  - image: cimg/base:<< parameters.tag >>
-resource_class: << parameters.resource_class >>
+  Continue the pipeline for testing. This job will inject your orb source code into the provided config file prior to continuing the pipeline. With the orb injected, it will be possible to test your orbs features as if it were published.
 
 parameters:
-  pipeline-number:
+  pipeline_number:
     description: The CircleCI pipeline number. Required to be passed in as a parameter for compatibility.
     type: integer
-  vcs-type:
+  vcs_type:
     description: The VCS type. Required to be passed in as a parameter for compatibility. Should be configured automatically by the Orb Development Kit.
     type: enum
     enum:
@@ -17,38 +13,77 @@ parameters:
       - github
       - bb
       - bitbucket
-  config-path:
-    description: Path to the next config file to execute. By default, this will execute the "test-deploy" workflow.
+  config_path:
+    description: Path to the next config file to execute. By default, this will execute the "test_deploy" workflow.
     type: string
     default: .circleci/test-deploy.yml
-  circleci-api-host:
-    description: Host URL of CircleCI API. If you are using self-hosted CircleCI, this value should be set.
+  orb_dir:
+    description: Directory containing packed orb source. Path must be absolute or relative to the working directory. Should match the "orb_dir" of the "pack" job.
+    type: string
+    default: dist
+  orb_file_name:
+    description: The orb output file name. The orb will be named this value in the output directory. Path must be absolute or relative to the working directory.
+    type: string
+    default: orb.yml
+  orb_name:
+    type: string
+    description: >
+      The reference name of the orb to be injected in the config, no namespace or version number. e.g. "orb-tools"
+  inject_orb:
+    description: If true, the orb will be injected into the provided config file.
+    type: boolean
+    default: true
+  circleci_api_host:
+    description: Host URL of CircleCI API. If you are using CircleCI server, this value should be set.
     type: string
     default: https://circleci.com
-  circleci-app-host:
-    description: Host URL of CircleCI Web UI. If you are using self-hosted CircleCI, this value should be set.
+  circleci_app_host:
+    description: Host URL of CircleCI Web UI. If you are using CircleCI server, this value should be set.
     type: string
     default: https://app.circleci.com
-  resource_class:
-    description: Configure the executor resource class
-    type: enum
-    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
-    default: "medium"
-  tag:
-    type: string
-    default: "current"
+  attach_workspace:
+    type: boolean
+    default: true
     description: |
-      By default the most current stable release of `cimg/base` image will be used, but you may statically set the image tag with this parameter.
-      https://circleci.com/developer/images/image/cimg/base
+      By default, the workspace will be attached to the job at the orb_dir path. If you are implementing a custom workflow, you may want to disable this behavior.
+  checkout:
+    type: boolean
+    default: true
+    description: |
+      If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
+  executor:
+    description: The executor to use for this job. By default, this will use the "default" executor provided by this orb.
+    type: executor
+    default: default
+
+executor: << parameters.executor >>
 
 steps:
-  - checkout
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
+  - when:
+      condition: <<parameters.attach_workspace>>
+      steps:
+        - attach_workspace:
+            at: <<parameters.orb_dir>>
+        - run:
+            name: Prep Workspace
+            environment:
+              ORB_VAL_ORB_DIR: << parameters.orb_dir >>
+              ORB_VAL_UNTAR: true
+            command: <<include(scripts/workspace-prep.sh)>>
   - run:
       name: Continuing To Orb Testing And Deployment
       environment:
-        ORB_PARAM_CONTINUE_CONFIG_PATH: <<parameters.config-path>>
-        PIPELINE_NUMBER: <<parameters.pipeline-number>>
-        PIPELINE_VCS_TYPE: <<parameters.vcs-type>>
-        CIRCLECI_API_HOST: <<parameters.circleci-api-host>>
-        CIRCLECI_APP_HOST: <<parameters.circleci-app-host>>
+        ORB_VAL_INJECT_ORB: <<parameters.inject_orb>>
+        ORB_VAL_ORB_DIR: <<parameters.orb_dir>>
+        ORB_VAL_ORB_NAME: <<parameters.orb_name>>
+        ORB_VAL_ORB_FILE_NAME: <<parameters.orb_file_name>>
+        ORB_VAL_CONTINUE_CONFIG_PATH: <<parameters.config_path>>
+        PIPELINE_NUMBER: <<parameters.pipeline_number>>
+        PIPELINE_VCS_TYPE: <<parameters.vcs_type>>
+        CIRCLECI_API_HOST: <<parameters.circleci_api_host>>
+        CIRCLECI_APP_HOST: <<parameters.circleci_app_host>>
       command: <<include(scripts/continue.sh)>>

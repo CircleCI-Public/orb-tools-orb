@@ -10,15 +10,10 @@ parameters:
       Example: "RC001,RC002"
     type: string
     default: ""
-  source-dir:
+  source_dir:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
-    default: ./src/
-  resource_class:
-    description: Configure the executor resource class
-    type: enum
-    enum: ["small", "medium", "medium+", "large", "xlarge", "2xlarge", "2xlarge+"]
-    default: "medium"
+    default: src
   max_command_length:
     description: |
       The maximum length of a command (RC009).
@@ -26,19 +21,23 @@ parameters:
       Commands longer than this will fail the review.
     type: integer
     default: 64
-  tag:
-    type: string
-    default: "2022.12-18.04"
+  checkout:
+    type: boolean
+    default: true
     description: |
-      By default the most current stable release of `cimg/base` image will be used, but you may statically set the image tag with this parameter.
-      https://circleci.com/developer/images/image/cimg/base
+      If you do not wish to checkout the source code, you may disable this behavior. Replace the checkout and add your own command or steps via the 'pre-steps' parameter in your workflow.
+  executor:
+    description: The executor to use for this job. By default, this will use the "python" executor provided by this orb.
+    type: executor
+    default: python
 
-docker:
-  - image: cimg/base:<< parameters.tag >>
-resource_class: << parameters.resource_class >>
+executor: << parameters.executor >>
 
 steps:
-  - checkout
+  - when:
+      condition: <<parameters.checkout>>
+      steps:
+        - checkout
   - bats/install
   - run:
       name: Review Best Practices
@@ -46,7 +45,7 @@ steps:
         PARAM_RC_EXCLUDE: <<parameters.exclude>>
         PARAM_MAX_COMMAND_LENGTH: <<parameters.max_command_length>>
         ORB_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
-        ORB_PARAM_SOURCE_DIR: << parameters.source-dir >>
+        ORB_VAL_SOURCE_DIR: << parameters.source_dir >>
       command: <<include(scripts/review.sh)>>
   - store_test_results:
       path: /tmp/orb_dev_kit/review/

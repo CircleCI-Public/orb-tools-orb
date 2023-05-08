@@ -1,6 +1,7 @@
 setup() {
     ORB_DEFAULT_SRC_DIR="./src/"
-    ORB_SOURCE_DIR=${ORB_PARAM_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
+    ORB_SOURCE_DIR=${ORB_VAL_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
+		ORB_SOURCE_DIR=${ORB_SOURCE_DIR%/}
 	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${PARAM_RC_EXCLUDE}"
 }
 
@@ -8,7 +9,7 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC001" ]]; then
 		skip
 	fi
-	result=$(yq '.display.source_url' "${ORB_SOURCE_DIR}@orb.yml")
+	result=$(yq '.display.source_url' "${ORB_SOURCE_DIR}/@orb.yml")
 
 	echo 'Set a value for "source_url" under the "display" key in "@orb.yml"'
 	[[ ! $result = null ]]
@@ -18,12 +19,12 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC002" ]]; then
 		skip
 	fi
-	for i in $(find "${ORB_SOURCE_DIR}jobs" "${ORB_SOURCE_DIR}examples" "${ORB_SOURCE_DIR}commands" "${ORB_SOURCE_DIR}executors" -name "*.yml" 2>/dev/null); do
+	for i in $(find "${ORB_SOURCE_DIR}/jobs" "${ORB_SOURCE_DIR}/examples" "${ORB_SOURCE_DIR}/commands" "${ORB_SOURCE_DIR}/executors" -name "*.yml" 2>/dev/null); do
 		ORB_ELEMENT_DESCRIPTION=$(yq '.description' "$i")
 		if [[ "$ORB_ELEMENT_DESCRIPTION" == null || "$ORB_ELEMENT_DESCRIPTION" == '""' ]]; then
 			echo
 			echo "Orb component ${i} is missing a description"
-			echo "Orb components are not invalid without descriptions, but these descriptions appear on the Orb Registry for documentation and provide a better experience."
+			echo "While descriptions are not required to create a valid orb, they provide a way to document the purpose of each component and will appear in the orb registry."
 			echo "Check all orb components for descriptions."
 			exit 1
 		fi
@@ -34,11 +35,11 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC003" ]]; then
 		skip
 	fi
-	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${ORB_SOURCE_DIR}examples/*.yml -type f 2>/dev/null | wc -l | xargs)
+	ORB_ELEMENT_EXAMPLE_COUNT=$(find ${ORB_SOURCE_DIR}/examples/*.yml -type f 2>/dev/null | wc -l | xargs)
 	if [ "$ORB_ELEMENT_EXAMPLE_COUNT" -lt 1 ]; then
 		echo
 		echo "This orb appears to be missing a usage example."
-		echo "Add examples under $(${ORB_SOURCE_DIR}examples) to document how to use the orb for any available use cases."
+		echo "Add examples under $(${ORB_SOURCE_DIR}/examples) to document how to use the orb for any available use cases."
 		exit 1
 	fi
 }
@@ -61,11 +62,11 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC005" ]]; then
 		skip
 	fi
-	ORB_ELEMENT_DESCRIPTION=$(yq '.description' "${ORB_SOURCE_DIR}@orb.yml")
+	ORB_ELEMENT_DESCRIPTION=$(yq '.description' "${ORB_SOURCE_DIR}/@orb.yml")
 	if [[ "${#ORB_ELEMENT_DESCRIPTION}" -lt 64 ]]; then
 		echo
 		echo "Orb description appears short (under 64 characters)."
-		echo "Update the description in ${ORB_SOURCE_DIR}@orb.yml to provide a detailed description of the orb."
+		echo "Update the description in ${ORB_SOURCE_DIR}/@orb.yml to provide a detailed description of the orb."
 		echo "Use the orb description to help users find your orb via search. Try describing what use-case this orb solves for."
 		exit 1
 	fi
@@ -75,7 +76,7 @@ setup() {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC006" ]]; then
 		skip
 	fi
-	SOURCE_URL=$(yq '.display.source_url' "${ORB_SOURCE_DIR}@orb.yml")
+	SOURCE_URL=$(yq '.display.source_url' "${ORB_SOURCE_DIR}/@orb.yml")
 	HTTP_RESPONSE=$(curl -s -L -o /dev/null -w "%{http_code}" --retry 5 --retry-delay 5 "$SOURCE_URL")
 	if [[ "$HTTP_RESPONSE" -ne 200 ]]; then
 		echo
@@ -86,7 +87,7 @@ setup() {
 }
 
 @test "RC007: Home URL should be valid." {
-	HOME_URL=$(yq '.display.home_url' "${ORB_SOURCE_DIR}@orb.yml")
+	HOME_URL=$(yq '.display.home_url' "${ORB_SOURCE_DIR}/@orb.yml")
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC007" || "$HOME_URL" == "null" ]]; then
 		skip
 	fi
@@ -104,7 +105,7 @@ setup() {
 		skip
 	fi
 	ERROR_COUNT=0
-	for i in $(find "${ORB_SOURCE_DIR}jobs" "${ORB_SOURCE_DIR}commands" -name "*.yml" 2>/dev/null); do
+	for i in $(find "${ORB_SOURCE_DIR}/jobs" "${ORB_SOURCE_DIR}/commands" -name "*.yml" 2>/dev/null); do
 		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run | select(. != null)] | length' "$i")
 		j=0
 		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
@@ -135,7 +136,7 @@ setup() {
 	if [[ "$ERROR_COUNT" -gt 0 ]]; then
 		echo
 		echo "Components were found to contain \"run\" steps without a name."
-		echo "Steps are not invalid without names, but the default used will be the command code, which can be long and confusing."
+		echo "While a step does not require a name to be valid, not providing a name will produce a less readable output in the CircleCI UI."
 		echo "Consider adding a name to the step to make the output in the UI easier to read."
 		echo "https://circleci.com/docs/2.0/configuration-reference/#run"
 		exit 1
@@ -147,7 +148,7 @@ setup() {
 		skip
 	fi
 	ERROR_COUNT=0
-	for i in $(find ${ORB_SOURCE_DIR}jobs ${ORB_SOURCE_DIR}commands -name "*.yml" 2>/dev/null); do
+	for i in $(find ${ORB_SOURCE_DIR}/jobs ${ORB_SOURCE_DIR}/commands -name "*.yml" 2>/dev/null); do
 		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run | select(. != null)] | length' "$i")
 		j=0
 		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
@@ -186,4 +187,30 @@ setup() {
 		echo "https://circleci.com/docs/2.0/using-orbs/#file-include-syntax"
 		exit 1
 	fi
+}
+
+@test "RC010: All components (jobs, commands, executors, examples) should be snake_cased." {
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC010" ]]; then
+		skip
+	fi
+	for i in $(find "${ORB_SOURCE_DIR}/jobs" "${ORB_SOURCE_DIR}/commands" "${ORB_SOURCE_DIR}/executors" -name "*.yml" 2>/dev/null); do
+		# Check file name for snake_case
+		ORB_COMPONENT_FILE_NAME=$(basename "$i")
+		if [[ "$ORB_COMPONENT_FILE_NAME" == *"-"* ]]; then
+			echo "File: \"${i}\""
+			echo "Component names should be snake_cased. Please rename this file to use snake_case."
+			exit 1
+		fi
+		# Check parameter keys on component for snake_case
+		ORB_COMPONENT_PARAMETERS_COUNT=$(yq '.parameters | keys | .[]' "$i")
+		for j in $ORB_COMPONENT_PARAMETERS_COUNT; do
+			if [[ "$j" == *"-"* ]]; then
+				echo "File: \"${i}\""
+				echo " Parameter: \"${j}\""
+				echo "Parameter keys should be snake_cased. Please rename this parameter to use snake_case."
+				exit 1
+			fi
+		done
+
+	done
 }

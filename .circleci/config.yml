@@ -5,31 +5,19 @@ orbs:
   #   meaning this dev version will need to be published every 90 days.
   # No other orbs will need to import themselves here.
   orb-tools-alpha: circleci/orb-tools@dev:alpha
-  shellcheck: circleci/shellcheck@3.0
+  shellcheck: circleci/shellcheck@3.1
 
 workflows:
   lint-pack:
     jobs:
-      - orb-tools-alpha/lint:
-          filters:
-            tags:
-              only: /.*/
-      - orb-tools-alpha/pack:
-          filters:
-            tags:
-              only: /.*/
-      - orb-tools-alpha/review:
-          filters:
-            tags:
-              only: /.*/
-      - shellcheck/check:
-          exclude: SC2148,SC2038,SC2086,SC2002,SC2016
-          filters:
-            tags:
-              only: /.*/
-      - orb-tools-alpha/publish:
-          orb-name: circleci/orb-tools
-          vcs-type: << pipeline.project.type >>
+      - orb-tools-alpha/lint
+      - orb-tools-alpha/pack
+      - orb-tools-alpha/review
+      - shellcheck/check
+      - orb-tools-alpha/continue:
+          pipeline_number: << pipeline.number >>
+          vcs_type: << pipeline.project.type >>
+          orb_name: orb-tools-alpha
           requires:
             [
               orb-tools-alpha/lint,
@@ -37,15 +25,3 @@ workflows:
               orb-tools-alpha/pack,
               shellcheck/check,
             ]
-          github-token: GHI_TOKEN
-          context: orb-publisher
-          filters:
-            tags:
-              only: /.*/
-      - orb-tools-alpha/continue:
-          pipeline-number: << pipeline.number >>
-          vcs-type: << pipeline.project.type >>
-          requires: [orb-tools-alpha/publish]
-          filters:
-            tags:
-              only: /.*/

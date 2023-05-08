@@ -1,15 +1,15 @@
 description: |
   The Orb-Tools orb is typically configured automatically by the Orb Development Kit. After initializing a new orb, this is the configuration file that will be automatically loaded.
-  This configuration uses "Dynamic Config" with two different configuration files, so here we will see only the first `config.yml` file.
+  This configuration uses "Dynamic Config" with two different configuration files. In this example, we will see only the first `config.yml` file.
   This config breaks our orb's CI pipeline into two workflows, "test-pack", and "test-deploy".
-  "test-pack" will lint, shellcheck, and review our orb, before publishing a new development version of the orb and triggering the "test-deploy" workflow.
+  "test-pack" will lint, shellcheck, and review our orb, before triggering the "test-deploy" workflow with the orb injected for e2e testing.
   See the list of jobs for a detailed description of each job.
-  "test-deploy" deploy is found in the `./circleci/test-deploy.yml` file. See step 2 for more information.
+  "test-deploy" is found in the `./circleci/test-deploy.yml` file. See step 2 for more information.
 usage:
   version: 2.1
   setup: true
   orbs:
-    orb-tools: circleci/orb-tools@11.1
+    orb-tools: circleci/orb-tools@12.0
     shellcheck: circleci/shellcheck@3.1
 
   workflows:
@@ -32,26 +32,16 @@ usage:
             filters:
               tags:
                 only: /.*/
-        - orb-tools/publish:
-            orb-name: circleci/orb-tools
-            vcs-type: << pipeline.project.type >>
-            requires:
-              [
-                orb-tools/lint,
-                orb-tools/review,
-                orb-tools/pack,
-                shellcheck/check,
-              ]
-            # Use a context to hold your publishing token.
-            context: publishing-context
-            filters:
-              tags:
-                only: /.*/
         # Triggers the next workflow in the Orb Development Kit.
         - orb-tools/continue:
-            pipeline-number: << pipeline.number >>
-            vcs-type: << pipeline.project.type >>
-            requires: [orb-tools/publish]
+            pipeline_number: << pipeline.number >>
+            vcs_type: << pipeline.project.type >>
+            orb_name: <orb name>
+            requires:
+              - orb-tools-alpha/lint
+              - orb-tools-alpha/review
+              - orb-tools-alpha/pack
+              - shellcheck/check
             filters:
               tags:
                 only: /.*/

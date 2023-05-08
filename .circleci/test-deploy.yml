@@ -1,30 +1,36 @@
 version: 2.1
 orbs:
-  orb-tools-alpha: circleci/orb-tools@dev:<<pipeline.git.revision>>
+  orb-tools-alpha: {}
+
+filters: &filters
+  tags:
+    only: /.*/
 
 workflows:
   test-deploy:
     jobs:
       - orb-tools-alpha/lint:
-          filters:
-            tags:
-              only: /.*/
+          filters: *filters
       - orb-tools-alpha/pack:
-          filters:
-            tags:
-              only: /.*/
+          filters: *filters
       - orb-tools-alpha/review:
-          filters:
-            tags:
-              only: /.*/
+          filters: *filters
       - orb-tools-alpha/publish:
-          orb-name: circleci/orb-tools
-          vcs-type: <<pipeline.project.type>>
-          pub-type: production
+          name: publish_dev_test
+          orb_name: circleci/orb-tools
+          vcs_type: <<pipeline.project.type>>
+          pub_type: dev
           requires:
             [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
           context: orb-publisher
-          github-token: GHI_TOKEN
+      - orb-tools-alpha/publish:
+          orb_name: circleci/orb-tools
+          vcs_type: <<pipeline.project.type>>
+          pub_type: production
+          requires:
+            [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack, publish_dev_test]
+          context: orb-publisher
+          github_token: GHI_TOKEN
           filters:
             branches:
               ignore: /.*/

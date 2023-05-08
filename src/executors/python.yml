@@ -1,13 +1,13 @@
 description: >
-  The circleci-cli Docker image, which includes the CircleCI CLI executable.
+  An Ubuntu based image built by CircleCI with CI/CD in mind. This image contains basic tools and the Python runtime.
 
 parameters:
   tag:
     type: string
-    default: "0.1.26094"
+    default: "3.11"
     description: >
-      What version of the CircleCI CLI Docker image? For full list, see
-      https://hub.docker.com/r/circleci/circleci-cli/tags
+      What version of the cimg/python image? For full list, see
+      https://circleci.com/developer/images/image/cimg/python
   resource_class:
     description: Configure the executor resource class
     type: enum
@@ -16,4 +16,4 @@ parameters:
 
 resource_class: << parameters.resource_class >>
 docker:
-  - image: circleci/circleci-cli:<< parameters.tag >>
+  - image: cimg/python:<< parameters.tag >>
