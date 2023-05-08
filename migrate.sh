@@ -91,7 +91,7 @@ find_and_replace() {
   #1 the file
   #2 the string to find
   #3 the string to replace it with
-  sed -i "s/$2/$3/g" "$1"
+  sed -i "" -e "s/$2/$3/g" "$1"
 }
 
 main() {
