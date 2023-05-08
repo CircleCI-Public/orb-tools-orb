@@ -79,7 +79,11 @@ rename_components() {
     filename=$(convert_to_snake_case "$filename")
     filepath=$(dirname "$file")
     # Rename the file
-    mv "$file" "${filepath}/${filename}.yml" 2>/dev/null
+    if [ -d ".git" ]; then
+      git mv --no-commit "$file" "${filepath}/${filename}.yml" 2>/dev/null
+    else
+      mv "$file" "${filepath}/${filename}.yml" 2>/dev/null
+    fi
   done
 }
 
