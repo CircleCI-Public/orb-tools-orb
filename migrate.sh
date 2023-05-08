@@ -80,7 +80,7 @@ rename_components() {
     filepath=$(dirname "$file")
     # Rename the file
     if [ -d ".git" ]; then
-      git mv --no-commit "$file" "${filepath}/${filename}.yml" 2>/dev/null
+      git mv "$file" "${filepath}/${filename}.yml" 2>/dev/null
     else
       mv "$file" "${filepath}/${filename}.yml" 2>/dev/null
     fi
