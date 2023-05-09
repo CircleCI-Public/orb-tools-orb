@@ -57,9 +57,9 @@ function orbPublish() {
   if [ "$ORB_PARAM_PUB_TYPE" == "production" ]; then
     printf "Production release detected!\n"
     if [ -z "$CIRCLE_TAG" ]; then
-      printf "No tag detected. Peacfully exiting.\n"
+      printf "No tag detected. Exiting.\n"
       printf "If you are trying to publish a production orb, you must push a semantically versioned tag.\n"
-      exit 0
+      exit 1
     fi
     validateProdTag
     ORB_RELEASE_VERSION="$(echo "${CIRCLE_TAG}" | grep -Eo "[0-9]+\.[0-9]+\.[0-9]+")"
