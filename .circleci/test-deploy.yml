@@ -20,6 +20,7 @@ workflows:
           orb_name: circleci/orb-tools
           vcs_type: <<pipeline.project.type>>
           pub_type: dev
+          github_token: GHI_TOKEN
           requires:
             [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
           context: orb-publisher
