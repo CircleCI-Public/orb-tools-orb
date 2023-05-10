@@ -17,8 +17,8 @@ checkRequirements() {
 		exit 1
 	fi
 
-	if [ -z "${CIRCLECI_API_HOST}" ]; then
-		printf "CIRCLECI_API_HOST is required.\n"
+	if [ -z "${ORB_VAL_CIRCLECI_API_HOST}" ]; then
+		printf "ORB_VAL_CIRCLECI_API_HOST is required.\n"
 		printf "If you are using CircleCI Cloud, use default value or set https://circleci.com.\n"
 		exit 1
 	fi
@@ -76,7 +76,7 @@ continuePipeline() {
 			-H "Content-Type: application/json" \
 			-H "Accept: application/json" \
 			--data @/tmp/circleci/continue_post.json \
-			"${CIRCLECI_API_HOST}/api/v2/pipeline/continue"
+			"${ORB_VAL_CIRCLECI_API_HOST}/api/v2/pipeline/continue"
 	)
 	# Check if the pipeline was successfully continued
 	if [[ "$RESPONSE" -eq 200 ]]; then
@@ -95,7 +95,7 @@ continuePipeline() {
 	# 	-H "Content-Type: application/json" \
 	# 	-H "Accept: application/json" \
 	# 	--data @/tmp/circleci/continue_post.json \
-	# 	"${CIRCLECI_API_HOST}/api/v2/pipeline/continue") -eq 200 ]] || printf "Failed to continue pipeline. Attempt to retry the pipeline, if the problem persists please open an issue on the Orb-Tools Orb repository: https://github.com/CircleCI-Public/orb-tools-orb\n" >&2 && exit 1
+	# 	"${ORB_VAL_CIRCLECI_API_HOST}/api/v2/pipeline/continue") -eq 200 ]] || printf "Failed to continue pipeline. Attempt to retry the pipeline, if the problem persists please open an issue on the Orb-Tools Orb repository: https://github.com/CircleCI-Public/orb-tools-orb\n" >&2 && exit 1
 }
 
 # Print completion message
@@ -103,7 +103,7 @@ printComplete() {
 	printf "Continuation successful!\n"
 	printf "Your orb will now be tested in the next workflow.\n"
 	# shellcheck disable=SC2153
-	printf "View the full pipeline progress: %s/pipelines/%s/%s/%s/%s\n" "${CIRCLECI_APP_HOST}" "${PIPELINE_VCS_TYPE}" "${CIRCLE_PROJECT_USERNAME}" "${CIRCLE_PROJECT_REPONAME}" "${PIPELINE_NUMBER}"
+	printf "View the full pipeline progress: %s/pipelines/%s/%s/%s/%s\n" "${ORB_VAL_CIRCLECI_APP_HOST}" "${ORB_VAL_PIPELINE_VCS_TYPE}" "${CIRCLE_PROJECT_USERNAME}" "${CIRCLE_PROJECT_REPONAME}" "${ORB_VAL_PIPELINE_NUMBER}"
 
 }
 
