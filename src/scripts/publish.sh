@@ -45,7 +45,7 @@ function publishDevOrbs() {
   {
     printf "Your development orb(s) have been published. It will expire in 30 days.\n"
     printf "You can preview what this will look like on the CircleCI Orb Registry at the following link: \n"
-    printf "https://circleci.com/developer/orbs/orb/%s?version=dev:%s\n" "${ORB_VAL_ORB_NAME}" "${array[0]}"
+    printf "https://circleci.com/developer/orbs/orb/%s?version=dev:%s\n" "${ORB_PARAM_ORB_NAME}" "${array[0]}"
   } >/tmp/orb_dev_kit/publishing_message.txt
 }
 
