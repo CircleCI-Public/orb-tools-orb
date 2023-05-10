@@ -78,21 +78,21 @@ fi
 
 PR_COMMENT_BODY=$(awk '{printf "%s\\n", $0}' /tmp/orb_dev_kit/publishing_message.txt)
 
-if [[ "$PIPELINE_VCS_TYPE" == "gh" || "$PIPELINE_VCS_TYPE" == "github" ]]; then
+if [[ "$ORB_VAL_PIPELINE_VCS_TYPE" == "gh" || "$ORB_VAL_PIPELINE_VCS_TYPE" == "github" ]]; then
   # GitHub PR Comment Process
-  PARAM_GH_TOKEN_VALUE=${!ORB_PARAM_GITHUB_TOKEN}
-  if [ -z "$PARAM_GH_TOKEN_VALUE" ]; then
+  GH_TOKEN_VALUE=${!ORB_VAL_GITHUB_TOKEN}
+  if [ -z "$GH_TOKEN_VALUE" ]; then
     echo "UNABLE TO COMMENT"
     echo "GitHub Personal Access Token not found."
     echo "Please set the GITHUB_TOKEN environment variable to your GitHub personal access token."
     exit 0
   fi
-  GH_HEADER_DATA="Authorization: Bearer $PARAM_GH_TOKEN_VALUE"
+  GH_HEADER_DATA="Authorization: Bearer $GH_TOKEN_VALUE"
   mainGitHub
-elif [[ "$PIPELINE_VCS_TYPE" == "bb" || "$PIPELINE_VCS_TYPE" == "bitbucket" ]]; then
+elif [[ "$ORB_VAL_PIPELINE_VCS_TYPE" == "bb" || "$ORB_VAL_PIPELINE_VCS_TYPE" == "bitbucket" ]]; then
   echo "BitBucket PR Comments are not yet supported. Skipping."
   exit 0
 else
-  echo "Unsupported VCS type: $PIPELINE_VCS_TYPE"
+  echo "Unsupported VCS type: $ORB_VAL_PIPELINE_VCS_TYPE"
   exit 0
 fi

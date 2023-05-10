@@ -2,7 +2,7 @@ setup() {
     ORB_DEFAULT_SRC_DIR="./src/"
     ORB_SOURCE_DIR=${ORB_VAL_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
 		ORB_SOURCE_DIR=${ORB_SOURCE_DIR%/}
-	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${PARAM_RC_EXCLUDE}"
+	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${ORB_VAL_RC_EXCLUDE}"
 }
 
 @test "RC001: Include source_url in @orb.yml" {
@@ -165,11 +165,11 @@ setup() {
 				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
-			elif [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt "${PARAM_MAX_COMMAND_LENGTH}" ]]; then
+			elif [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt "${ORB_VAL_MAX_COMMAND_LENGTH}" ]]; then
 				if [[ ! "$ORB_COMPONENT_STEP_COMMAND" =~ \<\<include\(* ]]; then
 					echo "File: \"${i}\""
 					echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
-					echo "This command appears longer than ${PARAM_MAX_COMMAND_LENGTH} characters. Consider using the 'include' syntax."
+					echo "This command appears longer than ${ORB_VAL_MAX_COMMAND_LENGTH} characters. Consider using the 'include' syntax."
 					echo ---
 					echo "$ORB_COMPONENT_STEP_COMMAND"
 					echo ---

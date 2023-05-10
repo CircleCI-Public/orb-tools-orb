@@ -6,9 +6,9 @@ ORB_DIR=${ORB_VAL_ORB_DIR%/}
 ORB_FILE=${ORB_VAL_ORB_FILE_NAME#/}
 
 
-if [ "https://circleci.com" != "${CIRCLECI_API_HOST}" ] && [ -z "${CIRCLE_TOKEN}" ]; then
+if [ "https://circleci.com" != "${ORB_VAL_CIRCLECI_API_HOST}" ] && [ -z "${CIRCLE_TOKEN}" ]; then
     echo "Please set a valid CIRCLE_TOKEN token from your self-hosted CircleCI."
     exit 1
 fi
 
-circleci orb validate --host "${CIRCLECI_API_HOST:-https://circleci.com}" --token "${CIRCLE_TOKEN:-dummy}" ${ORB_VAL_ORG_ID:+--org-id "$ORB_VAL_ORG_ID"} ${ORB_VAL_ORG_SLUG:+--org-slug "$ORB_VAL_ORG_SLUG"} --skip-update-check "${ORB_DIR}/${ORB_FILE}"
+circleci orb validate --host "${ORB_VAL_CIRCLECI_API_HOST:-https://circleci.com}" --token "${CIRCLE_TOKEN:-dummy}" ${ORB_VAL_ORG_ID:+--org-id "$ORB_VAL_ORG_ID"} ${ORB_VAL_ORG_SLUG:+--org-slug "$ORB_VAL_ORG_SLUG"} --skip-update-check "${ORB_DIR}/${ORB_FILE}"

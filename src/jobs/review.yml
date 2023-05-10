@@ -42,9 +42,9 @@ steps:
   - run:
       name: Review Best Practices
       environment:
-        PARAM_RC_EXCLUDE: <<parameters.exclude>>
-        PARAM_MAX_COMMAND_LENGTH: <<parameters.max_command_length>>
-        ORB_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
+        ORB_VAL_RC_EXCLUDE: <<parameters.exclude>>
+        ORB_VAL_MAX_COMMAND_LENGTH: <<parameters.max_command_length>>
+        ORB_VAL_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
         ORB_VAL_SOURCE_DIR: << parameters.source_dir >>
       command: <<include(scripts/review.sh)>>
   - store_test_results:

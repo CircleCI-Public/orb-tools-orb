@@ -67,7 +67,7 @@ steps:
         ORB_VAL_ORB_FILE_NAME: <<parameters.orb_file_name>>
         ORB_VAL_ORG_ID: << parameters.org_id >>
         ORB_VAL_ORG_SLUG: << parameters.org_slug >>
-        CIRCLECI_API_HOST: <<parameters.circleci_api_host>>
+        ORB_VAL_CIRCLECI_API_HOST: <<parameters.circleci_api_host>>
       command: <<include(scripts/validate.sh)>>
   - when:
       condition: <<parameters.persist_to_workspace>>
