@@ -17,8 +17,4 @@ mkdir -p /tmp/orb_dev_kit/review/
 echo "$ORB_VAL_REVIEW_BATS_FILE" >review.bats
 echo "Reviewing orb best practices"
 echo "If required, tests can be skipped via their \"RCXXX\" code with the \"exclude\" parameter."
-EXIT_CODE=0
-bats -T --formatter junit ./review.bats >/tmp/orb_dev_kit/review/review.xml || EXIT_CODE=$?
-echo "Review complete!"
-echo "Review the results in the \"TESTS\" tab above. If you would like to ignore any of the suggestions, add their \"RCXXX\" code to the \"exclude\" parameter."
-exit "$EXIT_CODE"
+bats -T --pretty --report-formatter junit --output /tmp/orb_dev_kit/review ./review.bats
