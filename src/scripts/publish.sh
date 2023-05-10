@@ -37,17 +37,22 @@ function publishOrb() {
 
 function publishDevOrbs() {
   printf "Publishing development orb(s).\n\n"
+  ORB_REG_LINKS=()
   DEV_TAG_LIST=$(echo "${ORB_VAL_DEV_TAGS}" | tr -d ' ')
   IFS=',' read -ra array <<<"$DEV_TAG_LIST"
   for tag in "${array[@]}"; do
-    publishOrb "$tag"
+    # shellcheck disable=SC2005
+    PROCESSED_TAG=$(circleci env subst "$tag")
+    ORB_REG_LINKS+=("$(printf 'https://circleci.com/developer/orbs/orb/%s?version=%s' "$ORB_VAL_ORB_NAME" "$PROCESSED_TAG")")
+    publishOrb "$PROCESSED_TAG"
   done
   {
     printf "Your development orb(s) have been published. It will expire in 30 days.\n"
-    printf "You can preview what this will look like on the CircleCI Orb Registry at the following link: \n"
-    printf "https://circleci.com/developer/orbs/orb/%s?version=dev:%s\n" "${ORB_VAL_ORB_NAME}" "${array[0]}"
+    printf "You can preview what this will look like on the CircleCI Orb Registry at the following link(s): \n"
+    printf "%s\n" "${ORB_REG_LINKS[@]}"
   } >/tmp/orb_dev_kit/publishing_message.txt
 }
+
 
 # The main function
 function orbPublish() {
