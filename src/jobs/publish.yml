@@ -118,7 +118,6 @@ steps:
         ORB_VAL_PUB_TYPE: <<parameters.pub_type>>
         ORB_VAL_TAG_PATTERN: <<parameters.tag_pattern>>
         ORB_VAL_DEV_TAGS: <<parameters.dev_tags>>
-        PARAM_GH_TOKEN: <<parameters.github_token>>
         CIRCLECI_API_HOST: <<parameters.circleci_api_host>>
       command: <<include(scripts/publish.sh)>>
   - when:
