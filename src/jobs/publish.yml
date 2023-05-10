@@ -111,13 +111,13 @@ steps:
   - run:
       name: Publishing Orb Release
       environment:
-        ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci_token>>
-        ORB_PARAM_ORB_NAME: <<parameters.orb_name>>
-        ORB_PARAM_ORB_DIR: <<parameters.orb_dir>>
-        ORB_PARAM_ORB_FILE_NAME: <<parameters.orb_file_name>>
-        ORB_PARAM_PUB_TYPE: <<parameters.pub_type>>
-        ORB_PARAM_TAG_PATTERN: <<parameters.tag_pattern>>
-        ORB_PARAM_DEV_TAGS: <<parameters.dev_tags>>
+        ORB_VAL_ORB_PUB_TOKEN: <<parameters.circleci_token>>
+        ORB_VAL_ORB_NAME: <<parameters.orb_name>>
+        ORB_VAL_ORB_DIR: <<parameters.orb_dir>>
+        ORB_VAL_ORB_FILE_NAME: <<parameters.orb_file_name>>
+        ORB_VAL_PUB_TYPE: <<parameters.pub_type>>
+        ORB_VAL_TAG_PATTERN: <<parameters.tag_pattern>>
+        ORB_VAL_DEV_TAGS: <<parameters.dev_tags>>
         PARAM_GH_TOKEN: <<parameters.github_token>>
         CIRCLECI_API_HOST: <<parameters.circleci_api_host>>
       command: <<include(scripts/publish.sh)>>
@@ -127,9 +127,9 @@ steps:
         - run:
             name: Adding Comment To PR
             environment:
-              ORB_PARAM_GITHUB_TOKEN: <<parameters.github_token>>
-              ORB_PARAM_ORB_NAME: <<parameters.orb_name>>
-              ORB_PARAM_ORB_PUB_TOKEN: <<parameters.circleci_token>>
-              ORB_PARAM_GH_GRAPHQL_URL: <<parameters.pr_comment_graphql_url>>
+              ORB_VAL_GITHUB_TOKEN: <<parameters.github_token>>
+              ORB_VAL_ORB_NAME: <<parameters.orb_name>>
+              ORB_VAL_ORB_PUB_TOKEN: <<parameters.circleci_token>>
+              ORB_VAL_GH_GRAPHQL_URL: <<parameters.pr_comment_graphql_url>>
               PIPELINE_VCS_TYPE: <<parameters.vcs_type>>
             command: <<include(scripts/comment-pr.sh)>>
