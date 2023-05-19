@@ -201,6 +201,13 @@ setup() {
 			echo "Component names should be snake_cased. Please rename this file to use snake_case."
 			exit 1
 		fi
+
+        # Check if the file has parameters, if not skip counting.
+        HAS_PARAMETERS=$(yq 'has("parameters")' "$i")
+        if [[ "$HAS_PARAMETERS" == "false" ]]; then
+            continue
+        fi
+
 		# Check parameter keys on component for snake_case
 		ORB_COMPONENT_PARAMETERS_COUNT=$(yq '.parameters | keys | .[]' "$i")
 		for j in $ORB_COMPONENT_PARAMETERS_COUNT; do
