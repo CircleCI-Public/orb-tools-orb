@@ -38,6 +38,12 @@ function isAuthenticatedGitHub() {
 }
 
 function mainGitHub() {
+  if [ "${CIRCLE_PULL_REQUEST}" == "" ]; then
+    echo "The current job is not running as part of a Pull Request."
+    echo "Skipping commenting..."
+    exit 0
+  fi
+
   echo "Checking if authenticated to GitHub..."
   local authenticated_user
   authenticated_user="$(isAuthenticatedGitHub | jq -r '.data.viewer.login')"
