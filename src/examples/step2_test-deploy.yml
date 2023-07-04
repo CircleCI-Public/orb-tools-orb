@@ -35,9 +35,9 @@ usage:
                 only: /.*/
         # Because our publishing job has a tag filter, we must also apply a filter to each job it depends on.
         - orb-tools/publish:
-            orb-name: <namespace>/<my-orb>
-            pub-type: production
-            vcs-type: <<pipeline.project.type>>
+            orb_name: <namespace>/<my-orb>
+            pub_type: production
+            vcs_type: <<pipeline.project.type>>
             requires:
               - command-tests
               - <my-orb>/my_job
