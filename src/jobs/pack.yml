@@ -45,8 +45,16 @@ parameters:
       You can use "org_id" instead if you prefer.
     type: string
     default: ""
+  circleci_ip_ranges:
+    type: boolean
+    default: false
+    description: |
+      The IP ranges feature enables users to restrict network access to CircleCI jobs by allowing only requests originating from specified IP ranges. For detailed documentation on "circleci_ip_ranges", you can refer to the official CircleCI documentation: [IP Ranges](https://circleci.com/docs/ip-ranges/)
+
 
 executor: << parameters.executor >>
+
+circleci_ip_ranges: << parameters.circleci_ip_ranges >>
 
 steps:
   - when:
