@@ -46,9 +46,10 @@ checkRequirements() {
 # Inject orb source into the configuration
 injectOrb() {
 	printf "Injecting orb source into configuration.\n"
-	ORB_SOURCE="$(cat "${ORB_DIR}/${ORB_FILE}")"
+	ORB_SOURCE="${ORB_DIR}/${ORB_FILE}"
 	export ORB_SOURCE
-	MODIFIED_CONFIG="$(yq '.orbs.[env(ORB_VAL_ORB_NAME)] = env(ORB_SOURCE)' "${ORB_VAL_CONTINUE_CONFIG_PATH}")"
+	# NOTE: load function from yq is only available from v4.x
+	MODIFIED_CONFIG="$(yq '.orbs.[env(ORB_VAL_ORB_NAME)] = load(env(ORB_SOURCE))' "${ORB_VAL_CONTINUE_CONFIG_PATH}")"
 	printf "Modified config:\n\n"
 	printf "%s" "${MODIFIED_CONFIG}"
 	printf "%s" "${MODIFIED_CONFIG}" >"/tmp/circleci/modified/${ORB_FILE}"
