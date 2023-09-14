@@ -10,5 +10,5 @@ display:
   home_url: https://circleci.com/docs/2.0/orb-author/
 
 orbs:
-  cli: circleci/circleci-cli@0.1
+  cli: circleci/circleci-cli@0.1.9
   bats: circleci/bats@1.0.0
