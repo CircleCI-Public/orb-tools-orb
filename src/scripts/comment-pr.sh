@@ -38,7 +38,7 @@ function isAuthenticatedGitHub() {
 }
 
 function mainGitHub() {
-  if [ "${CIRCLE_PULL_REQUEST}" == "" ]; then
+  if [ -z "${CIRCLE_PULL_REQUEST}" ]; then
     echo "The current job is not running as part of a Pull Request."
     echo "Skipping commenting..."
     exit 0
