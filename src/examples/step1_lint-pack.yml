@@ -38,9 +38,9 @@ usage:
             vcs_type: << pipeline.project.type >>
             orb_name: <orb name>
             requires:
-              - orb-tools-alpha/lint
-              - orb-tools-alpha/review
-              - orb-tools-alpha/pack
+              - orb-tools/lint
+              - orb-tools/review
+              - orb-tools/pack
               - shellcheck/check
             filters:
               tags:
