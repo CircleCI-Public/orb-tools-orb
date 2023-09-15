@@ -10,7 +10,8 @@ _Note: If you are upgrading from 11.x to 12.x proceed here. If you are upgrading
 
 - **Removed the need for a dev publishing token**
   - Previously, after the orb was built, it would be published to a development tag and referenced in the test pipeline. This required a publishing token to be present in the dev pipeline.
-   - The dynamic configuration system allows us to inject the orb directly into the pipeline as an "in-line" orb, allowing for orb testing without the need for access to a publishing token.
+  - The dynamic configuration system allows us to inject the orb directly into the pipeline as an "in-line" orb, allowing for orb testing without the need for access to a publishing token,
+  thus allowing forked-PR builds to "build and test" securely.
 - **Snake_Case Renamed Components**
   - To keep consistency with CircleCI's _native_ configuration schema, all components and parameters have been renamed to use snake_case.
   (Example: `parameter-name` -> `parameter_name`)
@@ -21,16 +22,46 @@ _Note: If you are upgrading from 11.x to 12.x proceed here. If you are upgrading
 
 1. Clone your orb project locally.
 1. Create a new branch for upgrading your pipeline
+
    ```sh
    git checkout -b orb-tools-12-migration
    ````
+
 1. Copy the `migrate.sh` script from this repository into your project's root directory.
 1. Run the script
+
    ```sh
    chmod +x migrate.sh && ./migrate.sh
    ```
 
 After executing the script, your orb's component names and parameters will be converted to snake_case, and references to them within your config files will be updated. The reference to your orb in the `test-deploy` config will be removed, as the orb will now be dynamically injected into the pipeline.
+
+1. Edit your project's `.circleci/config.yml` file.
+
+   Compare the current
+[v12 "step1 " lint-pack example](https://circleci.com/developer/orbs/orb/circleci/orb-tools?version=12#usage-step1_lint-pack)
+vs the
+[v11 version](https://circleci.com/developer/orbs/orb/circleci/orb-tools?version=11#usage-step1_lint-pack)
+to see the required changes.
+   - Remove the old "dev publish" job (`orb-tools/publish`) from the workflow.
+   - Fix the `requires:` specification so that the "continue" job requires everything else.
+
+1. Edit your project's `.circleci/test-deploy.yml` file.
+
+   Compare the current
+[v12 "step2 " test-deploy example](https://circleci.com/developer/orbs/orb/circleci/orb-tools?version=12#usage-step2_test-deploy)
+vs the
+[v11 version](https://circleci.com/developer/orbs/orb/circleci/orb-tools?version=11#usage-step2_test-deploy)
+to see the required changes.
+
+   - Add an extra call to the "pack" job (`orb-tools/pack`) and ensure that the publish job(s) `require:` it.
+   - Consider adding an extra call to the "publish" job to reinstate the "dev publish" removed from the `config.yml` build file.
+     - Not all users will require this; this is only necessary if dev publishes of unreleased orbs are needed for use by other projects.
+     - Consider setting a filter to ensure that the dev publish doesn't happen for release builds (i.e. no tags) or for external (forked) PR builds (i.e. no branches matching `/^pull/[0-9]+$/`).
+   - Make the "pack" job `require:` all your test jobs and then have the publish job(s) `require:` the pack job.
+
+---
+
 ## v11.0.0
 
 Version 11.0.0 of orb-tools is composed of a major re-write that greatly changes and improves the way orbs are deployed, makes use of CircleCI's [dynamic configuration](https://circleci.com/docs/2.0/dynamic-config/), and can even automatically test for best practices.
