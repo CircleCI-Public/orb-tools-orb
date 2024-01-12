@@ -34,30 +34,13 @@ usage:
               tags:
                 only: /.*/
         # Because our publishing job has a tag filter, we must also apply a filter to each job it depends on.
-        - orb-tools/pack:
-            requires:
-              - command-tests
-              - <my-orb>/my_job
-            filters:
-              tags:
-                only: /.*/
-        - orb-tools/publish:
-            name: publish_dev_test
-            orb_name: <namespace>/<my-orb>
-            pub_type: dev
-            vcs_type: <<pipeline.project.type>>
-            requires: [orb-tools/pack]
-            context: [orb-publishing-context]
-            filters:
-              tags:
-                ignore: /^v[0-9]+\.[0-9]+\.[0-9]+$/
-              branches:
-                ignore: /^pull/[0-9]+/
         - orb-tools/publish:
             orb_name: <namespace>/<my-orb>
             pub_type: production
             vcs_type: <<pipeline.project.type>>
-            requires: [orb-tools/pack]
+            requires:
+              - command-tests
+              - <my-orb>/my_job
             context: [orb-publishing-context]
             filters:
               tags:

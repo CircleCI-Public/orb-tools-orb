@@ -11,29 +11,25 @@ workflows:
     jobs:
       - orb-tools-alpha/lint:
           filters: *filters
-      - orb-tools-alpha/review:
-          filters: *filters
       - orb-tools-alpha/pack:
           filters: *filters
-          requires:
-            - orb-tools-alpha/lint
-            - orb-tools-alpha/review
+      - orb-tools-alpha/review:
+          filters: *filters
       - orb-tools-alpha/publish:
           name: publish_dev_test
           orb_name: circleci/orb-tools
           vcs_type: <<pipeline.project.type>>
           pub_type: dev
           github_token: GHI_TOKEN
-          requires: [orb-tools-alpha/pack]
+          requires:
+            [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack]
           context: orb-publisher
-          filters:
-            branches:
-              ignore: /pull/[0-9]+/
       - orb-tools-alpha/publish:
           orb_name: circleci/orb-tools
           vcs_type: <<pipeline.project.type>>
           pub_type: production
-          requires: [orb-tools-alpha/pack]
+          requires:
+            [orb-tools-alpha/lint, orb-tools-alpha/review, orb-tools-alpha/pack, publish_dev_test]
           context: orb-publisher
           github_token: GHI_TOKEN
           filters:
