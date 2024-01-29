@@ -244,18 +244,18 @@ setup() {
 		ORB_REF_VERSION_STRING=$(echo "$ORB_REF_STRING" | cut -d '@' -f 2)
 		ORB_REF_MAJOR_VERSION=$(echo "$ORB_REF_VERSION_STRING" | cut -d '.' -f 1)
 
-		if [[ "$ORB_REF_MAJOR_VERSION"!= "$CURRENT_MAJOR_VERSION" ]]; then
-		echo "File: \"${i}\""
-		echo "Orb version: \"${ORB_REF_VERSION_STRING}\""
-		echo "Current major version: \"${CURRENT_MAJOR_VERSION}\""
-		echo "Usage examples should showcase at least the current major version of the orb."
-		echo ""
-		echo "Steps to resolve:"
-		echo "  1. Delete the tag from your git repository which triggered this pipeline."
-		echo "  2. Update all of the orb usage examples to ensure they match the next major version of the orb."
-		echo "  3. Re-tag and release the orb to re-trigger the pipeline"
+		if [[ "$ORB_REF_MAJOR_VERSION" != "$CURRENT_MAJOR_VERSION" ]]; then
+			echo "File: \"${i}\""
+			echo "Orb version: \"${ORB_REF_VERSION_STRING}\""
+			echo "Current major version: \"${CURRENT_MAJOR_VERSION}\""
+			echo "Usage examples should showcase at least the current major version of the orb."
+			echo ""
+			echo "Steps to resolve:"
+			echo "  1. Delete the tag from your git repository which triggered this pipeline."
+			echo "  2. Update all of the orb usage examples to ensure they match the next major version of the orb."
+			echo "  3. Re-tag and release the orb to re-trigger the pipeline"
 
-		exit 1
+			exit 1
 		fi
 	done
 
