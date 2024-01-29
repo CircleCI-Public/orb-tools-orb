@@ -1,7 +1,7 @@
 setup() {
-    ORB_DEFAULT_SRC_DIR="./src/"
-    ORB_SOURCE_DIR=${ORB_VAL_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
-		ORB_SOURCE_DIR=${ORB_SOURCE_DIR%/}
+	ORB_DEFAULT_SRC_DIR="./src/"
+	ORB_SOURCE_DIR=${ORB_VAL_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
+	ORB_SOURCE_DIR=${ORB_SOURCE_DIR%/}
 	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${ORB_VAL_RC_EXCLUDE}"
 }
 
@@ -202,11 +202,11 @@ setup() {
 			exit 1
 		fi
 
-        # Check if the file has parameters, if not skip counting.
-        HAS_PARAMETERS=$(yq 'has("parameters")' "$i")
-        if [[ "$HAS_PARAMETERS" == "false" ]]; then
-            continue
-        fi
+		# Check if the file has parameters, if not skip counting.
+		HAS_PARAMETERS=$(yq 'has("parameters")' "$i")
+		if [[ "$HAS_PARAMETERS" == "false" ]]; then
+			continue
+		fi
 
 		# Check parameter keys on component for snake_case
 		ORB_COMPONENT_PARAMETERS_COUNT=$(yq '.parameters | keys | .[]' "$i")
