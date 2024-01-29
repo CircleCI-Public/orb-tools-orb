@@ -24,6 +24,7 @@ usage:
               tags:
                 only: /.*/
         - orb-tools/review:
+            orb_name: <orb name>
             filters:
               tags:
                 only: /.*/
