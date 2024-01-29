@@ -17,8 +17,9 @@ parameters:
   orb_name:
     type: string
     default: ""
-    description: >
-      The reference name of the orb to be injected in the config, no namespace or version number. e.g. "orb-tools"
+    description: |
+      The reference name of the orb to be injected in the config, no namespace or version number. e.g. "orb-tools".
+      This is required for RC011. RC011 will be skipped if this is not set.
   max_command_length:
     description: |
       The maximum length of a command (RC009).
