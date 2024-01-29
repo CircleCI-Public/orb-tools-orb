@@ -1,7 +1,7 @@
 setup() {
-    ORB_DEFAULT_SRC_DIR="./src/"
-    ORB_SOURCE_DIR=${ORB_VAL_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
-		ORB_SOURCE_DIR=${ORB_SOURCE_DIR%/}
+	ORB_DEFAULT_SRC_DIR="./src/"
+	ORB_SOURCE_DIR=${ORB_VAL_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
+	ORB_SOURCE_DIR=${ORB_SOURCE_DIR%/}
 	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${ORB_VAL_RC_EXCLUDE}"
 }
 
@@ -202,11 +202,11 @@ setup() {
 			exit 1
 		fi
 
-        # Check if the file has parameters, if not skip counting.
-        HAS_PARAMETERS=$(yq 'has("parameters")' "$i")
-        if [[ "$HAS_PARAMETERS" == "false" ]]; then
-            continue
-        fi
+		# Check if the file has parameters, if not skip counting.
+		HAS_PARAMETERS=$(yq 'has("parameters")' "$i")
+		if [[ "$HAS_PARAMETERS" == "false" ]]; then
+			continue
+		fi
 
 		# Check parameter keys on component for snake_case
 		ORB_COMPONENT_PARAMETERS_COUNT=$(yq '.parameters | keys | .[]' "$i")
@@ -219,5 +219,48 @@ setup() {
 			fi
 		done
 
+	done
+}
+
+@test "RC011: Ensure usage examples showcase current major version of the orb." {
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC011" ]]; then
+		skip
+	fi
+
+	if [[ -z "$ORB_VAL_ORB_NAME" ]]; then
+		echo "Orb name not set. Skipping usage example check."
+		skip
+	fi
+
+	if [[ -z "$CIRCLE_TAG" ]]; then
+		echo "No tag detected. Skipping usage example check."
+		skip
+	fi
+
+	if [[ ! "$CIRCLE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+		echo "Non-production tag detected. Skipping usage example check."
+		skip
+	fi
+
+	CURRENT_MAJOR_VERSION=$(echo "${CIRCLE_TAG#v}" | cut -d '.' -f 1)
+
+	for i in $(find "${ORB_SOURCE_DIR}/examples" -name "*.yml" -type f); do
+		ORB_REF_STRING=$(yq ".usage.orbs[\"${ORB_VAL_ORB_NAME}\"]" "$i")
+		ORB_REF_VERSION_STRING=$(echo "$ORB_REF_STRING" | cut -d '@' -f 2)
+		ORB_REF_MAJOR_VERSION=$(echo "$ORB_REF_VERSION_STRING" | cut -d '.' -f 1)
+
+		if [[ "$ORB_REF_MAJOR_VERSION" != "$CURRENT_MAJOR_VERSION" ]]; then
+			echo "File: \"${i}\""
+			echo "Usage example Orb version: \"${ORB_REF_VERSION_STRING}\""
+			echo "Current major version: \"${CURRENT_MAJOR_VERSION}\""
+			echo "Usage examples should showcase at least the current major version of the orb."
+			echo ""
+			echo "Steps to resolve:"
+			echo "  1. Delete the release and tag from your git repository which triggered this pipeline."
+			echo "  2. Update all of the orb usage examples to ensure they match the next major version of the orb."
+			echo "  3. Re-tag and release the orb to re-trigger the pipeline"
+
+			exit 1
+		fi
 	done
 }

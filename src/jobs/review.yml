@@ -14,6 +14,12 @@ parameters:
     description: Path to the orb source. Path must be absolute or relative to the working directory.
     type: string
     default: src
+  orb_name:
+    type: string
+    default: ""
+    description: |
+      The reference name of the orb to be injected in the config, no namespace or version number. e.g. "orb-tools".
+      This is required for RC011. RC011 will be skipped if this is not set.
   max_command_length:
     description: |
       The maximum length of a command (RC009).
@@ -46,6 +52,7 @@ steps:
         ORB_VAL_MAX_COMMAND_LENGTH: <<parameters.max_command_length>>
         ORB_VAL_REVIEW_BATS_FILE: <<include(scripts/review.bats)>>
         ORB_VAL_SOURCE_DIR: << parameters.source_dir >>
+        ORB_VAL_ORB_NAME: <<parameters.orb_name>>
       command: <<include(scripts/review.sh)>>
   - store_test_results:
       path: /tmp/orb_dev_kit/review/

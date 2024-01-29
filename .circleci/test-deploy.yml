@@ -14,6 +14,7 @@ workflows:
       - orb-tools-alpha/pack:
           filters: *filters
       - orb-tools-alpha/review:
+          orb_name: <orb name>
           filters: *filters
       - orb-tools-alpha/publish:
           name: publish_dev_test
