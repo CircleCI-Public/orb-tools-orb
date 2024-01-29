@@ -223,7 +223,7 @@ setup() {
 }
 
 @test "RC011: Ensure usage examples showcase current major version of the orb." {
-	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC001" ]]; then
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC011" ]]; then
 		skip
 	fi
 
