@@ -237,9 +237,9 @@ setup() {
 		skip
 	fi
 
-	CURRENT_MAJOR_VERSION=$(echo "$CIRCLE_TAG" | cut -d '.' -f 1)
+	CURRENT_MAJOR_VERSION=$(echo "${CIRCLE_TAG#v}" | cut -d '.' -f 1)
 
-	for i in $(find "${ORB_SOURCE_DIR}examples/*.yml" -type f); do
+	for i in $(find "${ORB_SOURCE_DIR}/examples" -name "*.yml" -type f); do
 		ORB_REF_STRING=$(yq ".usage.orbs[\"${ORB_VAL_ORB_NAME}\"]" "$i")
 		ORB_REF_VERSION_STRING=$(echo "$ORB_REF_STRING" | cut -d '@' -f 2)
 		ORB_REF_MAJOR_VERSION=$(echo "$ORB_REF_VERSION_STRING" | cut -d '.' -f 1)
@@ -258,5 +258,4 @@ setup() {
 			exit 1
 		fi
 	done
-
 }
