@@ -19,7 +19,7 @@ workflows:
       - orb-tools-alpha/pack:
           filters: *filters
       - orb-tools-alpha/review:
-          orb_name: orb-tools-alpha
+          orb_name: orb-tools
           filters: *filters
       - shellcheck/check:
           filters: *filters
