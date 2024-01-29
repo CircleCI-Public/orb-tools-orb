@@ -227,6 +227,11 @@ setup() {
 		skip
 	fi
 
+	if [[ -z "$ORB_VAL_ORB_NAME" ]]; then
+		echo "Orb name not set. Skipping usage example check."
+		skip
+	fi
+
 	if [[ -z "$CIRCLE_TAG" ]]; then
 		echo "No tag detected. Skipping usage example check."
 		skip

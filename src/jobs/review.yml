@@ -16,6 +16,7 @@ parameters:
     default: src
   orb_name:
     type: string
+    default: ""
     description: >
       The reference name of the orb to be injected in the config, no namespace or version number. e.g. "orb-tools"
   max_command_length:
