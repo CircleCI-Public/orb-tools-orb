@@ -246,7 +246,7 @@ setup() {
 
 		if [[ "$ORB_REF_MAJOR_VERSION" != "$CURRENT_MAJOR_VERSION" ]]; then
 			echo "File: \"${i}\""
-			echo "Orb version: \"${ORB_REF_VERSION_STRING}\""
+			echo "Usage example Orb version: \"${ORB_REF_VERSION_STRING}\""
 			echo "Current major version: \"${CURRENT_MAJOR_VERSION}\""
 			echo "Usage examples should showcase at least the current major version of the orb."
 			echo ""
