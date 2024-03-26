@@ -33,12 +33,17 @@ usage:
             filters:
               tags:
                 only: /.*/
+        - orb-tools/pack:
+            filters:
+              tags:
+                only: /.*/
         # Because our publishing job has a tag filter, we must also apply a filter to each job it depends on.
         - orb-tools/publish:
             orb_name: <namespace>/<my-orb>
             pub_type: production
             vcs_type: <<pipeline.project.type>>
             requires:
+              - orb-tools/pack
               - command-tests
               - <my-orb>/my_job
             context: [orb-publishing-context]
