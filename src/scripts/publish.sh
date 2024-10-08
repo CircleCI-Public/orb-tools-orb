@@ -47,7 +47,7 @@ function publishDevOrbs() {
     publishOrb "$PROCESSED_TAG"
   done
   {
-    printf "Your development orb(s) have been published. It will expire in 30 days.\n"
+    printf "Your development orb(s) have been published. It will expire in 90 days.\n"
     printf "You can preview what this will look like on the CircleCI Orb Registry at the following link(s): \n"
     printf "%s\n" "${ORB_REG_LINKS[@]}"
   } >/tmp/orb_dev_kit/publishing_message.txt
