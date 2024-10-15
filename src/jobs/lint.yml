@@ -15,6 +15,10 @@ parameters:
     description: The executor to use for this job. By default, this will use the "python" executor provided by this orb.
     type: executor
     default: python
+  circleci_ip_ranges:
+    description: Enables jobs to go through a set of well-defined IP address ranges.
+    type: boolean
+    default: false
 
 executor: << parameters.executor >>
 
