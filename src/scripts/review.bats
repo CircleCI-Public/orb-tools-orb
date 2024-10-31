@@ -44,7 +44,7 @@ setup() {
 	fi
 }
 
-@test "RC004: Usage example names shoud be descriptive." {
+@test "RC004: Usage example names should be descriptive." {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC004" ]]; then
 		skip
 	fi

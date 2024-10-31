@@ -84,6 +84,10 @@ parameters:
     description: The executor to use for this job. By default, this will use the "default" executor provided by this orb.
     type: executor
     default: default
+  circleci_ip_ranges:
+    description: Enables jobs to go through a set of well-defined IP address ranges.
+    type: boolean
+    default: false
   attach_workspace:
     type: boolean
     default: true
@@ -94,6 +98,8 @@ parameters:
       The tar file will be extracted to the "orb_dir" path.
 
 executor: << parameters.executor >>
+
+circleci_ip_ranges: << parameters.circleci_ip_ranges >>
 
 steps:
   - when:
