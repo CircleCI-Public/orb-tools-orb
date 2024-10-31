@@ -52,6 +52,8 @@ parameters:
 
 executor: << parameters.executor >>
 
+circleci_ip_ranges: << parameters.circleci_ip_ranges >>
+
 steps:
   - when:
       condition: <<parameters.checkout>>
