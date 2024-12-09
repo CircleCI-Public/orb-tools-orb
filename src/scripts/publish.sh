@@ -27,6 +27,12 @@ function publishOrb() {
   #$1 = full tag
 
   circleci orb publish --host "${ORB_VAL_CIRCLECI_API_HOST:-https://circleci.com}" --skip-update-check "${ORB_DIR}/${ORB_FILE}" "${ORB_VAL_ORB_NAME}@${1}" --token "$ORB_VAL_ORB_PUB_TOKEN"
+
+  # Track release if ORB_VAL_RELEASE_ENVIRONMENT is set
+  if [[ -n "${ORB_VAL_RELEASE_ENVIRONMENT}" ]]; then
+    circleci run release log --environment-name="${ORB_VAL_RELEASE_ENVIRONMENT}" --component-name="${ORB_VAL_ORB_NAME}" --target-version="${1}"
+  fi
+  
   printf "\n"
   {
     printf "Your orb has been published to the CircleCI Orb Registry.\n"
