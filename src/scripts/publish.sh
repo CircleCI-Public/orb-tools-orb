@@ -30,7 +30,7 @@ function publishOrb() {
 
   # Track release if ORB_VAL_RELEASE_ENVIRONMENT is set
   if [[ -n "${ORB_VAL_RELEASE_ENVIRONMENT}" ]]; then
-    circleci run release log --environment-name="${ORB_VAL_RELEASE_ENVIRONMENT}" --component-name="${ORB_VAL_ORB_NAME}" --target-version="${1}"
+    circleci-agent run release log --environment-name="${ORB_VAL_RELEASE_ENVIRONMENT}" --component-name="${ORB_VAL_ORB_NAME}" --target-version="${1}"
   fi
   
   printf "\n"
