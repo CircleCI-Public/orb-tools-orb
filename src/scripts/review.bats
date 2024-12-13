@@ -106,14 +106,14 @@ setup() {
 	fi
 	ERROR_COUNT=0
 	for i in $(find "${ORB_SOURCE_DIR}/jobs" "${ORB_SOURCE_DIR}/commands" -name "*.yml" 2>/dev/null); do
-		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run | select(. != null)] | length' "$i")
-		j=0
-		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
-			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run | select(. != null)][$j]" "$i")
-			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq -o=json '.' | jq 'type')
-			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run | select(. != null)][$j] | line" "$i")
-			ORB_COMPONENT_STEP_NAME=$(yq "[.steps.[] | .run | select(. != null)][$j] | .name" "$i")
-			if [[ "$ORB_COMPONENT_STEP_TYPE" == '"string"' ]]; then
+		ORB_COMPONENT_STEPS_COUNT=$(yq -o json '.' "$i" | jq '[. | paths ] | map(select(last=="run")) | length')
+		RUN_ENTRIES=$(yq -o json '.' "$i" | jq -r '[paths] | map(select(last == "run") | join(".")) | .[]')
+
+		for ENTRY in $(echo "$RUN_ENTRIES"); do
+			ORB_COMPONENT_STEP=$(yq ".$ENTRY" "$i")
+			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq 'type')
+			ORB_COMPONENT_LINE_NUMBER=$(yq ".${ENTRY} | line" "$i")
+			if [[ "$ORB_COMPONENT_STEP_TYPE" == '!!str' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
 				echo "It appears this 'run' step is using 'string' formatting."
@@ -122,15 +122,18 @@ setup() {
 				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
-			elif [[ "$ORB_COMPONENT_STEP_NAME" == null || "$ORB_COMPONENT_STEP_NAME" == '""' ]]; then
-				echo "File: \"${i}\""
-				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
-				echo ---
-				yq "[.steps.[] | .run | select(. != null)][$j]" "$i"
-				echo ---
-				ERROR_COUNT=$((ERROR_COUNT + 1))
+			else
+				ORB_COMPONENT_STEP_NAME=$(echo "${ORB_COMPONENT_STEP}" | yq '.name')
+				ORB_COMPONENT_LINE_NUMBER=$(yq ".${ENTRY}.command | line" "$i")
+				if [[ "$ORB_COMPONENT_STEP_NAME" == null || "$ORB_COMPONENT_STEP_NAME" == '""' ]]; then
+					echo "File: \"${i}\""
+					echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+					echo ---
+					echo "$ORB_COMPONENT_STEP"
+					echo ---
+					ERROR_COUNT=$((ERROR_COUNT + 1))
+				fi
 			fi
-			j=$((j + 1))
 		done
 	done
 	if [[ "$ERROR_COUNT" -gt 0 ]]; then
@@ -149,14 +152,14 @@ setup() {
 	fi
 	ERROR_COUNT=0
 	for i in $(find ${ORB_SOURCE_DIR}/jobs ${ORB_SOURCE_DIR}/commands -name "*.yml" 2>/dev/null); do
-		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run | select(. != null)] | length' "$i")
-		j=0
-		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
-			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run | select(. != null)][$j]" "$i")
-			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq -o=json '.' | jq 'type')
-			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run | select(. != null)][$j] | line" "$i")
-			ORB_COMPONENT_STEP_COMMAND=$(yq "[.steps.[] | .run | select(. != null)][$j] | .command" "$i")
-			if [[ "$ORB_COMPONENT_STEP_TYPE" == '"string"' ]]; then
+		ORB_COMPONENT_STEPS_COUNT=$(yq -o json '.' "$i" | jq '[. | paths ] | map(select(last=="run")) | length')
+		RUN_ENTRIES=$(yq -o json '.' "$i" | jq -r '[paths] | map(select(last == "run") | join(".")) | .[]')
+
+		for ENTRY in $(echo "$RUN_ENTRIES"); do
+			ORB_COMPONENT_STEP=$(yq ".$ENTRY" "$i")
+			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq 'type')
+			ORB_COMPONENT_LINE_NUMBER=$(yq ".${ENTRY} | line" "$i")
+			if [[ "$ORB_COMPONENT_STEP_TYPE" == '!!str' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
 				echo "It appears this 'run' step is using 'string' formatting."
@@ -165,18 +168,21 @@ setup() {
 				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
-			elif [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt "${ORB_VAL_MAX_COMMAND_LENGTH}" ]]; then
-				if [[ ! "$ORB_COMPONENT_STEP_COMMAND" =~ \<\<include\(* ]]; then
-					echo "File: \"${i}\""
-					echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
-					echo "This command appears longer than ${ORB_VAL_MAX_COMMAND_LENGTH} characters. Consider using the 'include' syntax."
-					echo ---
-					echo "$ORB_COMPONENT_STEP_COMMAND"
-					echo ---
-					ERROR_COUNT=$((ERROR_COUNT + 1))
+			else
+				ORB_COMPONENT_STEP_COMMAND=$(echo "${ORB_COMPONENT_STEP}" | yq '.command')
+				ORB_COMPONENT_LINE_NUMBER=$(yq ".${ENTRY}.command | line" "$i")
+				if [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt "${ORB_VAL_MAX_COMMAND_LENGTH}" ]]; then
+					if [[ ! "$ORB_COMPONENT_STEP_COMMAND" =~ \<\<include\(* ]]; then
+						echo "File: \"${i}\""
+						echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+						echo "This command appears longer than ${ORB_VAL_MAX_COMMAND_LENGTH} characters. Consider using the 'include' syntax."
+						echo ---
+						echo "$ORB_COMPONENT_STEP_COMMAND"
+						echo ---
+						ERROR_COUNT=$((ERROR_COUNT + 1))
+					fi
 				fi
 			fi
-			j=$((j + 1))
 		done
 	done
 	if [[ "$ERROR_COUNT" -gt 0 ]]; then

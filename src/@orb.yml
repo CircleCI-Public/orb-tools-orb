@@ -11,4 +11,4 @@ display:
 
 orbs:
   cli: circleci/circleci-cli@0.1.9
-  bats: circleci/bats@1.0.0
+  bats: circleci/bats@1.1.0
