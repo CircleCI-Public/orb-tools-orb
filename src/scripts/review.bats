@@ -270,3 +270,57 @@ setup() {
 		fi
 	done
 }
+
+@test "RC012: Incorrect usage of environment variables set as default parameter detected." {
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC012" ]]; then
+		skip
+	fi
+	ERROR_COUNT=0
+	for i in $(find "${ORB_SOURCE_DIR}/jobs" "${ORB_SOURCE_DIR}/commands" "${ORB_SOURCE_DIR}/executors" -name "*.yml" 2>/dev/null); do
+		# Retrieve all default entries
+		ORB_DEFAULT_PATHS=$(yq -o json "$i" | jq -r 'paths | select(last == "default" and .[0]== "parameters") | join(".")')
+		for TMP_PATH in $(echo "$ORB_DEFAULT_PATHS"); do
+			ORB_DEFAULT_VALUE=$(yq ".$TMP_PATH" "$i")
+			# Find entries that reference an environment variable
+			if [[ "$ORB_DEFAULT_VALUE" =~ \$ ]] && [[ ! "$ORB_DEFAULT_VALUE" =~ \$$ ]]; then
+				# Get the associated run step or included script
+				PARAMETER_NAME=$(echo "$TMP_PATH" | cut -d'.' -f2)
+				#echo "##################################"
+				#echo FILE: $i
+				#echo K: "$TMP_PATH"
+				#echo P: "$ORB_DEFAULT_VALUE"
+				LIST_DICT=$(yq -o json '.' "$i" | jq --arg key "${PARAMETER_NAME}" '. as $orig | [paths] | map(. as $p | $orig | getpath($p) | select(type == "string" and contains($key)) | {k:$p, v:.})')
+				LIST_DICT_LENGTH=$(echo "$LIST_DICT" | jq '.| length')
+				for j in $(seq 0 1 $((${LIST_DICT_LENGTH} - 1))); do
+					ENTRY_K=$(echo "$LIST_DICT" | jq -r --arg ind "$j" '.[$ind | tonumber].k | join(".")')
+					ENTRY_V=$(echo "$LIST_DICT" | jq -r --arg ind "$j" '.[$ind | tonumber].v')
+					#echo ENTRY_K: "$ENTRY_K"
+					#echo ENTRY_V: "$ENTRY_V"
+					if [[ "$ENTRY_K" =~ key$ ]]; then
+						# It is a key and environment variable is used in dependent orb
+						ORB_COMPONENT_LINE_NUMBER=$(yq ".$TMP_PATH | line" "$i")
+						ENTRY_K_LINE=$(yq ".$ENTRY_K | line" "$i")
+						echo
+						echo "File: \"${i}\""
+						echo "Parameter definition line: ${ORB_COMPONENT_LINE_NUMBER}"
+						echo "Parameter name: ${PARAMETER_NAME}"
+						echo "Parameter value: ${ORB_DEFAULT_VALUE}"
+						echo
+						echo "The parameter \"${PARAMETER_NAME}\" was initialized as an Environment Variable: \"${ORB_DEFAULT_VALUE}\""
+						echo "It is being used by an orb key parameter (\"${ENTRY_K}\") in line ${ENTRY_K_LINE} which is not permitted."
+						echo ---
+						echo "$ENTRY_V"
+						echo ---
+						ERROR_COUNT=$(($ERROR_COUNT + 1))
+						continue
+					fi
+				done
+			fi
+		done
+	done
+	if [[ "$ERROR_COUNT" -gt 0 ]]; then
+		echo
+		echo "\"default\" parameters referencing environment variables cannot be used directly in key properties."
+		exit 1
+	fi
+}
