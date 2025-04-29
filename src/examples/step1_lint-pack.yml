@@ -9,8 +9,8 @@ usage:
   version: 2.1
   setup: true
   orbs:
-    orb-tools: circleci/orb-tools@12.0
-    shellcheck: circleci/shellcheck@3.1
+    orb-tools: circleci/orb-tools@<version>
+    shellcheck: circleci/shellcheck@3.4.0
 
   workflows:
     lint-pack:
@@ -37,7 +37,8 @@ usage:
         - orb-tools/continue:
             pipeline_number: << pipeline.number >>
             vcs_type: << pipeline.project.type >>
-            orb_name: <orb name>
+            orb_name: <my-orb>
+            # config_path: .circleci/test_deploy.yml
             requires:
               - orb-tools/lint
               - orb-tools/review
