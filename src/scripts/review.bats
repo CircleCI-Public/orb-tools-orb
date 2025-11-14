@@ -1,7 +1,7 @@
 setup() {
-    ORB_DEFAULT_SRC_DIR="./src/"
-    ORB_SOURCE_DIR=${ORB_VAL_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
-		ORB_SOURCE_DIR=${ORB_SOURCE_DIR%/}
+	ORB_DEFAULT_SRC_DIR="./src/"
+	ORB_SOURCE_DIR=${ORB_VAL_SOURCE_DIR:-$ORB_DEFAULT_SRC_DIR}
+	ORB_SOURCE_DIR=${ORB_SOURCE_DIR%/}
 	IFS="," read -ra SKIPPED_REVIEW_CHECKS <<<"${ORB_VAL_RC_EXCLUDE}"
 }
 
@@ -44,7 +44,7 @@ setup() {
 	fi
 }
 
-@test "RC004: Usage example names shoud be descriptive." {
+@test "RC004: Usage example names should be descriptive." {
 	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC004" ]]; then
 		skip
 	fi
@@ -106,14 +106,14 @@ setup() {
 	fi
 	ERROR_COUNT=0
 	for i in $(find "${ORB_SOURCE_DIR}/jobs" "${ORB_SOURCE_DIR}/commands" -name "*.yml" 2>/dev/null); do
-		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run | select(. != null)] | length' "$i")
-		j=0
-		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
-			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run | select(. != null)][$j]" "$i")
-			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq -o=json '.' | jq 'type')
-			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run | select(. != null)][$j] | line" "$i")
-			ORB_COMPONENT_STEP_NAME=$(yq "[.steps.[] | .run | select(. != null)][$j] | .name" "$i")
-			if [[ "$ORB_COMPONENT_STEP_TYPE" == '"string"' ]]; then
+		ORB_COMPONENT_STEPS_COUNT=$(yq -o json '.' "$i" | jq '[. | paths ] | map(select(last=="run")) | length')
+		RUN_ENTRIES=$(yq -o json '.' "$i" | jq -r '[paths] | map(select(last == "run") | join(".")) | .[]')
+
+		for ENTRY in $(echo "$RUN_ENTRIES"); do
+			ORB_COMPONENT_STEP=$(yq ".$ENTRY" "$i")
+			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq 'type')
+			ORB_COMPONENT_LINE_NUMBER=$(yq ".${ENTRY} | line" "$i")
+			if [[ "$ORB_COMPONENT_STEP_TYPE" == '!!str' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
 				echo "It appears this 'run' step is using 'string' formatting."
@@ -122,15 +122,18 @@ setup() {
 				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
-			elif [[ "$ORB_COMPONENT_STEP_NAME" == null || "$ORB_COMPONENT_STEP_NAME" == '""' ]]; then
-				echo "File: \"${i}\""
-				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
-				echo ---
-				yq "[.steps.[] | .run | select(. != null)][$j]" "$i"
-				echo ---
-				ERROR_COUNT=$((ERROR_COUNT + 1))
+			else
+				ORB_COMPONENT_STEP_NAME=$(echo "${ORB_COMPONENT_STEP}" | yq '.name')
+				ORB_COMPONENT_LINE_NUMBER=$(yq ".${ENTRY}.command | line" "$i")
+				if [[ "$ORB_COMPONENT_STEP_NAME" == null || "$ORB_COMPONENT_STEP_NAME" == '""' ]]; then
+					echo "File: \"${i}\""
+					echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+					echo ---
+					echo "$ORB_COMPONENT_STEP"
+					echo ---
+					ERROR_COUNT=$((ERROR_COUNT + 1))
+				fi
 			fi
-			j=$((j + 1))
 		done
 	done
 	if [[ "$ERROR_COUNT" -gt 0 ]]; then
@@ -149,14 +152,14 @@ setup() {
 	fi
 	ERROR_COUNT=0
 	for i in $(find ${ORB_SOURCE_DIR}/jobs ${ORB_SOURCE_DIR}/commands -name "*.yml" 2>/dev/null); do
-		ORB_COMPONENT_STEPS_COUNT=$(yq '[.steps.[] | .run | select(. != null)] | length' "$i")
-		j=0
-		while [ "$j" -lt "$ORB_COMPONENT_STEPS_COUNT" ]; do
-			ORB_COMPONENT_STEP=$(yq "[.steps.[] | .run | select(. != null)][$j]" "$i")
-			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq -o=json '.' | jq 'type')
-			ORB_COMPONENT_LINE_NUMBER=$(yq "[.steps.[] | .run | select(. != null)][$j] | line" "$i")
-			ORB_COMPONENT_STEP_COMMAND=$(yq "[.steps.[] | .run | select(. != null)][$j] | .command" "$i")
-			if [[ "$ORB_COMPONENT_STEP_TYPE" == '"string"' ]]; then
+		ORB_COMPONENT_STEPS_COUNT=$(yq -o json '.' "$i" | jq '[. | paths ] | map(select(last=="run")) | length')
+		RUN_ENTRIES=$(yq -o json '.' "$i" | jq -r '[paths] | map(select(last == "run") | join(".")) | .[]')
+
+		for ENTRY in $(echo "$RUN_ENTRIES"); do
+			ORB_COMPONENT_STEP=$(yq ".$ENTRY" "$i")
+			ORB_COMPONENT_STEP_TYPE=$(echo "$ORB_COMPONENT_STEP" | yq 'type')
+			ORB_COMPONENT_LINE_NUMBER=$(yq ".${ENTRY} | line" "$i")
+			if [[ "$ORB_COMPONENT_STEP_TYPE" == '!!str' ]]; then
 				echo "File: \"${i}\""
 				echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
 				echo "It appears this 'run' step is using 'string' formatting."
@@ -165,18 +168,21 @@ setup() {
 				echo "$ORB_COMPONENT_STEP"
 				echo ---
 				ERROR_COUNT=$((ERROR_COUNT + 1))
-			elif [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt "${ORB_VAL_MAX_COMMAND_LENGTH}" ]]; then
-				if [[ ! "$ORB_COMPONENT_STEP_COMMAND" =~ \<\<include\(* ]]; then
-					echo "File: \"${i}\""
-					echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
-					echo "This command appears longer than ${ORB_VAL_MAX_COMMAND_LENGTH} characters. Consider using the 'include' syntax."
-					echo ---
-					echo "$ORB_COMPONENT_STEP_COMMAND"
-					echo ---
-					ERROR_COUNT=$((ERROR_COUNT + 1))
+			else
+				ORB_COMPONENT_STEP_COMMAND=$(echo "${ORB_COMPONENT_STEP}" | yq '.command')
+				ORB_COMPONENT_LINE_NUMBER=$(yq ".${ENTRY}.command | line" "$i")
+				if [[ "${#ORB_COMPONENT_STEP_COMMAND}" -gt "${ORB_VAL_MAX_COMMAND_LENGTH}" ]]; then
+					if [[ ! "$ORB_COMPONENT_STEP_COMMAND" =~ \<\<include\(* ]]; then
+						echo "File: \"${i}\""
+						echo "Line number: ${ORB_COMPONENT_LINE_NUMBER}"
+						echo "This command appears longer than ${ORB_VAL_MAX_COMMAND_LENGTH} characters. Consider using the 'include' syntax."
+						echo ---
+						echo "$ORB_COMPONENT_STEP_COMMAND"
+						echo ---
+						ERROR_COUNT=$((ERROR_COUNT + 1))
+					fi
 				fi
 			fi
-			j=$((j + 1))
 		done
 	done
 	if [[ "$ERROR_COUNT" -gt 0 ]]; then
@@ -202,11 +208,11 @@ setup() {
 			exit 1
 		fi
 
-        # Check if the file has parameters, if not skip counting.
-        HAS_PARAMETERS=$(yq 'has("parameters")' "$i")
-        if [[ "$HAS_PARAMETERS" == "false" ]]; then
-            continue
-        fi
+		# Check if the file has parameters, if not skip counting.
+		HAS_PARAMETERS=$(yq 'has("parameters")' "$i")
+		if [[ "$HAS_PARAMETERS" == "false" ]]; then
+			continue
+		fi
 
 		# Check parameter keys on component for snake_case
 		ORB_COMPONENT_PARAMETERS_COUNT=$(yq '.parameters | keys | .[]' "$i")
@@ -220,4 +226,101 @@ setup() {
 		done
 
 	done
+}
+
+@test "RC011: Ensure usage examples showcase current major version of the orb." {
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC011" ]]; then
+		skip
+	fi
+
+	if [[ -z "$ORB_VAL_ORB_NAME" ]]; then
+		echo "Orb name not set. Skipping usage example check."
+		skip
+	fi
+
+	if [[ -z "$CIRCLE_TAG" ]]; then
+		echo "No tag detected. Skipping usage example check."
+		skip
+	fi
+
+	if [[ ! "$CIRCLE_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+		echo "Non-production tag detected. Skipping usage example check."
+		skip
+	fi
+
+	CURRENT_MAJOR_VERSION=$(echo "${CIRCLE_TAG#v}" | cut -d '.' -f 1)
+
+	for i in $(find "${ORB_SOURCE_DIR}/examples" -name "*.yml" -type f); do
+		ORB_REF_STRING=$(yq ".usage.orbs[\"${ORB_VAL_ORB_NAME}\"]" "$i")
+		ORB_REF_VERSION_STRING=$(echo "$ORB_REF_STRING" | cut -d '@' -f 2)
+		ORB_REF_MAJOR_VERSION=$(echo "$ORB_REF_VERSION_STRING" | cut -d '.' -f 1)
+
+		if [[ "$ORB_REF_MAJOR_VERSION" != "$CURRENT_MAJOR_VERSION" ]]; then
+			echo "File: \"${i}\""
+			echo "Usage example Orb version: \"${ORB_REF_VERSION_STRING}\""
+			echo "Current major version: \"${CURRENT_MAJOR_VERSION}\""
+			echo "Usage examples should showcase at least the current major version of the orb."
+			echo ""
+			echo "Steps to resolve:"
+			echo "  1. Delete the release and tag from your git repository which triggered this pipeline."
+			echo "  2. Update all of the orb usage examples to ensure they match the next major version of the orb."
+			echo "  3. Re-tag and release the orb to re-trigger the pipeline"
+
+			exit 1
+		fi
+	done
+}
+
+@test "RC012: Incorrect usage of environment variables set as default parameter detected." {
+	if [[ "${SKIPPED_REVIEW_CHECKS[*]}" =~ "RC012" ]]; then
+		skip
+	fi
+	ERROR_COUNT=0
+	for i in $(find "${ORB_SOURCE_DIR}/jobs" "${ORB_SOURCE_DIR}/commands" "${ORB_SOURCE_DIR}/executors" -name "*.yml" 2>/dev/null); do
+		# Retrieve all default entries
+		ORB_DEFAULT_PATHS=$(yq -o json "$i" | jq -r 'paths | select(last == "default" and .[0]== "parameters") | join(".")')
+		for TMP_PATH in $(echo "$ORB_DEFAULT_PATHS"); do
+			ORB_DEFAULT_VALUE=$(yq ".$TMP_PATH" "$i")
+			# Find entries that reference an environment variable
+			if [[ "$ORB_DEFAULT_VALUE" =~ \$ ]] && [[ ! "$ORB_DEFAULT_VALUE" =~ \$$ ]]; then
+				# Get the associated run step or included script
+				PARAMETER_NAME=$(echo "$TMP_PATH" | cut -d'.' -f2)
+				#echo "##################################"
+				#echo FILE: $i
+				#echo K: "$TMP_PATH"
+				#echo P: "$ORB_DEFAULT_VALUE"
+				LIST_DICT=$(yq -o json '.' "$i" | jq --arg key "${PARAMETER_NAME}" '. as $orig | [paths] | map(. as $p | $orig | getpath($p) | select(type == "string" and contains($key)) | {k:$p, v:.})')
+				LIST_DICT_LENGTH=$(echo "$LIST_DICT" | jq '.| length')
+				for j in $(seq 0 1 $((${LIST_DICT_LENGTH} - 1))); do
+					ENTRY_K=$(echo "$LIST_DICT" | jq -r --arg ind "$j" '.[$ind | tonumber].k | join(".")')
+					ENTRY_V=$(echo "$LIST_DICT" | jq -r --arg ind "$j" '.[$ind | tonumber].v')
+					#echo ENTRY_K: "$ENTRY_K"
+					#echo ENTRY_V: "$ENTRY_V"
+					if [[ "$ENTRY_K" =~ key$ ]]; then
+						# It is a key and environment variable is used in dependent orb
+						ORB_COMPONENT_LINE_NUMBER=$(yq ".$TMP_PATH | line" "$i")
+						ENTRY_K_LINE=$(yq ".$ENTRY_K | line" "$i")
+						echo
+						echo "File: \"${i}\""
+						echo "Parameter definition line: ${ORB_COMPONENT_LINE_NUMBER}"
+						echo "Parameter name: ${PARAMETER_NAME}"
+						echo "Parameter value: ${ORB_DEFAULT_VALUE}"
+						echo
+						echo "The parameter \"${PARAMETER_NAME}\" was initialized as an Environment Variable: \"${ORB_DEFAULT_VALUE}\""
+						echo "It is being used by an orb key parameter (\"${ENTRY_K}\") in line ${ENTRY_K_LINE} which is not permitted."
+						echo ---
+						echo "$ENTRY_V"
+						echo ---
+						ERROR_COUNT=$(($ERROR_COUNT + 1))
+						continue
+					fi
+				done
+			fi
+		done
+	done
+	if [[ "$ERROR_COUNT" -gt 0 ]]; then
+		echo
+		echo "\"default\" parameters referencing environment variables cannot be used directly in key properties."
+		exit 1
+	fi
 }
