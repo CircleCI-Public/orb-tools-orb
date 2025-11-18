@@ -12,6 +12,7 @@ workflows:
       - orb-tools-alpha/lint:
           filters: *filters
       - orb-tools-alpha/review:
+          orb_name: orb-tools
           filters: *filters
       - orb-tools-alpha/pack:
           filters: *filters

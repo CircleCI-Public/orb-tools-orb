@@ -7,8 +7,8 @@ description: |
 
 display:
   source_url: https://github.com/CircleCI-Public/orb-tools-orb/
-  home_url: https://circleci.com/docs/2.0/orb-author/
+  home_url: https://github.com/CircleCI-Public/orb-tools-orb/
 
 orbs:
   cli: circleci/circleci-cli@0.1.9
-  bats: circleci/bats@1.0.0
+  bats: circleci/bats@1.1.0
