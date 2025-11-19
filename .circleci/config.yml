@@ -4,8 +4,8 @@ orbs:
   # For the orb-tools-orb it must call itself within the first workflow,
   #   meaning this dev version will need to be published every 90 days.
   # No other orbs will need to import themselves here.
-  orb-tools-alpha: circleci/orb-tools@dev:alpha
-  shellcheck: circleci/shellcheck@3.1
+  orb-tools-alpha: circleci/orb-tools@12.2.0
+  shellcheck: circleci/shellcheck@3.2.0
 
 filters: &filters
   tags:
@@ -19,6 +19,7 @@ workflows:
       - orb-tools-alpha/pack:
           filters: *filters
       - orb-tools-alpha/review:
+          orb_name: orb-tools
           filters: *filters
       - shellcheck/check:
           filters: *filters
