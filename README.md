@@ -4,7 +4,7 @@ An orb for orb authors - provides a full suite of jobs for packing, validating, 
 
 ## Usage
 
-The _orb-tools_ orb is a key component of the "[Orb Development Kit](https://circleci.com/docs/2.0/orb-author/#orb-development-kit)". For the full documentation for developing orbs, see the [Intro to Authoring an Orb](https://circleci.com/docs/2.0/orb-author-intro/) documentation.
+The _orb-tools_ orb is a key component of the "[Orb Development Kit](https://circleci.com/docs/orbs/author/orb-author/#orb-development-kit)". For the full documentation for developing orbs, see the [Intro to Authoring an Orb](https://circleci.com/docs/orbs/author/orb-author/) documentation.
 
 When you initialize a new orb project using the Orb Development Kit, a customized `.circleci/config.yml` file is created containing a full CI pipeline for building, testing, and publishing your orb which utilizes the "orb-tools" orb for the majority of these functions. You can find the config template [here](https://github.com/CircleCI-Public/Orb-Template).
 
@@ -14,10 +14,9 @@ When you are ready to publish a new version of your orb, you can create a new re
 
 ### Quick Docs
 
-- [Getting Started](https://circleci.com/docs/2.0/orb-author-intro/)
-- [Creating an Orb](https://circleci.com/docs/2.0/orb-author/)
-- [Testing an Orb](https://circleci.com/docs/2.0/testing-orbs/)
-- [Publishing an Orb](https://circleci.com/docs/2.0/creating-orbs/)
+- [Creating an Orb](https://circleci.com/docs/orbs/orb-author/)
+- [Testing an Orb](https://circleci.com/docs/orbs/author/testing-orbs/)
+- [Publishing an Orb](https://circleci.com/docs/orbs/author/creating-orbs/)
 
 ## Migrate From Older Orb Tools Versions
 
