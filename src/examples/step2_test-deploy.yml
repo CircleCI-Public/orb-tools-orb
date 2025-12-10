@@ -7,7 +7,7 @@ description: |
 usage:
   version: 2.1
   orbs:
-    orb-tools: circleci/orb-tools@<version>
+    orb-tools: circleci/orb-tools@12.3
     <my-orb>: {}
     # The orb will be injected here by the "continue" job.
   jobs:
