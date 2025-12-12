@@ -5,5 +5,9 @@ if [ ! -d "$ORB_VAL_SOURCE_DIR" ]; then
     printf "https://circleci.com/docs/orbs/author/orb-development-kit/\n"
     exit 1
 fi
-pip install --user yamllint
+if [ "$PIP_BREAK" = true ]; then
+    pip install --user --break-system-packages yamllint
+else
+    pip install --user yamllint
+fi
 yamllint "$ORB_VAL_SOURCE_DIR"
