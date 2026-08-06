@@ -26,13 +26,15 @@ Follow the [migration guide](./MIGRATION.md).
 
 A subset of the orb-tools orb jobs and scripts can be ran locally. It is useful to be able to lint, shellcheck, and review your orbs locally, before committing. With this setup, it is possible to test your _code_ locally, but integration tests of the built orb will be ran on CircleCI.
 
+**Note:** The `circleci local execute` command used below is only available in the `0.1.x` CircleCI CLI. Version 1 of the CLI does not run jobs locally, so on v1 use the direct tool invocations (`yamllint`, `shellcheck`, `bats`) documented alongside each job. Check which version you have with `circleci version`.
+
 ### Local Linting
 
 The orb-tools orb's `orb-tools/lint` job uses a utility [yamllint](https://yamllint.readthedocs.io/en/stable/), which can be downloaded an ran locally, or you can invoke the job locally with the CircleCI CLI.
 
 Assuming you `./circleci/config.yml` file appears similar to the one in this repository, you will have imported the orb-tools orb and defined the `orb-tools/lint` job in a workflow. Using the CLI from this directory, use the following command to locally lint your orb:
 
-#### CircleCI Local Linting
+#### CircleCI Local Linting (CLI `0.1.x` only)
 
 ```shell
 $ circleci local execute --job orb-tools/lint
@@ -50,7 +52,7 @@ Note: you will need a `.yamllint` file in the current directory to run the yamll
 
 [Shellcheck](https://github.com/koalaman/shellcheck) is a static analysis tool for shell scripts, and behaves like a linter for our shell scripts. Which of course can also be ran locally, or if defined within your configuration file, you can invoke the job locally with the CircleCI CLI.
 
-#### CircleCI Local Shellcheck
+#### CircleCI Local Shellcheck (CLI `0.1.x` only)
 
 ```shell
 $ circleci local execute --job shellcheck/check
@@ -68,7 +70,7 @@ $ shellcheck ./src/scripts/*.sh --exclude SC2148,SC2038,SC2086,SC2002,SC2016
 
 The `review` job is a suite of Bash unit tests written using [bats-core](https://github.com/bats-core/bats-core), a test automation framework for Bash. Each test focuses on checking for a best practice in the orb. The tests can be executed directly with the `bats` CLI, or you can invoke the job locally with the CircleCI CLI.
 
-#### CircleCI Local Review
+#### CircleCI Local Review (CLI `0.1.x` only)
 
 ```shell
 $ circleci local execute --job orb-tools/review
