@@ -26,7 +26,14 @@ function validateOrbPubToken() {
 function publishOrb() {
   #$1 = full tag
 
-  circleci orb publish --host "${ORB_VAL_CIRCLECI_API_HOST:-https://circleci.com}" --skip-update-check "${ORB_DIR}/${ORB_FILE}" "${ORB_VAL_ORB_NAME}@${1}" --token "$ORB_VAL_ORB_PUB_TOKEN"
+  if [ "${CLI_MAJOR_VERSION:-1}" -ge 1 ]; then
+    # The v1 CLI reads the host and token from CIRCLE_HOST/CIRCLE_TOKEN instead of --host/--token.
+    CIRCLE_HOST="${ORB_VAL_CIRCLECI_API_HOST:-https://circleci.com}" \
+      CIRCLE_TOKEN="$ORB_VAL_ORB_PUB_TOKEN" \
+      circleci orb publish "${ORB_DIR}/${ORB_FILE}" "${ORB_VAL_ORB_NAME}@${1}"
+  else
+    circleci orb publish --host "${ORB_VAL_CIRCLECI_API_HOST:-https://circleci.com}" --skip-update-check "${ORB_DIR}/${ORB_FILE}" "${ORB_VAL_ORB_NAME}@${1}" --token "$ORB_VAL_ORB_PUB_TOKEN"
+  fi
 
   # Track release if ORB_VAL_RELEASE_ENVIRONMENT is set
   if [[ -n "${ORB_VAL_RELEASE_ENVIRONMENT}" ]]; then
@@ -92,5 +99,6 @@ function orbPublish() {
 
 ORB_RELEASE_VERSION=""
 ORB_VAL_ORB_PUB_TOKEN=${!ORB_VAL_ORB_PUB_TOKEN}
+CLI_MAJOR_VERSION=$(circleci version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+' | head -n1 | cut -d. -f1)
 mkdir -p /tmp/orb_dev_kit/
 orbPublish
