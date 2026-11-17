@@ -103,8 +103,13 @@ continuePipeline() {
 printComplete() {
 	printf "Continuation successful!\n"
 	printf "Your orb will now be tested in the next workflow.\n"
-	# shellcheck disable=SC2153
-	printf "View the full pipeline progress: %s/pipelines/%s/%s/%s/%s\n" "${ORB_VAL_CIRCLECI_APP_HOST}" "${ORB_VAL_PIPELINE_VCS_TYPE}" "${CIRCLE_PROJECT_USERNAME}" "${CIRCLE_PROJECT_REPONAME}" "${ORB_VAL_PIPELINE_NUMBER}"
+	if [ "$ORB_VAL_PIPELINE_VCS_TYPE" == "circleci" ]; then
+		# GitHub App project URLs use IDs rather than org/repo names
+		printf "View the full pipeline progress from this job: %s\n" "${CIRCLE_BUILD_URL}"
+	else
+		# shellcheck disable=SC2153
+		printf "View the full pipeline progress: %s/pipelines/%s/%s/%s/%s\n" "${ORB_VAL_CIRCLECI_APP_HOST}" "${ORB_VAL_PIPELINE_VCS_TYPE}" "${CIRCLE_PROJECT_USERNAME}" "${CIRCLE_PROJECT_REPONAME}" "${ORB_VAL_PIPELINE_NUMBER}"
+	fi
 
 }
 

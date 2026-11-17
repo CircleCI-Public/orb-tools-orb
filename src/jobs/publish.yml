@@ -44,6 +44,7 @@ parameters:
       - github
       - bb
       - bitbucket
+      - circleci
   github_token:
     description: |
       For GitHub users with "enable_pr_comment" enabled, the GitHub API token must be set.

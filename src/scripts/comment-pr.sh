@@ -86,7 +86,13 @@ fi
 
 PR_COMMENT_BODY=$(awk '{printf "%s\\n", $0}' /tmp/orb_dev_kit/publishing_message.txt)
 
-if [[ "$ORB_VAL_PIPELINE_VCS_TYPE" == "gh" || "$ORB_VAL_PIPELINE_VCS_TYPE" == "github" ]]; then
+# GitHub App projects report "circleci"; only comment when the PR is on GitHub
+if [[ "$ORB_VAL_PIPELINE_VCS_TYPE" == "circleci" && "$CIRCLE_PULL_REQUEST" != *"github.com"* ]]; then
+  echo "PR Comments are only supported for GitHub. Skipping."
+  exit 0
+fi
+
+if [[ "$ORB_VAL_PIPELINE_VCS_TYPE" == "gh" || "$ORB_VAL_PIPELINE_VCS_TYPE" == "github" || "$ORB_VAL_PIPELINE_VCS_TYPE" == "circleci" ]]; then
   # GitHub PR Comment Process
   GH_TOKEN_VALUE=${!ORB_VAL_GITHUB_TOKEN}
   if [ -z "$GH_TOKEN_VALUE" ]; then
